@@ -31,6 +31,7 @@ interface StoreValue {
   importOpen: boolean;
   focusMode: boolean;
   emojiOpen: boolean;
+  inspectorOpen: boolean;
   versions: Version[] | null;
   versionsLoading: boolean;
 
@@ -51,6 +52,7 @@ interface StoreValue {
   setImportOpen: (open: boolean) => void;
   toggleFocusMode: () => void;
   setEmojiOpen: (open: boolean) => void;
+  setInspectorOpen: (open: boolean) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -74,6 +76,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
   const [importOpen, setImportOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [emojiOpen, setEmojiOpen] = useState(false);
+  const [inspectorOpen, setInspectorOpen] = useState(true);
   /**
    * Versions of the active note. `null` means "loading" (history just opened).
    */
@@ -346,6 +349,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       importOpen,
       focusMode,
       emojiOpen,
+      inspectorOpen,
       versions,
       versionsLoading: versions === null,
       setActiveNote,
@@ -365,6 +369,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       toggleFocusMode,
       openHistory,
       setEmojiOpen,
+      setInspectorOpen,
     }),
     [
       ready,
@@ -381,6 +386,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       importOpen,
       focusMode,
       emojiOpen,
+      inspectorOpen,
       versions,
       setActiveNote,
       createNote,
@@ -392,6 +398,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       setSettings,
       toggleFocusMode,
       openHistory,
+      setInspectorOpen,
     ]
   );
 

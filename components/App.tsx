@@ -1,9 +1,10 @@
 "use client";
 
-import { Bell, CircleUserRound, Feather, Redo2, Undo2 } from "lucide-react";
+import { Redo2, SlidersHorizontal, Undo2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useActiveEditor } from "@/lib/editorRegistry";
+import { Rail } from "./Rail";
 import { Sidebar } from "./Sidebar";
 import { EditorView } from "./EditorView";
 import { Inspector } from "./Inspector";
@@ -14,39 +15,38 @@ import { HistoryPanel } from "./HistoryPanel";
 import { SettingsMenu } from "./SettingsMenu";
 
 function TopBar() {
-  const { activeNote, view } = useStore();
+  const { activeNote, view, inspectorOpen, setInspectorOpen } = useStore();
   const editor = useActiveEditor();
 
   return (
-    <header className="flex h-[54px] shrink-0 items-center border-b border-border px-7">
-      <div className="flex w-[188px] shrink-0 items-center gap-2.5">
-        <span className="flex size-6 items-center justify-center rounded-[7px] bg-foreground text-background">
-          <Feather className="size-3.5" strokeWidth={2.4} />
-        </span>
-        <span className="text-[14px] font-semibold tracking-[-0.025em]">Grapho</span>
+    <header className="top-bar">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="brand-mark" aria-hidden>G</span>
+        <span className="top-title">Grapho</span>
+        <span className="mx-1 h-4 w-px bg-border" aria-hidden />
+        <nav className="breadcrumb" aria-label="Breadcrumb">
+          <span>{view === "trash" ? "Trash" : "Notes"}</span>
+          <span className="crumb-sep" aria-hidden>/</span>
+          <span className="crumb-active max-w-[280px] truncate">{activeNote?.title || "Untitled"}</span>
+        </nav>
       </div>
 
-      <nav className="flex min-w-0 items-center gap-2 text-[10px]" aria-label="Breadcrumb">
-        <span className="text-faint">{view === "trash" ? "Trash" : "My Notes"}</span>
-        <span className="text-faint">/</span>
-        <span className="truncate font-medium text-muted">{activeNote?.title || "Untitled"}</span>
-      </nav>
-
-      <div className="ml-auto flex items-center gap-1.5">
-        <button className="top-control" onClick={() => editor?.undo()} disabled={!editor} aria-label="Undo" title="Undo">
-          <Undo2 className="size-3.5" />
+      <div className="ml-auto flex items-center gap-1">
+        <button className="icon-btn" onClick={() => editor?.undo()} disabled={!editor} aria-label="Undo" title="Undo">
+          <Undo2 size={15} strokeWidth={1.9} />
         </button>
-        <button className="top-control" onClick={() => editor?.redo()} disabled={!editor} aria-label="Redo" title="Redo">
-          <Redo2 className="size-3.5" />
+        <button className="icon-btn" onClick={() => editor?.redo()} disabled={!editor} aria-label="Redo" title="Redo">
+          <Redo2 size={15} strokeWidth={1.9} />
         </button>
-      </div>
-
-      <div className="ml-[238px] flex items-center gap-4">
-        <button className="text-muted transition-colors hover:text-foreground" aria-label="Notifications" title="Notifications">
-          <Bell className="size-4" />
-        </button>
-        <button className="text-muted transition-colors hover:text-foreground" aria-label="Profile" title="Profile">
-          <CircleUserRound className="size-[18px]" />
+        <span className="mx-2 h-4 w-px bg-border" aria-hidden />
+        <button
+          className={inspectorOpen ? "icon-btn is-active" : "icon-btn"}
+          onClick={() => setInspectorOpen(!inspectorOpen)}
+          aria-label="Toggle style panel"
+          title="Style panel"
+          aria-pressed={inspectorOpen}
+        >
+          <SlidersHorizontal size={15} strokeWidth={1.9} />
         </button>
       </div>
     </header>
@@ -55,31 +55,45 @@ function TopBar() {
 
 function Splash() {
   return (
-    <div className="flex h-full w-full items-center justify-center text-[11px] text-faint">
+    <div className="flex h-full w-full items-center justify-center text-[13px] text-faint">
       Opening your notes…
     </div>
   );
 }
 
 export default function App() {
-  const { ready, settings, activeNote } = useStore();
+  const { ready, settings, activeNote, inspectorOpen } = useStore();
   useKeyboardShortcuts();
 
   return (
-    <div data-accent={settings.accent} className="flex h-dvh w-full bg-background text-foreground antialiased">
+    <div data-accent={settings.accent} className="app-shell bg-background text-foreground antialiased">
       {!ready ? (
         <Splash />
       ) : (
-        <div className="app-shell flex h-full w-full flex-col overflow-hidden">
+        <>
           <TopBar />
-          <div className="grid min-h-0 flex-1 grid-cols-[210px_minmax(0,1fr)_290px] gap-3 px-3 pb-3">
-            <Sidebar />
-            <main className="relative min-w-0 bg-workspace">
-              {activeNote ? <EditorView key={activeNote.id} note={activeNote} /> : <WelcomeScreen />}
-            </main>
-            <Inspector />
+          <div className="flex min-h-0 flex-1">
+            <Rail />
+            <div className="stage-grid relative flex min-w-0 flex-1 flex-col overflow-hidden">
+              {/* Floating notes panel */}
+              <div className="absolute bottom-4 left-4 top-4 z-20">
+                <Sidebar />
+              </div>
+
+              {/* The document stage */}
+              <main className="editor-stage">
+                {activeNote ? <EditorView key={activeNote.id} note={activeNote} /> : <WelcomeScreen />}
+              </main>
+
+              {/* Floating style panel */}
+              {inspectorOpen && (
+                <div className="absolute bottom-4 right-4 top-4 z-30 w-[252px] animate-slide-left">
+                  <Inspector />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <HistoryPanel />

@@ -8,35 +8,29 @@ import { useStore } from "@/lib/store";
 import type { Note } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { EDITOR_SYNC_THROTTLE_MS } from "@/lib/constants";
-import { deriveTitle, inlineToText } from "@/lib/markdown";
+import { deriveTitle } from "@/lib/markdown";
 import { sanitizeBlocks } from "@/lib/sanitize";
 import { publishActiveEditor } from "@/lib/editorRegistry";
 import { useDocState } from "@/lib/docState";
-import { ContextMenu } from "./ContextMenu";
+import { FormatBar } from "./FormatBar";
+import { EmojiPicker, type EmojiSelectEvent } from "./EmojiPicker";
 
 interface EditorViewProps {
   note: Note;
 }
 
 /**
- * The document surface — a centered dark editorial canvas sitting on the
- * near-black editor column. The reference's floating BlockNote chrome
- * (formatting toolbar, slash menu, side menu, …) is disabled: formatting
- * lives in the inspector, and the selection context menu is our own.
+ * The writing surface — a quiet, typography-led document on the dark stage.
+ * No card, no chrome: text sits directly on the canvas, Notion-style. The
+ * contextual format bar floats over the top while the note is open.
  */
 export function EditorView({ note }: EditorViewProps) {
-  const { updateNote, settings } = useStore();
-  // Sanitize once per mount (EditorView is keyed by note id). Guard so a
-  // damaged document can never crash the editor here — db.ts also sanitizes
-  // on load; this catches any other content source.
+  const { updateNote, settings, emojiOpen, setEmojiOpen } = useStore();
   const [initialContent] = useState(() => sanitizeBlocks(note.content));
   const editor = useCreateBlockNote({ initialContent });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastDocRef = useRef<Block[]>(initialContent);
-
-  /* Selection context menu state (right-click on the document surface). */
-  const [menu, setMenu] = useState<{ x: number; y: number; text: string } | null>(null);
 
   const fontClass =
     settings.font === "inter"
@@ -49,8 +43,7 @@ export function EditorView({ note }: EditorViewProps) {
 
   const doc = useDocState();
 
-  /* Publish this editor so out-of-tree UI (top bar, inspector, menus) can
-     reach the cursor/selection. Exactly one editor is mounted at a time. */
+  /* Publish this editor so the top bar + format bar can reach it. */
   useEffect(() => {
     publishActiveEditor(editor);
     return () => publishActiveEditor(null);
@@ -78,52 +71,33 @@ export function EditorView({ note }: EditorViewProps) {
     }
   }, [note.content, note.title, note.id, updateNote]);
 
-  const onContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    let text = "";
-    try {
-      text = editor.getSelectedText() ?? "";
-    } catch {
-      /* non-fatal */
-    }
-    if (!text.trim()) {
-      try {
-        const block = editor.getTextCursorPosition().block;
-        text = inlineToText(block.content).trim();
-      } catch {
-        /* non-fatal */
-      }
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = Math.min(Math.max(e.clientX - rect.left, 8), Math.max(rect.width - 238, 8));
-    const y = Math.min(Math.max(e.clientY - rect.top, 8), Math.max(rect.height - 252, 8));
-    setMenu({ x, y, text });
+  const onEmoji = (event: EmojiSelectEvent) => {
+    editor.insertInlineContent(`${event.native} `);
+    editor.focus();
+    setEmojiOpen(false);
   };
 
   return (
-    <div
-      className="relative h-full min-h-0 overflow-hidden"
-      onContextMenu={onContextMenu}
-    >
-      {/* Document surface — fixed proportions, internally scrollable. */}
+    <div className="relative h-full min-h-0 overflow-hidden">
+      {/* Contextual floating format bar */}
+      <FormatBar />
+
+      {/* Document — centered on the stage, generous type, quiet canvas. */}
       <div
-        className="grapho-doc flex h-full items-start justify-center overflow-hidden px-8 py-6"
+        className="grapho-doc flex h-full items-start justify-center overflow-hidden"
         style={{ "--doc-font-scale": doc.size, "--doc-line-height": doc.spacing } as React.CSSProperties}
       >
-        <article className="document-card flex h-full w-full max-w-[920px] flex-col overflow-hidden">
-          <div className="min-h-0 flex-1 overflow-y-auto px-12 pb-14 pt-10">
+        <article className="doc-col-panels h-full">
+          <div className="doc-scroll">
             <input
               value={note.title}
               onChange={(e) => updateNote(note.id, { title: e.target.value })}
               placeholder="Untitled"
               spellCheck={false}
-              className={cn(
-                fontClass,
-                "w-full bg-transparent text-[34px] font-semibold leading-[1.05] tracking-[-0.05em] text-foreground outline-none placeholder:text-faint/60"
-              )}
+              className={cn(fontClass, "doc-title-input")}
               aria-label="Note title"
             />
-            <div className={cn("grapho-editor-host mt-8", fontClass)}>
+            <div className={cn("grapho-editor-host mt-10", fontClass)}>
               <BlockNoteView
                 editor={editor}
                 theme="light"
@@ -141,14 +115,14 @@ export function EditorView({ note }: EditorViewProps) {
         </article>
       </div>
 
-      <ContextMenu
-        editor={editor}
-        open={menu !== null}
-        x={menu?.x ?? 0}
-        y={menu?.y ?? 0}
-        text={menu?.text ?? ""}
-        onClose={() => setMenu(null)}
-      />
+      {emojiOpen && (
+        <>
+          <button className="fixed inset-0 z-40 cursor-default" onClick={() => setEmojiOpen(false)} aria-label="Close emoji picker" />
+          <div className="animate-pop absolute left-1/2 top-[76px] z-50 overflow-hidden rounded-xl border border-border bg-panel-solid shadow-(--shadow-floating)">
+            <EmojiPicker theme="dark" onEmojiSelect={onEmoji} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

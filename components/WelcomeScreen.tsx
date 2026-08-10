@@ -1,41 +1,35 @@
 "use client";
 
+import { FilePlus2, Import } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { APP_TAGLINE } from "@/lib/constants";
 
 /**
- * Quiet empty state — shown only when no note is active (e.g. everything is
- * in the trash). Understated per the reference: no hero, no big buttons.
+ * Quiet empty state — a centered wordmark and two quiet actions. Nothing
+ * shouts; the canvas stays calm until you write.
  */
 export function WelcomeScreen() {
   const { createNote, setImportOpen } = useStore();
 
   return (
     <div className="flex h-full flex-col items-center justify-center px-8 text-center">
-      <h1 className="text-[15px] font-medium tracking-tight text-foreground">Grapho</h1>
-      <p className="mt-2 max-w-[240px] text-[11px] leading-relaxed text-muted">{APP_TAGLINE}</p>
-      <p className="mt-6 text-[10px] leading-relaxed text-faint">
-        Start a new note, or import text from ChatGPT
-        <br />
-        and Grapho will format it automatically.
-      </p>
-      <div className="mt-4 flex items-center gap-3">
-        <button
-          onClick={() => createNote()}
-          className="text-[11px] text-muted underline-offset-4 transition-colors hover:text-foreground hover:underline"
-        >
+      <span className="brand-mark mb-5" aria-hidden>G</span>
+      <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-foreground">Grapho</h1>
+      <p className="mt-2 text-[13px] text-muted">Write freely.</p>
+
+      <div className="mt-7 flex items-center gap-2">
+        <button onClick={() => createNote()} className="primary-btn">
+          <FilePlus2 size={14} strokeWidth={1.9} />
           New note
         </button>
-        <span className="text-faint" aria-hidden>
-          ·
-        </span>
-        <button
-          onClick={() => setImportOpen(true)}
-          className="text-[11px] text-muted underline-offset-4 transition-colors hover:text-foreground hover:underline"
-        >
+        <button onClick={() => setImportOpen(true)} className="chip-btn">
+          <Import size={14} strokeWidth={1.9} />
           Import
         </button>
       </div>
+
+      <p className="mt-5 text-[11px] text-faint">
+        Start a new note, or import text from ChatGPT and Grapho formats it automatically.
+      </p>
     </div>
   );
 }
