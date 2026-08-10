@@ -6,6 +6,7 @@ import type {
   Orientation,
   PageSize,
   TemplateName,
+  ThemeMode,
 } from "./types";
 
 export const APP_NAME = "Grapho";
@@ -36,6 +37,13 @@ export const ACCENTS: { id: AccentName; label: string; swatch: string }[] = [
   { id: "green", label: "Green", swatch: "#34D399" },
   { id: "gold", label: "Gold", swatch: "#F59E0B" },
   { id: "rainbow", label: "Plum", swatch: "#E4D4DF" },
+];
+
+/** App theme modes — the editor/system preference unless forced. */
+export const THEMES: { id: ThemeMode; label: string }[] = [
+  { id: "system", label: "System" },
+  { id: "light", label: "Light" },
+  { id: "dark", label: "Dark" },
 ];
 
 export const FONTS: { id: FontName; label: string; preview: string; className: string }[] = [
@@ -80,6 +88,7 @@ export const DEFAULT_EXPORT: AppSettings["export"] = {
 export const DEFAULT_SETTINGS: AppSettings = {
   accent: "neutral",
   font: "georgia",
+  theme: "system",
   export: DEFAULT_EXPORT,
 };
 

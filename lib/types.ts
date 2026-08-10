@@ -27,6 +27,7 @@ export interface Version {
 
 export type AccentName = "neutral" | "blue" | "green" | "gold" | "rainbow";
 export type FontName = "inter" | "georgia" | "merriweather" | "mono";
+export type ThemeMode = "system" | "light" | "dark";
 export type PageSize = "A4" | "LETTER" | "LEGAL";
 export type Orientation = "portrait" | "landscape";
 export type MarginPreset = "normal" | "narrow" | "wide";
@@ -45,6 +46,8 @@ export interface AppSettings {
   /** Accent color style — the app is a dark editorial workspace; this picks the single accent hue. */
   accent: AccentName;
   font: FontName;
+  /** App theme — follows the OS unless the user forces light or dark. */
+  theme: ThemeMode;
   export: ExportSettings;
 }
 

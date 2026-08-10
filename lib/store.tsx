@@ -32,6 +32,8 @@ interface StoreValue {
   focusMode: boolean;
   emojiOpen: boolean;
   inspectorOpen: boolean;
+  /** Narrow-window (< =900px) navigation drawer — the notes panel as a temporary overlay. */
+  navDrawerOpen: boolean;
   versions: Version[] | null;
   versionsLoading: boolean;
 
@@ -53,6 +55,7 @@ interface StoreValue {
   toggleFocusMode: () => void;
   setEmojiOpen: (open: boolean) => void;
   setInspectorOpen: (open: boolean) => void;
+  setNavDrawerOpen: (open: boolean) => void;
 }
 
 const StoreContext = createContext<StoreValue | null>(null);
@@ -76,7 +79,8 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
   const [importOpen, setImportOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [emojiOpen, setEmojiOpen] = useState(false);
-  const [inspectorOpen, setInspectorOpen] = useState(true);
+  const [inspectorOpen, setInspectorOpen] = useState(false);
+  const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   /**
    * Versions of the active note. `null` means "loading" (history just opened).
    */
@@ -320,6 +324,8 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
     // Release focus first so the editor is never torn down while focused.
     blurActiveElement();
     setFocusMode((f) => !f);
+    // Focus mode and the narrow-window drawer never coexist.
+    setNavDrawerOpen(false);
   }, []);
 
   /** Select a note; blurs first so the outgoing editor tears down cleanly. */
@@ -350,6 +356,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       focusMode,
       emojiOpen,
       inspectorOpen,
+      navDrawerOpen,
       versions,
       versionsLoading: versions === null,
       setActiveNote,
@@ -370,6 +377,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       openHistory,
       setEmojiOpen,
       setInspectorOpen,
+      setNavDrawerOpen,
     }),
     [
       ready,
@@ -399,6 +407,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       toggleFocusMode,
       openHistory,
       setInspectorOpen,
+      navDrawerOpen,
     ]
   );
 

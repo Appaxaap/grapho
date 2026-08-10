@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -13,7 +13,7 @@ import {
   Smile,
 } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { ACCENTS, FONTS } from "@/lib/constants";
+import { ACCENTS, FONTS, THEMES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useActiveEditor } from "@/lib/editorRegistry";
 import { cycleDocSize, cycleDocSpacing, useDocState } from "@/lib/docState";
@@ -68,12 +68,53 @@ export function Inspector() {
   const doc = useDocState();
   const { settings, setSettings, activeNote, emojiOpen, setEmojiOpen } = useStore();
   const [fontOpen, setFontOpen] = useState(false);
+  const fontWrapRef = useRef<HTMLDivElement>(null);
+  const fontBtnRef = useRef<HTMLButtonElement>(null);
+
+  /* Escape + outside-click dismissal with focus return to the trigger. A
+     fixed backdrop would be trapped by the panel's backdrop-filter, so the
+     menu closes from a document-level pointer listener instead. */
+  useEffect(() => {
+    if (!fontOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setFontOpen(false);
+        fontBtnRef.current?.focus();
+      }
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      if (fontWrapRef.current && !fontWrapRef.current.contains(e.target as Node)) {
+        setFontOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [fontOpen]);
 
   const font = FONTS.find((item) => item.id === settings.font) ?? FONTS[1];
 
   return (
     <aside className="floating-panel inspector animate-slide-left">
-      <Section label="Theme">
+      <Section label="Appearance">
+        <div className="seg" role="group" aria-label="Theme">
+          {THEMES.map((mode) => (
+            <button
+              key={mode.id}
+              onClick={() => setSettings({ theme: mode.id })}
+              className={cn(settings.theme === mode.id && "is-active")}
+              aria-pressed={settings.theme === mode.id}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      <Section label="Accent">
         <div className="flex gap-2">
           {ACCENTS.map((accent) => {
             const active = settings.accent === accent.id;
@@ -86,8 +127,8 @@ export function Inspector() {
                 aria-label={accent.label}
                 aria-pressed={active}
               >
-                <span className="font-editor-georgia text-[12px] text-[#161616]">Aa</span>
-                {active && <Check className="absolute right-1 top-1 size-2.5 text-[#161616]" />}
+                <span className="font-editor-georgia text-[12px]">Aa</span>
+                {active && <Check className="absolute right-1 top-1 size-2.5" />}
               </button>
             );
           })}
@@ -97,12 +138,14 @@ export function Inspector() {
       <span className="insp-rule" aria-hidden />
 
       <Section label="Typography">
-        <div className="relative">
+        <div className="relative" ref={fontWrapRef}>
           <button
+            ref={fontBtnRef}
             onClick={() => setFontOpen(!fontOpen)}
             disabled={!editor}
             className="font-selector"
             aria-label="Editor font"
+            aria-expanded={fontOpen}
           >
             <span className={cn("text-[30px] leading-none", font.className)}>Aa</span>
             <span className="flex w-full items-center justify-between">
@@ -111,29 +154,23 @@ export function Inspector() {
             </span>
           </button>
           {fontOpen && (
-            <>
-              <button
-                className="fixed inset-0 z-40 cursor-default"
-                onClick={() => setFontOpen(false)}
-                aria-label="Close font menu"
-              />
-              <div className="animate-menu absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-[10px] border border-border bg-panel-solid p-1 shadow-(--shadow-floating)">
-                {FONTS.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setSettings({ font: item.id });
-                      setFontOpen(false);
-                    }}
-                    className={cn("insp-control w-full", settings.font === item.id && "is-active")}
-                  >
-                    <span className={cn("text-[15px]", item.className)}>Aa</span>
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {settings.font === item.id && <Check size={12} />}
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="animate-menu absolute left-0 top-full z-50 mt-2 w-full overflow-hidden rounded-[10px] border border-border bg-panel-solid p-1 shadow-(--shadow-floating)">
+              {FONTS.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setSettings({ font: item.id });
+                    setFontOpen(false);
+                    fontBtnRef.current?.focus();
+                  }}
+                  className={cn("insp-control w-full", settings.font === item.id && "is-active")}
+                >
+                  <span className={cn("text-[15px]", item.className)}>Aa</span>
+                  <span className="flex-1 text-left">{item.label}</span>
+                  {settings.font === item.id && <Check size={12} />}
+                </button>
+              ))}
+            </div>
           )}
         </div>
 

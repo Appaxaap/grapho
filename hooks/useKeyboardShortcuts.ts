@@ -2,7 +2,29 @@
 
 import { useEffect } from "react";
 import { useStore } from "@/lib/store";
-import { ACCENTS } from "@/lib/constants";
+import { ACCENTS, THEMES } from "@/lib/constants";
+
+/**
+ * True when BlockNote/Radix floating chrome is open — Escape belongs to it
+ * (it closes itself), so higher-priority modal/menu behavior wins.
+ */
+function blocknoteChromeOpen(): boolean {
+  const selectors = [
+    ".bn-suggestion-menu",
+    ".bn-grid-suggestion-menu",
+    ".bn-formatting-toolbar",
+    ".bn-link-toolbar",
+    '[data-slot="select-content"]',
+    '[data-slot="dropdown-menu-content"]',
+  ];
+  for (const selector of selectors) {
+    for (const el of document.querySelectorAll<HTMLElement>(selector)) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) return true;
+    }
+  }
+  return false;
+}
 
 /**
  * Global keyboard shortcuts (Cmd on macOS, Ctrl elsewhere).
@@ -29,6 +51,10 @@ export function useKeyboardShortcuts(): void {
     openHistory,
     emojiOpen,
     setEmojiOpen,
+    toggleFocusMode,
+    focusMode,
+    navDrawerOpen,
+    setNavDrawerOpen,
   } = useStore();
 
   useEffect(() => {
@@ -37,13 +63,18 @@ export function useKeyboardShortcuts(): void {
       const modalOpen = historyOpen || exportOpen || settingsOpen || importOpen;
       const tag = (e.target as HTMLElement | null)?.tagName;
 
-      // Escape closes things first.
+      // Escape closes things first: app modals, the emoji picker, the
+      // narrow-window nav drawer, then BlockNote chrome (which closes
+      // itself — don't steal its Escape), then focus mode.
       if (e.key === "Escape") {
         if (importOpen) setImportOpen(false);
         else if (exportOpen) setExportOpen(false);
         else if (settingsOpen) setSettingsOpen(false);
         else if (historyOpen) setHistoryOpen(false);
         else if (emojiOpen) setEmojiOpen(false);
+        else if (navDrawerOpen) setNavDrawerOpen(false);
+        else if (blocknoteChromeOpen()) return;
+        else if (focusMode) toggleFocusMode();
         return;
       }
 
@@ -75,7 +106,12 @@ export function useKeyboardShortcuts(): void {
           break;
         }
         case "f": {
-          // Only hijack Cmd+F when not typing inside an input/textarea.
+          // Cmd+Shift+F = focus mode; Cmd+F = search when not typing.
+          if (e.shiftKey) {
+            e.preventDefault();
+            toggleFocusMode();
+            break;
+          }
           if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
           e.preventDefault();
           window.dispatchEvent(new CustomEvent("grapho:focus-search"));
@@ -93,6 +129,15 @@ export function useKeyboardShortcuts(): void {
             const next =
               ACCENTS[(ACCENTS.findIndex((a) => a.id === settings.accent) + 1) % ACCENTS.length];
             setSettings({ accent: next.id });
+          }
+          break;
+        }
+        case "l": {
+          // Cmd+Shift+L cycles the app theme (system → light → dark).
+          if (e.shiftKey) {
+            e.preventDefault();
+            const next = THEMES[(THEMES.findIndex((t) => t.id === settings.theme) + 1) % THEMES.length];
+            setSettings({ theme: next.id });
           }
           break;
         }
@@ -135,10 +180,15 @@ export function useKeyboardShortcuts(): void {
     settingsOpen,
     importOpen,
     settings.accent,
+    settings.theme,
     setSettings,
     openHistory,
     emojiOpen,
     setEmojiOpen,
+    toggleFocusMode,
+    focusMode,
+    navDrawerOpen,
+    setNavDrawerOpen,
   ]);
 }
 

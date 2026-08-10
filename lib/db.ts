@@ -310,6 +310,7 @@ export async function loadSettings(): Promise<AppSettings> {
   return {
     accent: (map.get("accent") as AppSettings["accent"]) ?? DEFAULT_SETTINGS.accent,
     font: (map.get("font") as AppSettings["font"]) ?? DEFAULT_SETTINGS.font,
+    theme: (map.get("theme") as AppSettings["theme"]) ?? DEFAULT_SETTINGS.theme,
     export: {
       ...DEFAULT_SETTINGS.export,
       ...(map.has("export") ? (JSON.parse(map.get("export")!) as AppSettings["export"]) : {}),
@@ -321,6 +322,7 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
   const db = await openDatabase();
   db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('accent', ?)", [settings.accent]);
   db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('font', ?)", [settings.font]);
+  db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('theme', ?)", [settings.theme]);
   db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('export', ?)", [
     JSON.stringify(settings.export),
   ]);

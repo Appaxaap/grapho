@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local browser-validation tooling (not app code).
+    ".pwtools/**",
+    ".pwbrowsers/**",
   ]),
 ]);
 
