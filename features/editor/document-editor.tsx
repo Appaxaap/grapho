@@ -57,6 +57,18 @@ function createDefaultBlocks(): EditorBlock[] {
   return initialBlocks.map((block) => ({ ...block, attributes: { ...block.attributes } }));
 }
 
+function normalizeEmptyBlocks(blocks: EditorBlock[]) {
+  const normalized: EditorBlock[] = [];
+  blocks.forEach((block) => {
+    const isEmptyParagraph = block.type === "paragraph" && !block.content.trim();
+    const previous = normalized.at(-1);
+    const previousIsEmptyParagraph = previous?.type === "paragraph" && !previous.content.trim();
+    if (isEmptyParagraph && previousIsEmptyParagraph) return;
+    normalized.push(block);
+  });
+  return normalizeBlocks(normalized);
+}
+
 export function DocumentEditor({ documentId, onDirtyChange }: { documentId: string; onDirtyChange?: (dirty: boolean) => void }) {
   const [blocks, setBlocks] = useState<EditorBlock[]>(createDefaultBlocks);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
@@ -78,7 +90,7 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
     let cancelled = false;
     void localDocumentService.getDocument(documentId).then((stored) => {
       if (!cancelled && stored?.blocks?.length) {
-        setBlocks(stored.blocks as EditorBlock[]);
+        setBlocks(normalizeEmptyBlocks(stored.blocks as EditorBlock[]));
       }
     });
     return () => {
