@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
-import "@blocknote/shadcn/style.css";
+
 import "./globals.css";
 
+
 export const metadata: Metadata = {
-  title: "Grapho — Write freely.",
-  description:
-    "Grapho is a lightning-fast, offline-first note-taking app. Instant, private, and limitless.",
-  applicationName: "Grapho",
+  title: "Grapho",
+  description: "Write without limits. Local-first notes and document workspace.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
