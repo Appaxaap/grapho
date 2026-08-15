@@ -265,10 +265,9 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
         { left: Number.POSITIVE_INFINITY, right: 0, top: Number.POSITIVE_INFINITY, bottom: 0 },
       );
       const toolbarHeight = 46;
-      const toolbarHalfWidth = 145;
+      const toolbarWidth = 290;
       const top = rect.top > toolbarHeight + 12 ? rect.top - toolbarHeight - 10 : rect.bottom + 10;
-      const selectionCenter = (rect.left + rect.right) / 2;
-      const left = Math.min(Math.max(selectionCenter, toolbarHalfWidth + 12), window.innerWidth - toolbarHalfWidth - 12);
+      const left = Math.min(Math.max(rect.left, 12), window.innerWidth - toolbarWidth - 12);
       setToolbarPosition({ top, left });
       setSelectedRange(range);
     } else {
