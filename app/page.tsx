@@ -1,10 +1,5 @@
-import App from "@/components/App";
-import { NotesProvider } from "@/lib/store";
+import { GraphoShell } from "@/components/grapho-shell";
 
 export default function Home() {
-  return (
-    <NotesProvider>
-      <App />
-    </NotesProvider>
-  );
+  return <GraphoShell />;
 }
