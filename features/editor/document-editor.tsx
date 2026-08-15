@@ -254,10 +254,21 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed && selection.rangeCount) {
       const range = selection.getRangeAt(0).cloneRange();
-      const rect = range.getBoundingClientRect();
+      const rects = Array.from(range.getClientRects());
+      const rect = rects.reduce(
+        (bounds, current) => ({
+          left: Math.min(bounds.left, current.left),
+          right: Math.max(bounds.right, current.right),
+          top: Math.min(bounds.top, current.top),
+          bottom: Math.max(bounds.bottom, current.bottom),
+        }),
+        { left: Number.POSITIVE_INFINITY, right: 0, top: Number.POSITIVE_INFINITY, bottom: 0 },
+      );
       const toolbarHeight = 46;
+      const toolbarHalfWidth = 145;
       const top = rect.top > toolbarHeight + 12 ? rect.top - toolbarHeight - 10 : rect.bottom + 10;
-      const left = Math.min(Math.max(rect.left + rect.width / 2, 110), window.innerWidth - 110);
+      const selectionCenter = (rect.left + rect.right) / 2;
+      const left = Math.min(Math.max(selectionCenter, toolbarHalfWidth + 12), window.innerWidth - toolbarHalfWidth - 12);
       setToolbarPosition({ top, left });
       setSelectedRange(range);
     } else {
