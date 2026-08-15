@@ -58,14 +58,25 @@ function createDefaultBlocks(): EditorBlock[] {
 }
 
 function normalizeEmptyBlocks(blocks: EditorBlock[]) {
+  const hasContent = blocks.some((block) => block.content.trim());
   const normalized: EditorBlock[] = [];
+  let keptEmptyParagraph = false;
+
   blocks.forEach((block) => {
     const isEmptyParagraph = block.type === "paragraph" && !block.content.trim();
-    const previous = normalized.at(-1);
-    const previousIsEmptyParagraph = previous?.type === "paragraph" && !previous.content.trim();
-    if (isEmptyParagraph && previousIsEmptyParagraph) return;
-    normalized.push(block);
+    if (!isEmptyParagraph) {
+      normalized.push(block);
+      return;
+    }
+    if (!hasContent && !keptEmptyParagraph) {
+      normalized.push(block);
+      keptEmptyParagraph = true;
+    }
   });
+
+  if (normalized.length === 0) {
+    normalized.push(blockForType("paragraph"));
+  }
   return normalizeBlocks(normalized);
 }
 

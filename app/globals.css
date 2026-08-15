@@ -37,11 +37,11 @@ button, input { font: inherit; }
 button { cursor: pointer; }
 button:focus-visible, input:focus-visible, [contenteditable="true"]:focus-visible { outline: 3px solid rgba(85, 185, 130, 0.28); outline-offset: 2px; }
 
-.grapho-app { min-height: 100vh; display: flex; gap: 20px; padding: 24px; background: radial-gradient(circle at 70% 0%, #fbfbfd 0, var(--app-bg) 48%, #eff1f5 100%); transition: background .2s ease; }
+.grapho-app { height: 100vh; min-height: 0; overflow: hidden; display: flex; gap: 20px; padding: 24px; background: radial-gradient(circle at 70% 0%, #fbfbfd 0, var(--app-bg) 48%, #eff1f5 100%); transition: background .2s ease; }
 .theme-dark { --app-bg: #171922; --surface: rgba(32, 34, 45, .92); --surface-solid: #242632; --surface-soft: #2a2d3b; --surface-muted: #303343; --border: rgba(255,255,255,.08); --text: #f4f5fb; --text-soft: #a9adbf; --text-faint: #777d91; --accent-soft: #234532; --purple-soft: #312b50; --shadow: 0 18px 55px rgba(0,0,0,.2); }
 
 .grapho-sidebar, .grapho-workspace { border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); border-radius: 24px; backdrop-filter: blur(18px); }
-.grapho-sidebar { width: 302px; flex: 0 0 302px; min-height: calc(100vh - 48px); padding: 24px; display: flex; flex-direction: column; }
+.grapho-sidebar { width: 302px; flex: 0 0 302px; height: 100%; min-height: 0; padding: 24px; display: flex; flex-direction: column; }
 .brand-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
 .brand-mark { width: 30px; height: 30px; display: grid; place-items: center; color: white; background: #121728; border-radius: 10px 10px 10px 4px; font-weight: 800; font-size: 17px; transform: rotate(-7deg); }
 .brand-name { font-size: 22px; font-weight: 760; letter-spacing: -0.04em; }
@@ -78,7 +78,7 @@ kbd { margin-left: auto; padding: 4px 8px; border-radius: 8px; background: rgba(
 .profile-card > svg { margin-left: auto; transform: rotate(90deg); color: var(--text-soft); }
 .appearance-row { display: flex; gap: 9px; margin-top: 14px; }
 
-.grapho-workspace { min-width: 0; flex: 1; min-height: calc(100vh - 48px); overflow: hidden; display: flex; flex-direction: column; }
+.grapho-workspace { min-width: 0; flex: 1; height: 100%; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 .workspace-header { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 28px; border-bottom: 1px solid var(--border); }
 .breadcrumbs { display: flex; align-items: center; gap: 11px; min-width: 0; color: var(--text-soft); font-size: 13px; }
 .breadcrumbs span, .breadcrumbs strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -142,4 +142,4 @@ kbd { margin-left: auto; padding: 4px 8px; border-radius: 8px; background: rgba(
 @keyframes float-in { from { opacity: 0; transform: translate(-50%, 7px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (max-width: 1280px) { .grapho-app { padding: 16px; gap: 16px; }.grapho-sidebar { width: 270px; flex-basis: 270px; padding: 20px; }.style-panel { width: 270px; flex-basis: 270px; margin-right: 16px; }.document-rail { width: 215px; flex-basis: 215px; padding-left: 18px; }.workspace-header { padding-inline: 20px; }.save-status { display: none; } }
 @media (max-width: 1050px) { .style-panel { display: none; }.document-rail { width: 220px; flex-basis: 220px; } }
-@media (max-width: 760px) { .grapho-app { padding: 0; display: block; }.grapho-sidebar { display: none; }.grapho-workspace { min-height: 100vh; border: 0; border-radius: 0; }.document-rail { display: none; }.workspace-header { min-height: 64px; padding: 14px 17px; }.breadcrumbs span:first-child, .breadcrumbs b:first-of-type { display: none; }.header-actions .history-group, .header-actions > .tool-button { display: none; }.canvas-wrap { padding: 30px 18px 75px; }.document-canvas { padding-inline: 0; }.document-title { font-size: 38px; }.document-content { font-size: 16px; }.bottom-actions { right: 18px; bottom: 18px; } }
+@media (max-width: 760px) { .grapho-app { height: auto; min-height: 100vh; overflow: visible; padding: 0; display: block; }.grapho-sidebar { display: none; }.grapho-workspace { height: auto; min-height: 100vh; border: 0; border-radius: 0; }.document-rail { display: none; }.workspace-header { min-height: 64px; padding: 14px 17px; }.breadcrumbs span:first-child, .breadcrumbs b:first-of-type { display: none; }.header-actions .history-group, .header-actions > .tool-button { display: none; }.canvas-wrap { padding: 30px 18px 75px; overflow: visible; }.document-canvas { padding-inline: 0; }.document-title { font-size: 38px; }.document-content { font-size: 16px; }.bottom-actions { right: 18px; bottom: 18px; } }
