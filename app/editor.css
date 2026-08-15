@@ -38,9 +38,10 @@
 .structured-editor blockquote { margin: 24px 0; padding: 4px 0 4px 22px; border-left: 3px solid var(--accent); color: var(--text-soft); font-size: 19px; font-style: italic; }
 .editor-code { margin: 24px 0; overflow-x: auto; border-radius: 13px; padding: 17px 19px; color: #dce6df; background: #20252d; font-family: var(--font-jetbrains-mono); font-size: 13px; line-height: 1.65; white-space: pre; }
 .editor-code code { outline: 0; }
-.selection-toolbar { position: fixed; z-index: 20; display: flex; gap: 2px; padding: 6px; border: 1px solid var(--border); border-radius: 13px; background: var(--surface-solid); box-shadow: var(--shadow-small); transform: translate(-50%, -100%); animation: float-in .16s ease-out; }
+.selection-toolbar { position: fixed; z-index: 20; display: flex; gap: 2px; padding: 6px; border: 1px solid var(--border); border-radius: 13px; background: var(--surface-solid); box-shadow: var(--shadow-small); transform: translateX(-50%); animation: float-in .16s ease-out; }
 .selection-toolbar button { width: 31px; height: 30px; border: 0; border-radius: 8px; color: var(--text-soft); background: transparent; }
 .selection-toolbar button:hover { color: var(--text); background: var(--surface-muted); }
+.selection-toolbar-divider { width: 1px; height: 22px; margin: 0 4px; background: var(--border); }
 .slash-menu { position: absolute; z-index: 12; left: 0; top: 32px; width: 255px; padding: 9px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface-solid); box-shadow: var(--shadow-small); animation: float-in .16s ease-out; }
 .slash-menu-heading { padding: 5px 8px 8px; color: var(--text-faint); font-size: 10px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
 .slash-menu input { width: 100%; margin-bottom: 6px; border: 0; border-radius: 9px; outline: 0; padding: 8px; color: var(--text); background: var(--surface-muted); font-size: 12px; }

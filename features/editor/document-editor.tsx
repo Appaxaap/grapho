@@ -78,6 +78,7 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
   const [blocks, setBlocks] = useState<EditorBlock[]>(createDefaultBlocks);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
   const [selectedRange, setSelectedRange] = useState<Range | null>(null);
+  const [toolbarPosition, setToolbarPosition] = useState({ top: 0, left: 0 });
   const [query, setQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [history, setHistory] = useState<EditorBlock[][]>([]);
@@ -251,16 +252,25 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
 
   function selectText() {
     const selection = window.getSelection();
-    if (selection && !selection.isCollapsed && selection.rangeCount) setSelectedRange(selection.getRangeAt(0).cloneRange());
-    else setSelectedRange(null);
+    if (selection && !selection.isCollapsed && selection.rangeCount) {
+      const range = selection.getRangeAt(0).cloneRange();
+      const rect = range.getBoundingClientRect();
+      const toolbarHeight = 46;
+      const top = rect.top > toolbarHeight + 12 ? rect.top - toolbarHeight - 10 : rect.bottom + 10;
+      const left = Math.min(Math.max(rect.left + rect.width / 2, 110), window.innerWidth - 110);
+      setToolbarPosition({ top, left });
+      setSelectedRange(range);
+    } else {
+      setSelectedRange(null);
+    }
   }
 
-  function applyFormat(command: "bold" | "italic" | "underline" | "strikeThrough" | "insertCode") {
+  function applyFormat(command: "bold" | "italic" | "underline" | "strikeThrough" | "insertCode" | "hiliteColor" | "insertUnorderedList" | "insertOrderedList") {
     if (!selectedRange) return;
     const selection = window.getSelection();
     selection?.removeAllRanges();
     selection?.addRange(selectedRange);
-    document.execCommand(command === "insertCode" ? "formatBlock" : command, false, command === "insertCode" ? "code" : undefined);
+    document.execCommand(command === "insertCode" ? "formatBlock" : command, false, command === "insertCode" ? "code" : command === "hiliteColor" ? "#e7f6ed" : undefined);
     setSelectedRange(null);
   }
 
@@ -339,6 +349,6 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
   return <div className="structured-editor" onClick={(event) => { if (event.target === event.currentTarget) refs.current.get(activeBlockId ?? blocks[0]?.id)?.focus(); }} onMouseUp={selectText}>
     {blocks.map((block, index) => <div className={`editor-block-wrap ${activeBlockId === block.id ? "is-active" : ""} ${dropIndex === index ? "drop-target" : ""}`} onDragOver={(event) => { event.preventDefault(); setDropIndex(index); }} onDragEnd={() => { setDraggingId(null); setDropIndex(null); }} onDrop={() => dropBlock(index)} key={block.id}><div className="block-controls"><button aria-label="Add block" onClick={() => { setActiveBlockId(block.id); setQuery(""); }} type="button">+</button><button aria-label="Drag block" className="drag-handle" draggable onDragStart={() => setDraggingId(block.id)} type="button">⠿</button><button aria-label="Block actions" onClick={() => setMenuBlockId(menuBlockId === block.id ? null : block.id)} type="button">⋯</button>{menuBlockId === block.id ? <div className="block-menu"><button onClick={() => duplicateBlock(block.id)} type="button">Duplicate</button><button disabled={index === 0} onClick={() => moveBlock(block.id, -1)} type="button">Move up</button><button disabled={index === blocks.length - 1} onClick={() => moveBlock(block.id, 1)} type="button">Move down</button><div className="block-menu-label">Turn into</div>{commands.slice(0, 9).map((command) => <button key={command.type} onClick={() => turnInto(block.id, command.type)} type="button">{command.label}</button>)}<button className="danger" onClick={() => deleteBlock(block.id)} type="button">Delete</button></div> : null}</div>{renderBlock(block)}</div>)}
     {showCommands ? <div className="slash-menu"><div className="slash-menu-heading">Insert block</div><input autoFocus onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") setCommandIndex((index) => Math.min(index + 1, filteredCommands.length - 1)); if (event.key === "ArrowUp") setCommandIndex((index) => Math.max(index - 1, 0)); if (event.key === "Enter" && filteredCommands[commandIndex]) chooseCommand(filteredCommands[commandIndex]); if (event.key === "Escape") setQuery(""); }} placeholder="Search commands..." value={query} />{filteredCommands.slice(0, 7).map((command, index) => <button className={index === commandIndex ? "is-highlighted" : ""} key={command.type} onClick={() => chooseCommand(command)} type="button"><span>{command.label}</span><small>{command.shortcut}</small></button>)}</div> : null}
-    {selectedRange ? <div className="selection-toolbar"><button aria-label="Bold" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("bold")} type="button"><b>B</b></button><button aria-label="Italic" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("italic")} type="button"><i>I</i></button><button aria-label="Underline" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("underline")} type="button"><u>U</u></button><button aria-label="Strikethrough" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("strikeThrough")} type="button"><s>S</s></button><button aria-label="Inline code" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertCode")} type="button">&lt;/&gt;</button></div> : null}
+    {selectedRange ? <div className="selection-toolbar" style={{ left: toolbarPosition.left, top: toolbarPosition.top }}><button aria-label="Bold" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("bold")} type="button"><b>B</b></button><button aria-label="Italic" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("italic")} type="button"><i>I</i></button><button aria-label="Underline" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("underline")} type="button"><u>U</u></button><button aria-label="Strikethrough" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("strikeThrough")} type="button"><s>S</s></button><button aria-label="Inline code" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertCode")} type="button">&lt;/&gt;</button><button aria-label="Highlight" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("hiliteColor")} type="button">✦</button><span className="selection-toolbar-divider" /><button aria-label="Bulleted list" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertUnorderedList")} type="button">•≡</button><button aria-label="Numbered list" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertOrderedList")} type="button">1≡</button><button aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={() => { const url = window.prompt("Link URL"); if (url) { const normalized = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`; const selection = window.getSelection(); selection?.removeAllRanges(); selection?.addRange(selectedRange); document.execCommand("createLink", false, normalized); setSelectedRange(null); } }} type="button">↗</button></div> : null}
   </div>;
 }
