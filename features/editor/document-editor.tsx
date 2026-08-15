@@ -58,25 +58,19 @@ function createDefaultBlocks(): EditorBlock[] {
 }
 
 function normalizeEmptyBlocks(blocks: EditorBlock[]) {
-  const hasContent = blocks.some((block) => block.content.trim());
   const normalized: EditorBlock[] = [];
-  let keptEmptyParagraph = false;
+  let emptyParagraph: EditorBlock | null = null;
 
   blocks.forEach((block) => {
-    const isEmptyParagraph = block.type === "paragraph" && !block.content.trim();
-    if (!isEmptyParagraph) {
-      normalized.push(block);
+    if (block.type === "paragraph" && !block.content.trim()) {
+      emptyParagraph ??= block;
       return;
     }
-    if (!hasContent && !keptEmptyParagraph) {
-      normalized.push(block);
-      keptEmptyParagraph = true;
-    }
+    normalized.push(block);
   });
 
-  if (normalized.length === 0) {
-    normalized.push(blockForType("paragraph"));
-  }
+  if (emptyParagraph) normalized.push(emptyParagraph);
+  if (normalized.length === 0) normalized.push(blockForType("paragraph"));
   return normalizeBlocks(normalized);
 }
 
@@ -132,7 +126,7 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
   const commit = useCallback((next: EditorBlock[], focusId?: string) => {
     setHistory((current) => [...current.slice(-49), blocks]);
     setFuture([]);
-    setBlocks(normalizeBlocks(next));
+    setBlocks(normalizeEmptyBlocks(normalizeBlocks(next)));
     if (focusId) requestAnimationFrame(() => refs.current.get(focusId)?.focus());
   }, [blocks]);
 
