@@ -13,8 +13,31 @@ import {
   blocksToPlainText,
   deriveTitle,
   markdownToBlocks,
+  parseInline,
   wordCount,
 } from "../lib/markdown";
+
+/** Flatten parsed inline output into a map of style flags → joined text. */
+function inlineSummary(input: string) {
+  let bold = false;
+  let italic = false;
+  let strike = false;
+  let code = false;
+  let link = false;
+  let literal = "";
+  for (const node of parseInline(input)) {
+    if (node.type === "link") link = true;
+    const s = node.styles ?? {};
+    if (s.bold) bold = true;
+    if (s.italic) italic = true;
+    if (s.strike) strike = true;
+    if (s.code) code = true;
+    if (!s.bold && !s.italic && !s.strike && !s.code && node.type !== "link") {
+      literal += node.text ?? "";
+    }
+  }
+  return { bold, italic, strike, code, link, literal };
+}
 import { renderNoteToPdfBuffer } from "../lib/pdf";
 import { DEFAULT_EXPORT } from "../lib/constants";
 import type { Note } from "../lib/types";
@@ -79,6 +102,24 @@ ok("empty document word count is 0", wordCount([]) === 0);
 // 4. Edge cases
 ok("empty markdown yields a paragraph block", markdownToBlocks("").length === 1);
 ok("empty title", deriveTitle([]) === "");
+
+// 5. Inline emphasis parsing (premium, nested-friendly)
+const b = inlineSummary("**Linux-first**");
+ok("bold inline parsed", b.bold && !b.italic && !b.literal.includes("*"));
+const bi = inlineSummary("***both bold and italic***");
+ok("bold+italic inline parsed", bi.bold && bi.italic);
+const nested = inlineSummary("**bold *nested* bold**");
+ok("nested emphasis parsed", nested.bold && nested.italic);
+const it = inlineSummary("*italic **bold** italic*");
+ok("italic wrapping bold parsed", it.italic && it.bold);
+const lk = inlineSummary("see [the docs](https://example.com) here");
+ok("inline link parsed", lk.link);
+const st = inlineSummary("a ~~struck~~ word");
+ok("inline strike parsed", st.strike);
+const sc = inlineSummary("use snake_case naming");
+ok("snake_case stays literal", sc.literal.includes("snake_case"));
+const un = inlineSummary("an unmatched ** stays literal");
+ok("unmatched stars stay literal", un.literal.includes("**"));
 
 // 5. PDF generation
 const note: Note = {
