@@ -1,3 +1,12 @@
+.document-theme-blue { --document-accent: #4d9ed1; --document-soft: #edf7ff; --document-link: #287eb4; }
+.document-theme-green { --document-accent: #4aaf75; --document-soft: #edf9f1; --document-link: #248150; }
+.document-theme-warm { --document-accent: #bd8b26; --document-soft: #fff8e4; --document-link: #9c7118; }
+.document-theme-night { --document-accent: #b294ed; --document-soft: #2c2344; --document-link: #c8b3ff; color: #f4efff; }
+.document-theme-blue .document-title, .document-theme-green .document-title, .document-theme-warm .document-title, .document-theme-night .document-title { color: inherit; }
+.document-theme-blue .slash-placeholder strong, .document-theme-green .slash-placeholder strong, .document-theme-warm .slash-placeholder strong, .document-theme-night .slash-placeholder strong { color: var(--document-accent); }
+.document-theme-night .structured-editor { color: #f4efff; }
+.document-theme-night .editor-callout { color: #e6d9ff; background: var(--document-soft); border-left-color: var(--document-accent); }
+.document-theme-night .editor-table td, .document-theme-night .editor-table tr:first-child td { background: #29223a; color: #f4efff; }
 .structured-editor { position: relative; color: var(--text); font-size: 17px; line-height: 1.78; padding-bottom: 80px; }
 .editor-block-wrap { position: relative; margin: 0; }
 .editor-block-wrap .block-controls { position: absolute; left: -42px; top: 4px; display: flex; gap: 2px; opacity: 0; transition: opacity .15s ease; }
