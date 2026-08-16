@@ -54,7 +54,8 @@ function normalizeBlocks(blocks: EditorBlock[]) {
 }
 
 function blockTag(type: BlockType) {
-  if (type === "heading-1" || type === "heading-2" || type === "heading-3" || type === "heading-4") return type.replace("heading-", "h") as "h1" | "h2" | "h3" | "h4";
+  const m = /^(heading)-([1-6])$/.exec(type);
+  if (m) return `h${m[2]}` as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   return "p";
 }
 
@@ -308,11 +309,13 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
       }
       flushTable();
       if (!trimmed) return;
+      const heading = /^(#{1,6})\s+/.exec(trimmed);
       if (trimmed === "---" || trimmed === "***") parsed.push(blockForType("divider"));
-      else if (trimmed.startsWith("### ")) parsed.push(blockForType("heading-3", trimmed.slice(4)));
-      else if (trimmed.startsWith("## ")) parsed.push(blockForType("heading-2", trimmed.slice(3)));
-      else if (trimmed.startsWith("# ")) parsed.push(blockForType("heading-1", trimmed.slice(2)));
-      else if (trimmed.startsWith("> ")) parsed.push(blockForType("quote", trimmed.slice(2)));
+      else if (heading) {
+        // BlockType only models headings 1–4; clamp deeper levels to 4.
+        const level = Math.min(heading[1].length, 4);
+        parsed.push(blockForType(`heading-${level}` as BlockType, trimmed.slice(heading[1].length + 1)));
+      } else if (trimmed.startsWith("> ")) parsed.push(blockForType("quote", trimmed.slice(2)));
       else if (/^\[\]\s/.test(trimmed)) parsed.push(blockForType("checklist", trimmed.slice(3)));
       else if (trimmed.startsWith("- ") || trimmed.startsWith("* ") || trimmed.startsWith("+ ")) parsed.push(blockForType("bullet-list", trimmed.slice(2)));
       else if (/^\d+[.)]\s/.test(trimmed)) parsed.push(blockForType("numbered-list", trimmed.replace(/^\d+[.)]\s/, "")));
