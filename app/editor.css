@@ -35,6 +35,13 @@
 .editor-callout-content { min-width: 0; flex: 1; outline: 0; }
 .editor-callout-content:empty::before { content: "Write a callout..."; }
 .editor-divider { height: 1px; margin: 27px 0; background: var(--border); }
+.editor-table-wrap { max-width: 100%; margin: 24px 0; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.editor-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+.editor-table td { min-width: 120px; padding: 11px 13px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); outline: 0; }
+.editor-table tr:first-child td { color: var(--text); background: var(--surface-muted); font-weight: 650; }
+.editor-table td:last-child { border-right: 0; }
+.editor-table tr:last-child td { border-bottom: 0; }
+.editor-table td:focus { background: var(--accent-soft); }
 .structured-editor blockquote { margin: 24px 0; padding: 4px 0 4px 22px; border-left: 3px solid var(--accent); color: var(--text-soft); font-size: 19px; font-style: italic; }
 .editor-code { margin: 24px 0; overflow-x: auto; border-radius: 13px; padding: 17px 19px; color: #dce6df; background: #20252d; font-family: var(--font-jetbrains-mono); font-size: 13px; line-height: 1.65; white-space: pre; }
 .editor-code code { outline: 0; }

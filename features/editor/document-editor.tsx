@@ -5,6 +5,11 @@ import type { BlockType, DocumentBlock } from "@/domain/types";
 import { createStableId } from "@/lib/ids";
 import { localDocumentService } from "@/services/document-service";
 
+type TableAttributes = {
+  rows: string[][];
+  header?: boolean;
+};
+
 type EditorBlock = DocumentBlock & {
   checked?: boolean;
   language?: string;
@@ -40,8 +45,8 @@ const initialBlocks: EditorBlock[] = [
   { id: "block_list_3", type: "bullet-list", content: "Refine the document when ready", attributes: {}, order: 7, parentBlockId: null },
 ];
 
-function blockForType(type: BlockType, content = ""): EditorBlock {
-  return { id: createStableId("block"), type, content, attributes: {}, order: 0, parentBlockId: null };
+function blockForType(type: BlockType, content = "", attributes: Record<string, unknown> = {}): EditorBlock {
+  return { id: createStableId("block"), type, content, attributes, order: 0, parentBlockId: null };
 }
 
 function normalizeBlocks(blocks: EditorBlock[]) {
@@ -255,22 +260,77 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
     setBlocks(next);
   }
 
+  function parsePastedText(text: string): EditorBlock[] {
+    const lines = text.replace(/\r/g, "").split("\n");
+    const parsed: EditorBlock[] = [];
+    let codeLines: string[] | null = null;
+    let codeLanguage = "";
+    let tableLines: string[] = [];
+
+    const flushTable = () => {
+      if (tableLines.length < 2) {
+        tableLines = [];
+        return;
+      }
+      const rows = tableLines
+        .filter((line) => !/^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line))
+        .map((line) => line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim()));
+      if (rows.length) parsed.push(blockForType("table", "", { rows, header: true } satisfies TableAttributes));
+      tableLines = [];
+    };
+
+    const flushCode = () => {
+      if (codeLines === null) return;
+      parsed.push(blockForType("code", codeLines.join("\n"), { language: codeLanguage }));
+      codeLines = null;
+      codeLanguage = "";
+    };
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+        if (codeLines === null) {
+          flushTable();
+          codeLines = [];
+          codeLanguage = trimmed.slice(3).trim();
+        } else {
+          flushCode();
+        }
+        return;
+      }
+      if (codeLines !== null) {
+        codeLines.push(line);
+        return;
+      }
+      if (trimmed.includes("|") && trimmed.split("|").length >= 3) {
+        tableLines.push(trimmed);
+        return;
+      }
+      flushTable();
+      if (!trimmed) return;
+      if (trimmed === "---" || trimmed === "***") parsed.push(blockForType("divider"));
+      else if (trimmed.startsWith("### ")) parsed.push(blockForType("heading-3", trimmed.slice(4)));
+      else if (trimmed.startsWith("## ")) parsed.push(blockForType("heading-2", trimmed.slice(3)));
+      else if (trimmed.startsWith("# ")) parsed.push(blockForType("heading-1", trimmed.slice(2)));
+      else if (trimmed.startsWith("> ")) parsed.push(blockForType("quote", trimmed.slice(2)));
+      else if (/^\[\]\s/.test(trimmed)) parsed.push(blockForType("checklist", trimmed.slice(3)));
+      else if (trimmed.startsWith("- ") || trimmed.startsWith("* ") || trimmed.startsWith("+ ")) parsed.push(blockForType("bullet-list", trimmed.slice(2)));
+      else if (/^\d+[.)]\s/.test(trimmed)) parsed.push(blockForType("numbered-list", trimmed.replace(/^\d+[.)]\s/, "")));
+      else parsed.push(blockForType("paragraph", trimmed));
+    });
+
+    flushCode();
+    flushTable();
+    return parsed.length ? parsed : [blockForType("paragraph")];
+  }
+
   function handlePaste(id: string, event: React.ClipboardEvent<HTMLElement>) {
     const text = event.clipboardData.getData("text/plain");
-    if (!text.includes("\n")) return;
+    if (!text.trim()) return;
     event.preventDefault();
     const index = blocks.findIndex((block) => block.id === id);
     if (index < 0) return;
-    const pasted = text.split(/\r?\n/).filter((line) => line.trim()).map((line) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith("### ")) return blockForType("heading-3", trimmed.slice(4));
-      if (trimmed.startsWith("## ")) return blockForType("heading-2", trimmed.slice(3));
-      if (trimmed.startsWith("# ")) return blockForType("heading-1", trimmed.slice(2));
-      if (trimmed.startsWith("> ")) return blockForType("quote", trimmed.slice(2));
-      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) return blockForType("bullet-list", trimmed.slice(2));
-      if (/^\d+\.\s/.test(trimmed)) return blockForType("numbered-list", trimmed.replace(/^\d+\.\s/, ""));
-      return blockForType("paragraph", trimmed);
-    });
+    const pasted = parsePastedText(text);
     const next = [...blocks];
     next.splice(index, 1, ...pasted);
     commit(next, pasted[0]?.id);
@@ -370,6 +430,10 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
 
   function renderBlock(block: EditorBlock) {
     const common = { contentEditable: true, suppressContentEditableWarning: true, ref: (element: HTMLElement | null) => { if (element) { refs.current.set(block.id, element); if (element.innerText !== block.content && element !== document.activeElement) element.innerText = block.content; } else refs.current.delete(block.id); }, onInput: (event: React.FormEvent<HTMLElement>) => handleInput(block.id, event), onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => handleKeyDown(block.id, event), onPaste: (event: React.ClipboardEvent<HTMLElement>) => handlePaste(block.id, event), onFocus: () => setActiveBlockId(block.id), onMouseUp: selectText };
+    if (block.type === "table") {
+      const table = block.attributes as unknown as TableAttributes;
+      return <div className="editor-table-wrap" key={block.id}><table className="editor-table"><tbody>{(table.rows ?? [[""]]).map((row, rowIndex) => <tr key={`${block.id}-row-${rowIndex}`}>{row.map((cell, cellIndex) => <td contentEditable suppressContentEditableWarning key={`${block.id}-cell-${rowIndex}-${cellIndex}`} onInput={(event) => { const rows = (table.rows ?? []).map((currentRow) => [...currentRow]); rows[rowIndex][cellIndex] = event.currentTarget.innerText; setBlocks((current) => current.map((item) => item.id === block.id ? { ...item, attributes: { ...item.attributes, rows } } : item)); }}>{cell}</td>)}</tr>)}</tbody></table></div>;
+    }
     if (block.type === "divider") return <div className="editor-divider" key={block.id} onClick={() => setActiveBlockId(block.id)} />;
     if (block.type === "callout") return <div className="editor-callout" key={block.id}><span>✦</span><div {...common} className="editor-callout-content" /></div>;
     if (block.type === "quote") return <blockquote key={block.id}><div {...common} /></blockquote>;
