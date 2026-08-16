@@ -87,6 +87,7 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const refs = useRef(new Map<string, HTMLElement>());
+  const editorRootRef = useRef<HTMLDivElement>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
@@ -147,6 +148,31 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
     const blockIndex = blocks.findIndex((block) => block.id === id);
     const block = blocks[blockIndex];
     if (!block) return;
+
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "a") {
+      event.preventDefault();
+      const root = editorRootRef.current;
+      if (root) {
+        const range = document.createRange();
+        range.selectNodeContents(root);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        setSelectedRange(range.cloneRange());
+      }
+      return;
+    }
+
+    if ((event.key === "Backspace" || event.key === "Delete") && selectedRange && !selectedRange.collapsed) {
+      const root = editorRootRef.current;
+      if (root && root.contains(selectedRange.commonAncestorContainer)) {
+        event.preventDefault();
+        const emptyBlock = blockForType("paragraph");
+        commit([emptyBlock], emptyBlock.id);
+        setSelectedRange(null);
+        return;
+      }
+    }
 
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "b") { event.preventDefault(); document.execCommand("bold"); return; }
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "i") { event.preventDefault(); document.execCommand("italic"); return; }
@@ -356,7 +382,7 @@ export function DocumentEditor({ documentId, onDirtyChange }: { documentId: stri
   }
 
   const showCommands = activeBlockId !== null && (query.length > 0 || blocks.find((block) => block.id === activeBlockId)?.content === "/");
-  return <div className="structured-editor" onClick={(event) => { if (event.target === event.currentTarget) refs.current.get(activeBlockId ?? blocks[0]?.id)?.focus(); }} onMouseUp={selectText}>
+  return <div className="structured-editor" ref={editorRootRef} onClick={(event) => { if (event.target === event.currentTarget) refs.current.get(activeBlockId ?? blocks[0]?.id)?.focus(); }} onMouseUp={selectText}>
     {blocks.map((block, index) => <div className={`editor-block-wrap ${activeBlockId === block.id ? "is-active" : ""} ${dropIndex === index ? "drop-target" : ""}`} onDragOver={(event) => { event.preventDefault(); setDropIndex(index); }} onDragEnd={() => { setDraggingId(null); setDropIndex(null); }} onDrop={() => dropBlock(index)} key={block.id}><div className="block-controls"><button aria-label="Add block" onClick={() => { setActiveBlockId(block.id); setQuery(""); }} type="button">+</button><button aria-label="Drag block" className="drag-handle" draggable onDragStart={() => setDraggingId(block.id)} type="button">⠿</button><button aria-label="Block actions" onClick={() => setMenuBlockId(menuBlockId === block.id ? null : block.id)} type="button">⋯</button>{menuBlockId === block.id ? <div className="block-menu"><button onClick={() => duplicateBlock(block.id)} type="button">Duplicate</button><button disabled={index === 0} onClick={() => moveBlock(block.id, -1)} type="button">Move up</button><button disabled={index === blocks.length - 1} onClick={() => moveBlock(block.id, 1)} type="button">Move down</button><div className="block-menu-label">Turn into</div>{commands.slice(0, 9).map((command) => <button key={command.type} onClick={() => turnInto(block.id, command.type)} type="button">{command.label}</button>)}<button className="danger" onClick={() => deleteBlock(block.id)} type="button">Delete</button></div> : null}</div>{renderBlock(block)}</div>)}
     {showCommands ? <div className="slash-menu"><div className="slash-menu-heading">Insert block</div><input autoFocus onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "ArrowDown") setCommandIndex((index) => Math.min(index + 1, filteredCommands.length - 1)); if (event.key === "ArrowUp") setCommandIndex((index) => Math.max(index - 1, 0)); if (event.key === "Enter" && filteredCommands[commandIndex]) chooseCommand(filteredCommands[commandIndex]); if (event.key === "Escape") setQuery(""); }} placeholder="Search commands..." value={query} />{filteredCommands.slice(0, 7).map((command, index) => <button className={index === commandIndex ? "is-highlighted" : ""} key={command.type} onClick={() => chooseCommand(command)} type="button"><span>{command.label}</span><small>{command.shortcut}</small></button>)}</div> : null}
     {selectedRange ? <div className="selection-toolbar" style={{ left: toolbarPosition.left, top: toolbarPosition.top }}><button aria-label="Bold" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("bold")} type="button"><b>B</b></button><button aria-label="Italic" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("italic")} type="button"><i>I</i></button><button aria-label="Underline" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("underline")} type="button"><u>U</u></button><button aria-label="Strikethrough" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("strikeThrough")} type="button"><s>S</s></button><button aria-label="Inline code" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertCode")} type="button">&lt;/&gt;</button><button aria-label="Highlight" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("hiliteColor")} type="button">✦</button><span className="selection-toolbar-divider" /><button aria-label="Bulleted list" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertUnorderedList")} type="button">•≡</button><button aria-label="Numbered list" onMouseDown={(event) => event.preventDefault()} onClick={() => applyFormat("insertOrderedList")} type="button">1≡</button><button aria-label="Add link" onMouseDown={(event) => event.preventDefault()} onClick={() => { const url = window.prompt("Link URL"); if (url) { const normalized = url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`; const selection = window.getSelection(); selection?.removeAllRanges(); selection?.addRange(selectedRange); document.execCommand("createLink", false, normalized); setSelectedRange(null); } }} type="button">↗</button></div> : null}
