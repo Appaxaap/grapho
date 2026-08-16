@@ -163,30 +163,173 @@ export function deriveTitle(blocks: Block[]): string {
  * ------------------------------------------------------------------ */
 
 interface ParsedInline {
-  type: "text";
-  text: string;
-  styles: Record<string, boolean>;
+  type: "text" | "link";
+  text?: string;
+  href?: string;
+  content?: ParsedInline[];
+  styles?: Record<string, boolean>;
 }
 
-function parseInline(raw: string): ParsedInline[] {
-  // Splits on **bold**, *italic*, and `code` segments.
-  const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
-  const out: ParsedInline[] = [];
-  let last = 0;
-  for (const match of raw.matchAll(pattern)) {
-    const idx = match.index ?? 0;
-    if (idx > last) out.push({ type: "text", text: raw.slice(last, idx), styles: {} });
-    const token = match[0];
-    if (token.startsWith("**")) {
-      out.push({ type: "text", text: token.slice(2, -2), styles: { bold: true } });
-    } else if (token.startsWith("`")) {
-      out.push({ type: "text", text: token.slice(1, -1), styles: { code: true } });
+/* ------------------------------------------------------------------ *
+ * Inline Markdown parsing
+ *
+ * A small delimiter-stack parser (CommonMark-flavoured) that supports
+ * nesting and the strong/emphasis combinations ChatGPT emits, e.g.
+ *   **bold**, *italic*, ***bold italic***, **bold *nested* bold**,
+ *   __bold__, _italic_, ~~strike~~, `code`, and [links](https://...).
+ * Unmatched delimiters (e.g. a stray "**") are rendered literally rather
+ * than leaving orphan asterisks behind.
+ * ------------------------------------------------------------------ */
+
+const INLINE_ALNUM = (c: string | undefined): boolean =>
+  c !== undefined && /[A-Za-z0-9]/.test(c);
+const INLINE_WS = (c: string | undefined): boolean =>
+  c === undefined || c === " " || c === "\t" || c === "\n" || c === "\r";
+
+/** Parse a plain (code/link-free) segment for emphasis, applying `inherited`
+ *  styles to every leaf so nested runs merge correctly when emitted. */
+function parseEmphasis(seg: string, inherited: Record<string, boolean>): ParsedInline[] {
+  // 1. Tokenise into text runs and delimiter markers.
+  const items: Array<
+    | { text: string }
+    | { delim: true; ch: string; len: number; canOpen: boolean; canClose: boolean; matched: boolean }
+    | { group: true; styles: Record<string, boolean>; inner: Array<{ text: string } | { delim: true; ch: string; len: number; canOpen: boolean; canClose: boolean; matched: boolean }> }
+  > = [];
+  let buf = "";
+  let i = 0;
+  const n = seg.length;
+  while (i < n) {
+    const c = seg[i];
+    if (c === "*" || c === "_" || c === "~") {
+      let j = i;
+      while (j < n && seg[j] === c) j++;
+      const len = j - i;
+      const prev = seg[i - 1];
+      const next = seg[j];
+      let canOpen = false;
+      let canClose = false;
+      if (c === "_") {
+        // Underscores only emphasise when not pinned inside a word (snake_case).
+        const intra = INLINE_ALNUM(prev) && INLINE_ALNUM(next);
+        canOpen = !INLINE_WS(next) && !intra;
+        canClose = !INLINE_WS(prev) && !intra;
+      } else {
+        canOpen = !INLINE_WS(next);
+        canClose = !INLINE_WS(prev);
+      }
+      // A delimiter that can neither open nor close is just literal text.
+      if (!canOpen && !canClose) {
+        buf += seg.slice(i, j);
+        i = j;
+        continue;
+      }
+      // Strikethrough requires a run of at least two tildes.
+      if (c === "~" && len < 2) {
+        buf += seg.slice(i, j);
+        i = j;
+        continue;
+      }
+      if (buf) {
+        items.push({ text: buf });
+        buf = "";
+      }
+      items.push({ delim: true, ch: c, len, canOpen, canClose, matched: false });
+      i = j;
     } else {
-      out.push({ type: "text", text: token.slice(1, -1), styles: { italic: true } });
+      buf += c;
+      i++;
     }
-    last = idx + token.length;
   }
-  if (last < raw.length) out.push({ type: "text", text: raw.slice(last), styles: {} });
+  if (buf) items.push({ text: buf });
+
+  // 2. Match delimiter pairs (innermost first), folding matched spans into groups.
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let k = 0; k < items.length; k++) {
+      const it = items[k];
+      if (!(it as { delim?: boolean }).delim || !(it as { canClose?: boolean }).canClose || (it as { matched?: boolean }).matched) continue;
+      for (let m = k - 1; m >= 0; m--) {
+        const op = items[m];
+        if (!(op as { delim?: boolean }).delim || (op as { ch?: string }).ch !== (it as { ch?: string }).ch || !(op as { canOpen?: boolean }).canOpen || (op as { matched?: boolean }).matched) continue;
+        const openLen = (op as { len: number }).len;
+        const closeLen = (it as { len: number }).len;
+        const strong = openLen >= 2 && closeLen >= 2;
+        const emphasis = (openLen + closeLen) % 3 === 0;
+        const inner = items.slice(m + 1, k);
+        if (inner.length === 0) continue; // empty content is not emphasis
+        const styles: Record<string, boolean> = {};
+        const ch = (it as { ch: string }).ch;
+        if (ch === "~") {
+          if (strong) styles.strike = true;
+        } else {
+          if (strong) styles.bold = true;
+          if (!strong || emphasis) styles.italic = true;
+        }
+        (op as { matched: boolean }).matched = true;
+        (it as { matched: boolean }).matched = true;
+        items.splice(m, k - m + 1, { group: true, styles, inner } as never);
+        changed = true;
+        break;
+      }
+    }
+  }
+
+  // 3. Flatten groups, merging styles down onto leaf text nodes.
+  const flatten = (
+    arr: Array<
+      | { text: string }
+      | { delim: true; ch: string; len: number; matched: boolean }
+      | { group: true; styles: Record<string, boolean>; inner: Array<{ text: string } | { delim: true; ch: string; len: number; matched: boolean }> }
+    >,
+    inh: Record<string, boolean>
+  ): ParsedInline[] => {
+    const out: ParsedInline[] = [];
+    for (const x of arr) {
+      if ((x as { group?: boolean }).group) {
+        out.push(...flatten((x as { inner: typeof arr }).inner, { ...inh, ...(x as { styles: Record<string, boolean> }).styles }));
+      } else if ((x as { delim?: boolean }).delim) {
+        out.push({ type: "text", text: (x as { ch: string }).ch.repeat((x as { len: number }).len), styles: { ...inh } });
+      } else {
+        out.push({ type: "text", text: (x as { text: string }).text, styles: { ...inh } });
+      }
+    }
+    return out;
+  };
+  return flatten(items, inherited);
+}
+
+/** Parse inline Markdown into BlockNote inline content (text + link nodes). */
+export function parseInline(raw: string, inherited: Record<string, boolean> = {}): ParsedInline[] {
+  const out: ParsedInline[] = [];
+  const n = raw.length;
+  let i = 0;
+  while (i < n) {
+    const c = raw[i];
+    // Code spans are verbatim and take precedence over everything else.
+    if (c === "`") {
+      const end = raw.indexOf("`", i + 1);
+      if (end !== -1) {
+        out.push({ type: "text", text: raw.slice(i + 1, end), styles: { ...inherited, code: true } });
+        i = end + 1;
+        continue;
+      }
+    }
+    // Inline links: [text](url)
+    if (c === "[") {
+      const m = /^\[([^\]]*)\]\(([^)\s]+)\)/.exec(raw.slice(i));
+      if (m) {
+        out.push({ type: "link", href: m[2], content: parseInline(m[1], inherited) });
+        i += m[0].length;
+        continue;
+      }
+    }
+    // Otherwise collect a run up to the next code span or link, then emphasise it.
+    let j = i;
+    while (j < n && raw[j] !== "`" && raw[j] !== "[") j++;
+    out.push(...parseEmphasis(raw.slice(i, j), inherited));
+    i = j;
+  }
   return out;
 }
 
