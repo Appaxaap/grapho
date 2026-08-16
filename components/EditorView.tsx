@@ -8,7 +8,7 @@ import { useStore } from "@/lib/store";
 import type { Note } from "@/lib/types";
 import { cn, formatRelativeTime, pluralize } from "@/lib/utils";
 import { EDITOR_SYNC_THROTTLE_MS } from "@/lib/constants";
-import { blocksToPlainText, deriveTitle } from "@/lib/markdown";
+import { blocksToPlainText, deriveTitle, markdownToBlocks } from "@/lib/markdown";
 import { sanitizeBlocks } from "@/lib/sanitize";
 import { publishActiveEditor } from "@/lib/editorRegistry";
 import { useDocState } from "@/lib/docState";
@@ -32,6 +32,7 @@ export function EditorView({ note, theme }: EditorViewProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastDocRef = useRef<Block[]>(initialContent);
   const pendingRef = useRef(false);
+  const hostRef = useRef<HTMLDivElement | null>(null);
 
   /* Save-state feedback: "Saving…" until the store confirms the flush. */
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
@@ -51,6 +52,42 @@ export function EditorView({ note, theme }: EditorViewProps) {
   useEffect(() => {
     publishActiveEditor(editor);
     return () => publishActiveEditor(null);
+  }, [editor]);
+
+  /* Convert pasted Markdown into BlockNote blocks — headings, **bold**,
+     *italic*, lists, quotes, links — instead of leaving the markers as
+     literal text. BlockNote does not auto-parse pasted markdown, so we
+     intercept the paste (capture phase, before BlockNote's own handler)
+     and replace the current block with the parsed result. */
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    const looksLikeMarkdown = (t: string): boolean =>
+      /(?:^|\n)\s{0,3}(#{1,6}\s|[-*+]\s|\d+[.)]\s|>\s|```|~~~)/.test(t) ||
+      /\*\*[^*]+\*\*|~~[^~]+~~|`[^`]+`|\[[^\]]+\]\([^)]+\)/.test(t);
+
+    const onPaste = (e: ClipboardEvent) => {
+      const text = e.clipboardData?.getData("text/plain");
+      if (!text || !text.trim() || !looksLikeMarkdown(text)) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const blocks = markdownToBlocks(text);
+      const current = editor.getTextCursorPosition().block;
+      try {
+        if (current) editor.replaceBlocks([current], blocks);
+        else editor.insertBlocks(blocks, editor.document[0], "after");
+      } catch {
+        // Fall back to inserting the raw text so the paste is never lost.
+        const fallback = [{ type: "paragraph", content: text }] as Block[];
+        if (current) editor.replaceBlocks([current], fallback);
+        else editor.insertBlocks(fallback, editor.document[0], "after");
+      }
+    };
+
+    host.addEventListener("paste", onPaste, true);
+    return () => host.removeEventListener("paste", onPaste, true);
   }, [editor]);
 
   /* Throttled sync of editor changes into app state + SQLite. */
@@ -139,7 +176,7 @@ export function EditorView({ note, theme }: EditorViewProps) {
               <span>Edited {formatRelativeTime(note.updatedAt)}</span>
             </div>
 
-            <div className={cn("grapho-editor-host mt-10", fontClass)}>
+            <div className={cn("grapho-editor-host mt-10", fontClass)} ref={hostRef}>
               <BlockNoteView
                 editor={editor}
                 theme={theme}
