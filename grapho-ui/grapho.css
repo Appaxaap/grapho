@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Grapho-local typography and design tokens. The app-provided Geist Mono
+   variable is preferred, with portable system fallbacks for standalone use. */
+.grapho-ui {
+  --grapho-font: var(--font-mono, "Geist Mono"), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --grapho-font-display: var(--font-mono, "Geist Mono"), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --grapho-size-body: 17px;
+  --grapho-size-small: 10px;
+  --grapho-leading-body: 1.9;
+  --grapho-background: #f3f3f1;
+  --grapho-foreground: #161617;
+  --grapho-panel: rgba(255, 255, 255, .82);
+  --grapho-panel-solid: #fff;
+  --grapho-control: rgba(118, 118, 128, .09);
+  --grapho-control-hover: rgba(118, 118, 128, .15);
+  --grapho-border: rgba(0, 0, 0, .075);
+  --grapho-muted: #71717a;
+  --grapho-faint: #a1a1aa;
+  --grapho-accent: #1677ff;
+  --grapho-accent-soft: rgba(22, 119, 255, .12);
+  --grapho-shadow: 0 20px 55px rgba(0, 0, 0, .065), 0 1px 2px rgba(0, 0, 0, .025);
+  --grapho-font-sans: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --grapho-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  min-height: 100vh;
+  background: var(--grapho-background);
+  color: var(--grapho-foreground);
+  font-family: var(--grapho-font-sans);
+  font-family: var(--grapho-font);
+  letter-spacing: -0.015em;
+}
+
+.grapho-ui.grapho-dark {
+  --grapho-background: #0d0d0e;
+  --grapho-foreground: #f5f5f7;
+  --grapho-panel: rgba(25, 25, 28, .78);
+  --grapho-panel-solid: #18181b;
+  --grapho-control: rgba(255, 255, 255, .07);
+  --grapho-control-hover: rgba(255, 255, 255, .11);
+  --grapho-border: rgba(255, 255, 255, .09);
+  --grapho-muted: #a1a1aa;
+  --grapho-faint: #71717a;
+  --grapho-accent: #3b82f6;
+  --grapho-accent-soft: rgba(59, 130, 246, .16);
+  --grapho-shadow: 0 24px 60px rgba(0, 0, 0, .34), 0 1px 2px rgba(0, 0, 0, .2);
+}
+
+.grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { box-sizing: border-box; }
+.grapho-ui button, .grapho-ui input, .grapho-ui textarea { font: inherit; }
+.grapho-ui button { -webkit-tap-highlight-color: transparent; }
+.grapho-ui :focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
+.grapho-ui textarea:focus-visible,
+.grapho-ui [contenteditable]:focus-visible { outline: none; }
+.grapho-ui textarea:focus,
+.grapho-ui [contenteditable]:focus { box-shadow: none; border-radius: 0; }
+.grapho-ui [contenteditable] { caret-color: var(--grapho-accent); }
+.grapho-title { letter-spacing: -0.08em; }
+.grapho-label { letter-spacing: 0.18em; }
+.grapho-ui [contenteditable]:empty::before { content: "Start writing, or type / for commands…"; color: var(--grapho-faint); pointer-events: none; }
+.grapho-editor-scroll { height: 100vh; overflow-y: auto; overscroll-behavior: contain; }
+.grapho-print-branding { display: none; }
+.grapho-selection-toolbar { scrollbar-width: none; }
+.grapho-selection-toolbar::-webkit-scrollbar { display: none; }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+
+  }
+  .grapho-ui,
+  .grapho-ui .grapho-editor-scroll { background: #fff !important; color: #161617 !important; height: auto !important; min-height: 0 !important; overflow: visible !important; }
+  .grapho-ui > header,
+  .grapho-ui aside,
+  .grapho-ui .fixed,
+  .grapho-ui .grapho-document-meta,
+  .grapho-ui .grapho-print-hide,
+  .grapho-ui .grapho-canvas-grid,
+  .grapho-ui [data-grapho-block] + div,
+  .grapho-ui article > button { display: none !important; }
+  .grapho-ui main { width: 100% !important; }
+  .grapho-ui main > div { max-width: none !important; padding: 0 !important; }
+  .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 14mm !important; }
+  .grapho-ui [contenteditable] { color: #161617 !important; }
+  .grapho-ui .mb-10 { break-inside: avoid; }
+  .grapho-ui [data-grapho-block] { break-inside: avoid; }
+
+  .grapho-ui table { break-inside: avoid; }
+  .grapho-ui pre { break-inside: avoid; }
+  .grapho-ui * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
+  .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+}
+.grapho-ui .grapho-glass { background: var(--grapho-panel); border: 1px solid var(--grapho-border); box-shadow: var(--grapho-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.grapho-ui .grapho-canvas-grid { background-image: linear-gradient(var(--grapho-border) 1px, transparent 1px), linear-gradient(90deg, var(--grapho-border) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, black, transparent 75%); opacity: .34; }
+@media (prefers-reduced-motion: reduce) { .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
