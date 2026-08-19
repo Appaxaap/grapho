@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
-
+import { Geist_Mono } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
 
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "Grapho",
-  description: "Write without limits. Local-first notes and document workspace.",
+  description: "Write freely. Instantly. Without limits.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={geistMono.variable} suppressHydrationWarning>{children}</body>
     </html>
   );
 }

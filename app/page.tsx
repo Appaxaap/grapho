@@ -1,4 +1,4 @@
-import { GraphoShell } from "@/components/grapho-shell";
+import GraphoShell from "@/grapho-ui/components/GraphoShell";
 
 export default function Home() {
   return <GraphoShell />;
