@@ -178,6 +178,8 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 
 ### Visual polish
 
+- Moved the primary action toolbar to the lower-right side of the workspace for a cleaner reading canvas.
+
 - Table blocks now render as visible structured tables with consistent headers, rows, borders, and spacing.
 
 - Refined the slash command menu with consistent Grapho spacing, surfaces, borders, and icon containers.

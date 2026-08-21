@@ -348,6 +348,13 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Right-side action toolbar
+
+- Moved the bottom action toolbar to the lower-right workspace edge.
+- Reduced the toolbar’s viewport footprint while preserving horizontal overflow on small screens.
+- Kept save state and editing actions together in the right-side control group.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Table block rendering
 
 - Made table parsing tolerant of Markdown rows with or without outer pipes.
