@@ -52,6 +52,7 @@ export default function GraphoShell() {
   const [deleting, setDeleting] = useState(false);
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
+  const [isHydrated, setIsHydrated] = useState(false);
   const blockSequence = useRef(0);
   const hydrated = useRef(false);
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
@@ -69,6 +70,7 @@ export default function GraphoShell() {
         setActiveFolder(stored.activeFolder);
       }
       hydrated.current = true;
+      setIsHydrated(true);
     };
     const timer = window.setTimeout(hydrate, 0);
     return () => window.clearTimeout(timer);
@@ -483,8 +485,8 @@ export default function GraphoShell() {
 
         <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
           <span className="mx-2 flex shrink-0 items-center gap-1.5 text-[8px] text-[var(--grapho-faint)]" role="status" aria-live="polite"><span className={`size-1.5 rounded-full ${saveState === "saved" ? "bg-emerald-500" : saveState === "saving" ? "bg-amber-500" : "bg-red-500"}`} />{saveState === "saved" ? "Saved" : saveState === "saving" ? "Saving…" : <><span>Could not save</span><button type="button" onClick={saveNow} className="ml-1 text-[var(--grapho-accent)] hover:underline">Retry</button></>}</span>
-          <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={history.current.past.length === 0} />
-          <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={history.current.future.length === 0} />
+          <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
+          <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
           <span className="mx-1 h-5 w-px shrink-0 bg-[var(--grapho-border)]" />
           <ToolbarButton label="Heading" icon={<Hash size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "heading")} />
           <ToolbarButton label="Quote" icon={<Quote size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "quote")} />
