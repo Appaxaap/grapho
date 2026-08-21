@@ -176,6 +176,11 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 - Focus-visible styling.
 - Accessible labels on key icon and native window controls.
 
+### Visual polish
+
+- Removed the browser-default blue focus border from the command-palette search field.
+- Preserved keyboard focus without the distracting browser outline.
+
 ### Document management
 
 - Rename documents from the sidebar.

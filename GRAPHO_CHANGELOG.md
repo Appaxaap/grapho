@@ -348,6 +348,12 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Command palette focus styling
+
+- Removed the browser-default blue focus border from the command-palette search field.
+- Preserved keyboard focus while matching the Grapho panel visual language.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Document sidebar actions
 
 - Added working rename action to each document row.
