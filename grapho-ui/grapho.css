@@ -46,6 +46,15 @@
 }
 
 .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { box-sizing: border-box; }
+.grapho-ui.is-native-window .grapho-editor-scroll { height: calc(100vh - 38px); margin-top: 38px; }
+.grapho-native-titlebar { z-index: 100; top: 0; right: 0; left: 0; display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-background) 92%, transparent); color: var(--grapho-muted); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); user-select: none; }
+.grapho-native-brand { display: flex; align-items: center; gap: 7px; min-width: 150px; font-size: 10px; }
+.grapho-native-brand span { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 6px; color: var(--grapho-background); background: var(--grapho-foreground); }
+.grapho-native-context { position: absolute; left: 50%; max-width: 40%; overflow: hidden; color: var(--grapho-faint); font-size: 9px; text-overflow: ellipsis; transform: translateX(-50%); white-space: nowrap; }
+.grapho-native-window-controls { display: flex; gap: 3px; margin-left: auto; }
+.grapho-native-window-controls button { display: grid; width: 28px; height: 24px; place-items: center; border: 0; border-radius: 6px; color: var(--grapho-muted); background: transparent; font-size: 15px; line-height: 1; }
+.grapho-native-window-controls button:hover { color: var(--grapho-foreground); background: var(--grapho-control-hover); }
+.grapho-native-window-controls button.is-close:hover { color: #fff; background: #c74242; }
 .grapho-ui button, .grapho-ui input, .grapho-ui textarea { font: inherit; }
 .grapho-ui button { -webkit-tap-highlight-color: transparent; }
 .grapho-ui :focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
@@ -57,8 +66,19 @@
 .grapho-title { letter-spacing: -0.08em; }
 .grapho-label { letter-spacing: 0.18em; }
 .grapho-ui [contenteditable]:empty::before { content: "Start writing, or type / for commands…"; color: var(--grapho-faint); pointer-events: none; }
-.grapho-editor-scroll { height: 100vh; overflow-y: auto; overscroll-behavior: contain; }
+.grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; }
+.grapho-editor-scroll::after { content: ""; position: absolute; z-index: 40; right: 0; bottom: 0; left: 0; height: 72px; pointer-events: none; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--grapho-background) 28%, transparent)); }
+.grapho-project-list button { color: var(--grapho-muted); font-size: 12px; letter-spacing: -0.025em; }
+.grapho-project-list button:hover, .grapho-project-list button[class*="text-[var(--grapho-foreground)]"] { color: var(--grapho-foreground); }
+.grapho-project-list button > svg { color: var(--grapho-faint); }
+.grapho-project-list button > span:first-of-type { font-weight: 520; }
+.grapho-project-list button > span:last-child { color: var(--grapho-faint); font-size: 9px; }
+.grapho-document-list button { min-height: 48px; color: var(--grapho-muted); }
+.grapho-document-list button:hover, .grapho-document-list button[class*="text-[var(--grapho-foreground)]"] { color: var(--grapho-foreground); background: var(--grapho-control-hover); }
+.grapho-document-list button > span span:first-child { color: inherit; font-family: var(--grapho-font-sans); font-size: 11px; font-weight: 560; letter-spacing: -0.015em; }
+.grapho-document-list button > span span:last-child { color: var(--grapho-faint); font-family: var(--grapho-font-sans); font-size: 9px; }
 .grapho-print-branding { display: none; }
+.grapho-print-page-number { display: none; }
 .grapho-selection-toolbar { scrollbar-width: none; }
 .grapho-selection-toolbar::-webkit-scrollbar { display: none; }
 
@@ -70,6 +90,7 @@
   }
   .grapho-ui,
   .grapho-ui .grapho-editor-scroll { background: #fff !important; color: #161617 !important; height: auto !important; min-height: 0 !important; overflow: visible !important; }
+  .grapho-ui .grapho-editor-scroll::after { display: none !important; }
   .grapho-ui > header,
   .grapho-ui aside,
   .grapho-ui .fixed,
@@ -80,7 +101,7 @@
   .grapho-ui article > button { display: none !important; }
   .grapho-ui main { width: 100% !important; }
   .grapho-ui main > div { max-width: none !important; padding: 0 !important; }
-  .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 14mm !important; }
+  .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 22mm !important; }
   .grapho-ui [contenteditable] { color: #161617 !important; }
   .grapho-ui .mb-10 { break-inside: avoid; }
   .grapho-ui [data-grapho-block] { break-inside: avoid; }
@@ -88,6 +109,7 @@
   .grapho-ui table { break-inside: avoid; }
   .grapho-ui pre { break-inside: avoid; }
   .grapho-ui * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .grapho-print-page-number { display: none !important; }
   .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
   .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 }
