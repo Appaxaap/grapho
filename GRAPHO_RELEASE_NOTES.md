@@ -67,6 +67,14 @@ Currently supported block commands include:
 
 The menu can be dismissed with `Escape`.
 
+The slash menu also supports:
+
+- Command search/filtering
+- Basic, Lists, and Advanced categories
+- Arrow-key navigation
+- Enter to select
+- Empty-result feedback
+
 ### Undo and redo
 
 Undo and redo now operate on Grapho document state instead of relying only on browser content-editable history.

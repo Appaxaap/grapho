@@ -506,19 +506,30 @@ function EditableContent({ blockId, value, label, className, onChange, onKeyDown
 }
 
 function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["type"]) => void; onDismiss: () => void }) {
-  const commands: { type: Block["type"]; label: string; hint: string; icon: React.ReactNode }[] = [
-    { type: "paragraph", label: "Text", hint: "Plain text", icon: <AlignLeft size={13} /> },
-    { type: "heading", label: "Heading 1", hint: "Large section title", icon: <Hash size={13} /> },
-    { type: "heading", label: "Heading 2", hint: "Section title", icon: <Hash size={13} /> },
-    { type: "list", label: "Bulleted list", hint: "Simple list", icon: <List size={13} /> },
-    { type: "ordered-list", label: "Numbered list", hint: "Ordered steps", icon: <List size={13} /> },
-    { type: "quote", label: "Quote", hint: "Highlight a thought", icon: <Quote size={13} /> },
-    { type: "callout", label: "Callout", hint: "Bring attention", icon: <Sparkles size={13} /> },
-    { type: "code", label: "Code block", hint: "Monospaced code", icon: <Type size={13} /> },
-    { type: "table", label: "Table", hint: "Structured rows and columns", icon: <Table2 size={13} /> },
-    { type: "divider", label: "Divider", hint: "Separate sections", icon: <Minus size={13} /> },
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const commands: { type: Block["type"]; category: string; label: string; hint: string; icon: React.ReactNode }[] = [
+    { type: "paragraph", category: "Basic", label: "Text", hint: "Plain text", icon: <AlignLeft size={13} /> },
+    { type: "heading", category: "Basic", label: "Heading 1", hint: "Large section title", icon: <Hash size={13} /> },
+    { type: "heading", category: "Basic", label: "Heading 2", hint: "Section title", icon: <Hash size={13} /> },
+    { type: "list", category: "Lists", label: "Bulleted list", hint: "Simple list", icon: <List size={13} /> },
+    { type: "ordered-list", category: "Lists", label: "Numbered list", hint: "Ordered steps", icon: <List size={13} /> },
+    { type: "quote", category: "Basic", label: "Quote", hint: "Highlight a thought", icon: <Quote size={13} /> },
+    { type: "callout", category: "Basic", label: "Callout", hint: "Bring attention", icon: <Sparkles size={13} /> },
+    { type: "code", category: "Advanced", label: "Code block", hint: "Monospaced code", icon: <Type size={13} /> },
+    { type: "table", category: "Advanced", label: "Table", hint: "Structured rows and columns", icon: <Table2 size={13} /> },
+    { type: "divider", category: "Basic", label: "Divider", hint: "Separate sections", icon: <Minus size={13} /> },
   ];
-  return <div className="absolute left-0 top-full z-30 mt-2 w-56 overflow-hidden rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-1.5 shadow-2xl"><div className="flex items-center justify-between px-2.5 py-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Turn into</span><button type="button" onClick={onDismiss} aria-label="Close block menu"><X size={12} /></button></div>{commands.map((command) => <button key={`${command.label}-${command.type}`} type="button" onClick={() => onSelect(command.type)} className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left hover:bg-[var(--grapho-control)]"><span className="grid size-6 place-items-center rounded-md bg-[var(--grapho-control)] text-[var(--grapho-muted)]">{command.icon}</span><span><span className="block text-[9px] text-[var(--grapho-foreground)]">{command.label}</span><span className="block text-[8px] text-[var(--grapho-faint)]">{command.hint}</span></span></button>)}</div>;
+  const filtered = commands.filter((command) => `${command.label} ${command.hint} ${command.category}`.toLowerCase().includes(query.toLowerCase()));
+  useEffect(() => { searchRef.current?.focus(); }, []);
+  useEffect(() => { setActiveIndex(0); }, [query]);
+  const choose = (index: number) => { const command = filtered[index]; if (command) onSelect(command.type); };
+  return <div className="absolute left-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-1.5 shadow-2xl" onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); onDismiss(); } else if (event.key === "ArrowDown") { event.preventDefault(); setActiveIndex((index) => Math.min(index + 1, Math.max(filtered.length - 1, 0))); } else if (event.key === "ArrowUp") { event.preventDefault(); setActiveIndex((index) => Math.max(index - 1, 0)); } else if (event.key === "Enter") { event.preventDefault(); choose(activeIndex); } }}>
+    <div className="flex items-center justify-between px-2.5 py-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Insert block</span><button type="button" onClick={onDismiss} aria-label="Close block menu"><X size={12} /></button></div>
+    <input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search block commands" placeholder="Filter commands…" className="mb-1 h-8 w-full rounded-lg bg-[var(--grapho-control)] px-2.5 text-[10px] text-[var(--grapho-foreground)] outline-none placeholder:text-[var(--grapho-faint)]" />
+    <div className="max-h-64 overflow-y-auto">{filtered.map((command, index) => <button key={`${command.label}-${command.type}`} type="button" onMouseEnter={() => setActiveIndex(index)} onClick={() => choose(index)} className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left ${index === activeIndex ? "bg-[var(--grapho-control-hover)]" : "hover:bg-[var(--grapho-control)]"}`}><span className="grid size-6 place-items-center rounded-md bg-[var(--grapho-control)] text-[var(--grapho-muted)]">{command.icon}</span><span><span className="block text-[9px] text-[var(--grapho-foreground)]">{command.label}</span><span className="block text-[8px] text-[var(--grapho-faint)]">{command.category} · {command.hint}</span></span></button>)}{!filtered.length && <div className="px-2.5 py-4 text-center text-[9px] text-[var(--grapho-faint)]">No matching commands</div>}</div>
+  </div>;
 }
 
 function ShortcutGroup({ title, items }: { title: string; items: string[][] }) {

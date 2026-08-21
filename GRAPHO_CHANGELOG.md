@@ -348,6 +348,15 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Slash command navigation
+
+- Added command filtering/search to the block slash menu.
+- Added Basic, Lists, and Advanced command categories.
+- Added Arrow Up/Down keyboard navigation.
+- Added Enter to select and Escape to dismiss.
+- Added accessible command search input and empty-result state.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Reliability implementation
 
 Implemented the roadmap’s immediate next phase:
