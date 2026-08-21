@@ -10,10 +10,16 @@ export type GraphoStoragePayload = {
   activeFolder: string;
 };
 
+function isBlock(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  const block = value as Record<string, unknown>;
+  return typeof block.id === "string" && typeof block.type === "string" && typeof block.text === "string";
+}
+
 function isDocument(value: unknown): value is DocumentItem {
   if (!value || typeof value !== "object") return false;
   const document = value as Record<string, unknown>;
-  return typeof document.id === "string" && typeof document.title === "string" && typeof document.folder === "string" && Array.isArray(document.blocks);
+  return typeof document.id === "string" && document.id.length > 0 && typeof document.title === "string" && typeof document.folder === "string" && Array.isArray(document.blocks) && document.blocks.length > 0 && document.blocks.every(isBlock);
 }
 
 export function loadGraphoStorage(): GraphoStoragePayload | null {
@@ -21,7 +27,7 @@ export function loadGraphoStorage(): GraphoStoragePayload | null {
     const raw = window.localStorage.getItem(GRAPHO_STORAGE_KEY);
     if (!raw) return null;
     const value = JSON.parse(raw) as Partial<GraphoStoragePayload>;
-    if (value.version !== GRAPHO_STORAGE_VERSION || !Array.isArray(value.documents) || !value.documents.every(isDocument) || typeof value.selectedId !== "string" || typeof value.activeFolder !== "string") return null;
+    if (value.version !== GRAPHO_STORAGE_VERSION || !Array.isArray(value.documents) || value.documents.length === 0 || !value.documents.every(isDocument) || typeof value.selectedId !== "string" || typeof value.activeFolder !== "string") return null;
     return value as GraphoStoragePayload;
   } catch {
     return null;

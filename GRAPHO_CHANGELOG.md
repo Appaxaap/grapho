@@ -48,7 +48,6 @@ The roadmap remains the source of planned work. This file is the source of imple
 - Formatting marks are not represented in the persisted block model.
 - Deleted and archived document state is not fully implemented.
 - Automatic recovery UI for corrupted data is not implemented.
-- JSON backup import is not implemented.
 - Reset and backup actions should move into a dedicated settings screen.
 - Native Tauri application-data storage is not implemented yet.
 
@@ -154,8 +153,8 @@ The roadmap remains the source of planned work. This file is the source of imple
 
 #### Remaining
 
-- Immediate save on document switching is not separately implemented.
-- Save-before-window-close handling is not implemented.
+- Immediate save on document and project switching is implemented.
+- Save-before-window-close handling is implemented for browser lifecycle events and the native close action.
 - Offline-specific state is not implemented.
 - Interrupted-save recovery UI is not implemented.
 - Native Tauri application-data saving is not implemented.
@@ -173,7 +172,6 @@ The roadmap remains the source of planned work. This file is the source of imple
 
 - Markdown file import is not implemented.
 - Markdown export is not implemented.
-- JSON backup import is not implemented.
 - HTML and plain-text export are not implemented.
 - Native save dialogs are not implemented.
 - Drag-and-drop Markdown import is not implemented.
@@ -347,6 +345,14 @@ Remaining:
 - Stable migration strategy
 
 ## Change history
+
+### 2026-08-21 — Flush persistence on transitions
+
+- Added immediate persistence before document/project switching and native window close.
+- Added browser `beforeunload` and `pagehide` save flushing to reduce data loss during interrupted debounce windows.
+- Strengthened persisted block validation and rejected empty document collections.
+- Confirmed JSON backup import is available in the workspace.
+- Validation: `npm run build` passed; `npm run lint` remains blocked by existing React effect diagnostics and generated Tauri artifact parsing errors.
 
 ### 2026-08-21 — Delete loading state
 

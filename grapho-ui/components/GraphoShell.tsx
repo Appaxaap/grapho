@@ -57,6 +57,7 @@ export default function GraphoShell() {
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
   const previousDocuments = useRef<DocumentItem[]>(initialDocuments);
   const nativeWindow = useRef<ReturnType<typeof getCurrentWindow> | null>(null);
+  const latestWorkspace = useRef({ documents, selectedId, activeFolder });
   const backupInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -73,19 +74,33 @@ export default function GraphoShell() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  const saveNow = useCallback(() => {
+    if (!hydrated.current) return;
+    try {
+      saveGraphoStorage({ version: 1, ...latestWorkspace.current });
+      setSaveState("saved");
+    } catch {
+      setSaveState("error");
+    }
+  }, []);
+
   useEffect(() => {
+    latestWorkspace.current = { documents, selectedId, activeFolder };
     if (!hydrated.current) return;
     setSaveState("saving");
-    const timer = window.setTimeout(() => {
-      try {
-        saveGraphoStorage({ version: 1, documents, selectedId, activeFolder });
-        setSaveState("saved");
-      } catch {
-        setSaveState("error");
-      }
-    }, 350);
+    const timer = window.setTimeout(saveNow, 350);
     return () => window.clearTimeout(timer);
-  }, [documents, selectedId, activeFolder]);
+  }, [documents, selectedId, activeFolder, saveNow]);
+
+  useEffect(() => {
+    const flushSave = () => saveNow();
+    window.addEventListener("beforeunload", flushSave);
+    window.addEventListener("pagehide", flushSave);
+    return () => {
+      window.removeEventListener("beforeunload", flushSave);
+      window.removeEventListener("pagehide", flushSave);
+    };
+  }, [saveNow]);
 
   useEffect(() => {
     if (!hydrated.current) return;
@@ -110,7 +125,10 @@ export default function GraphoShell() {
 
   const minimizeWindow = () => void nativeWindow.current?.minimize();
   const toggleMaximizeWindow = () => void nativeWindow.current?.toggleMaximize();
-  const closeWindow = () => void nativeWindow.current?.close();
+  const closeWindow = () => {
+    saveNow();
+    void nativeWindow.current?.close();
+  };
 
   const selected = documents.find((document) => document.id === selectedId) ?? documents[0];
   const visibleDocuments = useMemo(() => {
@@ -425,9 +443,9 @@ export default function GraphoShell() {
               </div>
               <label className="mt-3 flex h-10 items-center gap-2 rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] focus-within:bg-[var(--grapho-control-hover)]"><Search size={13} className="shrink-0 text-[var(--grapho-faint)]" /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search documents" placeholder="Search documents" className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[var(--grapho-faint)]" /><kbd className="text-[8px] text-[var(--grapho-faint)]">⌘ K</kbd></label>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Workspace</span><button type="button" aria-label="Add folder" className="hover:text-[var(--grapho-foreground)]"><Plus size={12} /></button></div>
-              <div className="grapho-project-list mt-2 space-y-1">{folders.map((folder) => <button key={folder} type="button" onClick={() => setActiveFolder(folder)} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[10px] transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}>{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button>)}</div>
+              <div className="grapho-project-list mt-2 space-y-1">{folders.map((folder) => <button key={folder} type="button" onClick={() => { saveNow(); setActiveFolder(folder); }} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[10px] transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}>{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button>)}</div>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>{activeFolder}</span><span>{visibleDocuments.length}</span></div>
-              <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.map((document) => <div key={document.id} className={`group flex items-center gap-2 rounded-xl border px-2.5 py-2 transition-colors ${selectedId === document.id ? "border-[var(--grapho-border)] bg-[var(--grapho-control-hover)] text-[var(--grapho-foreground)]" : "border-transparent text-[var(--grapho-muted)] hover:border-[var(--grapho-border)] hover:bg-[var(--grapho-control)]"}`}><button type="button" onClick={() => setSelectedId(document.id)} className="flex min-w-0 flex-1 items-center gap-2.5 text-left"><span className={`grid size-7 shrink-0 place-items-center rounded-lg ${selectedId === document.id ? "bg-[var(--grapho-foreground)] text-[var(--grapho-background)]" : "bg-[var(--grapho-control)] text-[var(--grapho-faint)]"}`}><FileText size={12} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-medium">{document.title}</span><span className="mt-0.5 block text-[8px] text-[var(--grapho-faint)]">{document.updated} · {document.blocks.length} blocks</span></span></button><div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => renameDocument(document.id)} aria-label={`Rename ${document.title}`} title="Rename document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]"><MoreHorizontal size={13} /></button><button type="button" onClick={() => deleteDocument(document.id)} aria-label={`Delete ${document.title}`} title="Delete document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-red-500/10 hover:text-red-400"><Trash2 size={12} /></button></div></div>)}</div>
+              <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.map((document) => <div key={document.id} className={`group flex items-center gap-2 rounded-xl border px-2.5 py-2 transition-colors ${selectedId === document.id ? "border-[var(--grapho-border)] bg-[var(--grapho-control-hover)] text-[var(--grapho-foreground)]" : "border-transparent text-[var(--grapho-muted)] hover:border-[var(--grapho-border)] hover:bg-[var(--grapho-control)]"}`}><button type="button" onClick={() => { saveNow(); setSelectedId(document.id); }} className="flex min-w-0 flex-1 items-center gap-2.5 text-left"><span className={`grid size-7 shrink-0 place-items-center rounded-lg ${selectedId === document.id ? "bg-[var(--grapho-foreground)] text-[var(--grapho-background)]" : "bg-[var(--grapho-control)] text-[var(--grapho-faint)]"}`}><FileText size={12} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-medium">{document.title}</span><span className="mt-0.5 block text-[8px] text-[var(--grapho-faint)]">{document.updated} · {document.blocks.length} blocks</span></span></button><div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => renameDocument(document.id)} aria-label={`Rename ${document.title}`} title="Rename document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]"><MoreHorizontal size={13} /></button><button type="button" onClick={() => deleteDocument(document.id)} aria-label={`Delete ${document.title}`} title="Delete document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-red-500/10 hover:text-red-400"><Trash2 size={12} /></button></div></div>)}</div>
               <div className="mt-auto border-t border-[var(--grapho-border)] pt-3"><button type="button" className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><Archive size={13} /> Archive<span className="ml-auto text-[8px] text-[var(--grapho-faint)]">0</span></button><button type="button" onClick={() => setHelpOpen(true)} className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><CircleHelp size={13} /> Help & shortcuts<span className="ml-auto rounded border border-[var(--grapho-border)] px-1.5 py-0.5 text-[7px] text-[var(--grapho-faint)]">?</span></button></div>
             </div>
           </motion.aside>}
