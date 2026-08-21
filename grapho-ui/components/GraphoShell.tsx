@@ -441,9 +441,9 @@ export default function GraphoShell() {
         <div className="grapho-native-brand" data-tauri-drag-region><span><Hash size={11} /></span><b>Grapho</b></div>
         <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>
         <div className="grapho-native-window-controls">
-          <button onClick={minimizeWindow} aria-label="Minimize window">−</button>
-          <button onClick={toggleMaximizeWindow} aria-label="Maximize window">□</button>
-          <button className="is-close" onClick={closeWindow} aria-label="Close window">×</button>
+          <button className="is-close" type="button" onClick={closeWindow} aria-label="Close window" title="Close"><span aria-hidden="true" /></button>
+          <button className="is-minimize" type="button" onClick={minimizeWindow} aria-label="Minimize window" title="Minimize"><span aria-hidden="true" /></button>
+          <button className="is-maximize" type="button" onClick={toggleMaximizeWindow} aria-label="Maximize window" title="Maximize"><span aria-hidden="true" /></button>
         </div>
       </div>}
       <div className="grapho-canvas-grid pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
