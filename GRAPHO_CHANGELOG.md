@@ -348,6 +348,15 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Document sidebar actions
+
+- Added working rename action to each document row.
+- Added working delete action with confirmation.
+- Prevented deleting the final remaining document.
+- Automatically selects another document when the active document is deleted.
+- Keeps the first heading synchronized when renaming a document.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Workspace toolbar and command palette
 
 - Added a centered `Ctrl+K`/`Cmd+K` command palette.

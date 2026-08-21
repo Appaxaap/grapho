@@ -176,6 +176,13 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 - Focus-visible styling.
 - Accessible labels on key icon and native window controls.
 
+### Document management
+
+- Rename documents from the sidebar.
+- Delete documents with confirmation.
+- The last remaining document cannot be deleted accidentally.
+- The workspace selects another document after deleting the active document.
+
 ### Command palette
 
 - Open the command palette with `Ctrl+K` or `Cmd+K`.

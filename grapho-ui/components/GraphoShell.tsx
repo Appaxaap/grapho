@@ -118,6 +118,21 @@ export default function GraphoShell() {
     });
   }, [activeFolder, documents, query]);
 
+  const renameDocument = (documentId: string) => {
+    const current = documents.find((document) => document.id === documentId);
+    if (!current) return;
+    const title = window.prompt("Rename document", current.title)?.trim();
+    if (!title || title === current.title) return;
+    setDocuments((items) => items.map((document) => document.id === documentId ? { ...document, title, updated: "Just now", blocks: document.blocks.map((block, index) => index === 0 && block.type === "heading" && block.text === current.title ? { ...block, text: title } : block) } : document));
+  };
+
+  const deleteDocument = (documentId: string) => {
+    if (documents.length <= 1 || !window.confirm("Delete this document?")) return;
+    const remaining = documents.filter((document) => document.id !== documentId);
+    setDocuments(remaining);
+    if (selectedId === documentId) setSelectedId(remaining[0].id);
+  };
+
   const updateTitle = (title: string) => {
     setDocuments((current) => current.map((document) => {
       if (document.id !== selected.id) return document;
@@ -391,7 +406,7 @@ export default function GraphoShell() {
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Workspace</span><button type="button" aria-label="Add folder" className="hover:text-[var(--grapho-foreground)]"><Plus size={12} /></button></div>
               <div className="grapho-project-list mt-2 space-y-1">{folders.map((folder) => <button key={folder} type="button" onClick={() => setActiveFolder(folder)} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[10px] transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}>{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button>)}</div>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>{activeFolder}</span><span>{visibleDocuments.length}</span></div>
-              <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.map((document) => <button key={document.id} type="button" onClick={() => setSelectedId(document.id)} className={`group flex w-full items-start gap-2 rounded-lg px-2.5 py-2.5 text-left transition-colors ${selectedId === document.id ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}><FileText size={13} className="mt-0.5 shrink-0 text-[var(--grapho-faint)]" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px]">{document.title}</span><span className="mt-1 block text-[8px] text-[var(--grapho-faint)]">{document.updated}</span></span><MoreHorizontal size={13} className="mt-0.5 hidden shrink-0 text-[var(--grapho-faint)] group-hover:block" /></button>)}</div>
+              <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.map((document) => <div key={document.id} className={`group flex items-start gap-1 rounded-lg px-2.5 py-2.5 transition-colors ${selectedId === document.id ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}><button type="button" onClick={() => setSelectedId(document.id)} className="flex min-w-0 flex-1 items-start gap-2 text-left"><FileText size={13} className="mt-0.5 shrink-0 text-[var(--grapho-faint)]" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px]">{document.title}</span><span className="mt-1 block text-[8px] text-[var(--grapho-faint)]">{document.updated}</span></span></button><button type="button" onClick={() => renameDocument(document.id)} aria-label={`Rename ${document.title}`} title="Rename document" className="grid size-6 shrink-0 place-items-center rounded-md text-[var(--grapho-faint)] opacity-0 transition-opacity hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)] group-hover:opacity-100"><MoreHorizontal size={13} /></button><button type="button" onClick={() => deleteDocument(document.id)} aria-label={`Delete ${document.title}`} title="Delete document" className="grid size-6 shrink-0 place-items-center rounded-md text-[var(--grapho-faint)] opacity-0 transition-opacity hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"><Trash2 size={12} /></button></div>)}</div>
               <div className="mt-auto border-t border-[var(--grapho-border)] pt-3"><button type="button" className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><Archive size={13} /> Archive<span className="ml-auto text-[8px] text-[var(--grapho-faint)]">0</span></button><button type="button" onClick={() => setHelpOpen(true)} className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><CircleHelp size={13} /> Help & shortcuts<span className="ml-auto rounded border border-[var(--grapho-border)] px-1.5 py-0.5 text-[7px] text-[var(--grapho-faint)]">?</span></button></div>
             </div>
           </motion.aside>}
