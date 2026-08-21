@@ -1,4 +1,4 @@
-import type { DocumentItem } from "./components/GraphoShell";
+import type { DocumentItem } from "./model";
 
 export const GRAPHO_STORAGE_KEY = "grapho.workspace.v1";
 export const GRAPHO_STORAGE_VERSION = 1;
