@@ -460,7 +460,7 @@ export default function GraphoShell() {
                   <button type="button" onClick={() => { document.execCommand("delete"); setSelectionToolbar(null); }} aria-label="Delete selected text" title="Delete selected text" className="grid size-9 place-items-center rounded-lg text-red-500 hover:bg-red-500/10"><Trash2 size={18} /></button>
                 </div>}
 
-        <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 right-4 z-40 flex max-w-[calc(100vw-2rem)] items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
+        <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
           <span className="mx-2 flex shrink-0 items-center gap-1.5 text-[8px] text-[var(--grapho-faint)]"><span className={`size-1.5 rounded-full ${saveState === "saved" ? "bg-emerald-500" : saveState === "saving" ? "bg-amber-500" : "bg-red-500"}`} />{saveState === "saved" ? "Saved" : saveState === "saving" ? "Saving…" : "Could not save"}</span>
           <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} />
           <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} />

@@ -348,6 +348,12 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Centered action toolbar
+
+- Re-centered the primary editing toolbar in the writing canvas.
+- Preserved the compact overflow behavior on smaller screens.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Right-side action toolbar
 
 - Moved the bottom action toolbar to the lower-right workspace edge.
