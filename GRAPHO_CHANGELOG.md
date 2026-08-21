@@ -348,12 +348,6 @@ Remaining:
 
 ## Change history
 
-### 2026-08-21 — Remove unintended blur effects
-
-- Removed backdrop blur from the native title bar, floating toolbar, sidebar, style panel, bottom toolbar, command palette, and help dialog.
-- Kept solid borders, shadows, and panel surfaces for visual separation without blurred edges.
-- Validation: production build pending after this change.
-
 ### 2026-08-21 — Document sidebar actions
 
 - Added working rename action to each document row.

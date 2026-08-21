@@ -47,7 +47,7 @@
 
 .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { box-sizing: border-box; }
 .grapho-ui.is-native-window .grapho-editor-scroll { height: calc(100vh - 38px); margin-top: 38px; }
-.grapho-native-titlebar { z-index: 100; top: 0; right: 0; left: 0; display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-background) 92%, transparent); color: var(--grapho-muted); user-select: none; }
+.grapho-native-titlebar { z-index: 100; top: 0; right: 0; left: 0; display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-background) 92%, transparent); color: var(--grapho-muted); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); user-select: none; }
 .grapho-native-brand { display: flex; align-items: center; gap: 7px; min-width: 150px; font-size: 10px; }
 .grapho-native-brand span { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 6px; color: var(--grapho-background); background: var(--grapho-foreground); }
 .grapho-native-context { position: absolute; left: 50%; max-width: 40%; overflow: hidden; color: var(--grapho-faint); font-size: 9px; text-overflow: ellipsis; transform: translateX(-50%); white-space: nowrap; }
@@ -113,6 +113,6 @@
   .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
   .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 }
-.grapho-ui .grapho-glass { background: var(--grapho-panel); border: 1px solid var(--grapho-border); box-shadow: var(--grapho-shadow);  }
+.grapho-ui .grapho-glass { background: var(--grapho-panel); border: 1px solid var(--grapho-border); box-shadow: var(--grapho-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
 .grapho-ui .grapho-canvas-grid { background-image: linear-gradient(var(--grapho-border) 1px, transparent 1px), linear-gradient(90deg, var(--grapho-border) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, black, transparent 75%); opacity: .34; }
 @media (prefers-reduced-motion: reduce) { .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
