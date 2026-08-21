@@ -348,6 +348,14 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Document row redesign
+
+- Reworked sidebar document rows into bordered cards.
+- Added a clear document icon container.
+- Added block-count metadata.
+- Improved selected, hover, and action-button states.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Command palette focus styling
 
 - Removed the browser-default blue focus border from the command-palette search field.
