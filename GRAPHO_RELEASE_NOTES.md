@@ -178,6 +178,8 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 
 ### Visual polish
 
+- Refined the slash command menu with consistent Grapho spacing, surfaces, borders, and icon containers.
+
 - Document deletion now uses a Grapho-native confirmation dialog.
 - Added non-blocking toast feedback for document actions.
 

@@ -348,6 +348,14 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Slash menu visual refinement
+
+- Updated slash menu to a wider rounded panel with consistent spacing.
+- Added softer command-row hover/active surfaces.
+- Improved command search field sizing and border treatment.
+- Improved icon containers to match the workspace card language.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Native delete confirmation and toast
 
 - Replaced browser delete confirmation with a Grapho-native dialog.
