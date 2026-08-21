@@ -348,6 +348,14 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Table block rendering
+
+- Made table parsing tolerant of Markdown rows with or without outer pipes.
+- Added padded columns for uneven rows.
+- Added a visible fallback two-column table for empty table blocks.
+- Improved table surface, spacing, borders, and header treatment.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Slash menu visual refinement
 
 - Updated slash menu to a wider rounded panel with consistent spacing.

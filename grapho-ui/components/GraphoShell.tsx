@@ -567,9 +567,11 @@ function cleanMarkdown(value: string) {
 }
 
 function MarkdownTableBlock({ text }: { text: string }) {
-  const rows = text.split("\n").map((row) => row.split("|").slice(1, -1).map((cell) => cell.trim()));
-  if (!rows.length) return null;
-  return <div className="my-4 overflow-x-auto rounded-xl border border-[var(--grapho-border)]"><table className="w-full min-w-[520px] border-collapse text-left text-[12px] leading-6"><thead className="bg-[var(--grapho-control)]"><tr>{rows[0].map((cell, index) => <th key={`${cell}-${index}`} className="border-b border-[var(--grapho-border)] px-3 py-2 font-semibold text-[var(--grapho-foreground)]">{renderInlineMarkdown(cell)}</th>)}</tr></thead><tbody>{rows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className="px-3 py-2 text-[var(--grapho-muted)]">{renderInlineMarkdown(cell)}</td>)}</tr>)}</tbody></table></div>;
+  const rows = text.split("\n").filter(Boolean).map((row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim()));
+  const normalizedRows = rows.length ? rows : [["Column 1", "Column 2"], ["", ""]];
+  const columns = Math.max(...normalizedRows.map((row) => row.length), 2);
+  const paddedRows = normalizedRows.map((row) => [...row, ...Array.from({ length: columns - row.length }, () => "")]);
+  return <div className="my-4 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]"><table className="w-full min-w-[520px] border-collapse text-left text-[12px] leading-6"><thead><tr>{paddedRows[0].map((cell, index) => <th key={`${cell}-${index}`} className="border-b border-[var(--grapho-border)] px-4 py-3 font-semibold text-[var(--grapho-foreground)]">{renderInlineMarkdown(cell || `Column ${index + 1}`)}</th>)}</tr></thead><tbody>{paddedRows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className="px-4 py-3 text-[var(--grapho-muted)]">{renderInlineMarkdown(cell || " ")}</td>)}</tr>)}</tbody></table></div>;
 }
 
 function renderInlineMarkdown(value: string) {
