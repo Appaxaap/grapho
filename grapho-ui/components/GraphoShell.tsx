@@ -493,8 +493,6 @@ export default function GraphoShell() {
 
         <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
           <span className="mx-2 flex shrink-0 items-center gap-1.5 text-[8px] text-[var(--grapho-faint)]" role="status" aria-live="polite"><span className={`size-1.5 rounded-full ${saveState === "saved" ? "bg-emerald-500" : saveState === "saving" ? "bg-amber-500" : "bg-red-500"}`} />{saveState === "saved" ? "Saved" : saveState === "saving" ? "Saving…" : <><span>Could not save</span><button type="button" onClick={saveNow} className="ml-1 text-[var(--grapho-accent)] hover:underline">Retry</button></>}</span>
-          <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
-          <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
           <span className="mx-1 h-5 w-px shrink-0 bg-[var(--grapho-border)]" />
           <ToolbarButton label="Heading" icon={<Hash size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "heading")} />
           <ToolbarButton label="Quote" icon={<Quote size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "quote")} />
@@ -504,9 +502,9 @@ export default function GraphoShell() {
           <ToolbarButton label="Insert link" icon={<Link2 size={16} />} />
           <ToolbarButton label="Insert image" icon={<ImageIcon size={16} />} />
           <ToolbarButton label="Insert table" icon={<Table2 size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "table", "| Column 1 | Column 2 |\n| --- | --- |\n| | |\n")} />
-          <motion.button type="button" onClick={exportPdf} whileHover={{ y: -2 }} whileTap={{ scale: .94 }} className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[var(--grapho-foreground)] px-3 text-[10px] text-[var(--grapho-background)] hover:opacity-80"><ArrowDown size={14} /> <span>PDF</span></motion.button>
+
           <ToolbarButton label="Clear document" icon={<Trash2 size={16} />} onClick={clearDocument} danger />
-          <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} />
+
           <ToolbarButton label="Export JSON backup" icon={<ArrowDown size={16} />} onClick={exportBackup} />
           <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} />
           <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger />
