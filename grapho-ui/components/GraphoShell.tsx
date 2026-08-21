@@ -166,12 +166,17 @@ export default function GraphoShell() {
   const commitDelete = () => {
     if (!deleteTarget || deleting) return;
     setDeleting(true);
-    const remaining = documents.filter((document) => document.id !== deleteTarget.id);
-    setDocuments(remaining);
-    if (selectedId === deleteTarget.id) setSelectedId(remaining[0].id);
-    setDeleteTarget(null);
-    setDeleting(false);
-    setToast("Document deleted");
+    const targetId = deleteTarget.id;
+    window.setTimeout(() => {
+      setDocuments((current) => current.filter((document) => document.id !== targetId));
+      if (selectedId === targetId) {
+        const remaining = documents.filter((document) => document.id !== targetId);
+        setSelectedId(remaining[0]?.id ?? "product-notes");
+      }
+      setDeleteTarget(null);
+      setDeleting(false);
+      setToast("Document deleted");
+    }, 420);
   };
 
   const updateTitle = (title: string) => {
@@ -514,7 +519,7 @@ export default function GraphoShell() {
       </div>
       <AnimatePresence>
         {toast && <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="fixed bottom-20 left-1/2 z-[130] -translate-x-1/2 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-4 py-2.5 text-[10px] text-[var(--grapho-foreground)] shadow-xl" role="status">{toast}<button type="button" onClick={() => setToast(null)} className="ml-3 text-[var(--grapho-faint)]">×</button></motion.div>}
-        {deleteTarget && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[120] grid place-items-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setDeleteTarget(null); }}><motion.section role="dialog" aria-modal="true" aria-labelledby="delete-document-title" className="grapho-dialog grapho-glass w-full max-w-md rounded-3xl p-6"><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Workspace</div><h2 id="delete-document-title" className="mt-2 text-xl font-semibold">Delete document?</h2><p className="mt-3 text-[11px] leading-5 text-[var(--grapho-muted)]">“{deleteTarget.title}” will be removed from this workspace.</p><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDeleteTarget(null)} className="rounded-xl px-4 py-2.5 text-[11px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]">Cancel</button><button type="button" onClick={commitDelete} disabled={deleting} className="rounded-xl bg-red-500 px-4 py-2.5 text-[11px] text-white disabled:cursor-wait disabled:opacity-60">{deleting ? "Deleting…" : "Delete document"}</button></div></motion.section></motion.div>}
+        {deleteTarget && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[120] grid place-items-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (!deleting && event.target === event.currentTarget) setDeleteTarget(null); }}><motion.section role="dialog" aria-modal="true" aria-labelledby="delete-document-title" aria-busy={deleting} className="grapho-dialog grapho-glass w-full max-w-md rounded-3xl p-6"><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Workspace</div><h2 id="delete-document-title" className="mt-2 text-xl font-semibold">Delete document?</h2><p className="mt-3 text-[11px] leading-5 text-[var(--grapho-muted)]">“{deleteTarget.title}” will be removed from this workspace.</p><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="rounded-xl px-4 py-2.5 text-[11px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] disabled:cursor-not-allowed disabled:opacity-40">Cancel</button><button type="button" onClick={commitDelete} disabled={deleting} className="flex min-w-[132px] items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-[11px] text-white transition-opacity disabled:cursor-wait disabled:opacity-70"><span className={deleting ? "size-3.5 animate-spin rounded-full border-2 border-white/35 border-t-white" : "hidden"} aria-hidden="true" />{deleting ? "Deleting…" : "Delete document"}</button></div></motion.section></motion.div>}
         {renameTarget && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[120] grid place-items-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setRenameTarget(null); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="rename-document-title" initial={{ opacity: 0, y: 12, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="grapho-dialog grapho-glass w-full max-w-md rounded-3xl p-6">
             <div className="flex items-start justify-between"><div><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Document</div><h2 id="rename-document-title" className="mt-2 text-xl font-semibold tracking-[-.04em]">Rename document</h2></div><button type="button" onClick={() => setRenameTarget(null)} aria-label="Close rename dialog" className="grid size-8 place-items-center rounded-xl text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><X size={15} /></button></div>
