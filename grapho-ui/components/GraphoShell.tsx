@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "motion/react";
 
 import {
@@ -9,11 +10,12 @@ import {
   Sun, Moon, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
 import "../grapho.css";
+import { clearGraphoStorage, loadGraphoStorage, saveGraphoStorage } from "../storage";
 
 type Theme = "dark" | "light";
 type Block = { id: string; type: "paragraph" | "heading" | "quote" | "list" | "ordered-list" | "callout" | "table" | "code" | "divider"; text: string };
 
-type DocumentItem = { id: string; title: string; folder: string; updated: string; blocks: Block[] };
+export type DocumentItem = { id: string; title: string; folder: string; updated: string; blocks: Block[] };
 
 const initialDocuments: DocumentItem[] = [
   { id: "product-notes", title: "Product notes", folder: "Projects", updated: "Just now", blocks: [
@@ -31,7 +33,7 @@ const folders = ["Projects", "Personal", "Archive"];
 
 export default function GraphoShell() {
   const [theme, setTheme] = useState<Theme>("dark");
-  const [documents, setDocuments] = useState(initialDocuments);
+  const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
   const [selectedId, setSelectedId] = useState("product-notes");
   const [query, setQuery] = useState("");
   const [activeFolder, setActiveFolder] = useState("Projects");
@@ -42,7 +44,66 @@ export default function GraphoShell() {
   const [selectionToolbar, setSelectionToolbar] = useState<{ top: number; left: number } | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [isNativeWindow, setIsNativeWindow] = useState(false);
+  const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const blockSequence = useRef(0);
+  const hydrated = useRef(false);
+  const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
+  const previousDocuments = useRef<DocumentItem[]>(initialDocuments);
+  const nativeWindow = useRef<ReturnType<typeof getCurrentWindow> | null>(null);
+
+  useEffect(() => {
+    const stored = loadGraphoStorage();
+    const hydrate = () => {
+      if (stored) {
+        setDocuments(stored.documents);
+        setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
+        setActiveFolder(stored.activeFolder);
+      }
+      hydrated.current = true;
+    };
+    const timer = window.setTimeout(hydrate, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    setSaveState("saving");
+    const timer = window.setTimeout(() => {
+      try {
+        saveGraphoStorage({ version: 1, documents, selectedId, activeFolder });
+        setSaveState("saved");
+      } catch {
+        setSaveState("error");
+      }
+    }, 350);
+    return () => window.clearTimeout(timer);
+  }, [documents, selectedId, activeFolder]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    const previous = previousDocuments.current;
+    if (previous !== documents) {
+      history.current.past.push(previous);
+      history.current.future = [];
+      if (history.current.past.length > 100) history.current.past.shift();
+      previousDocuments.current = documents;
+    }
+  }, [documents]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
+      nativeWindow.current = getCurrentWindow();
+      setIsNativeWindow(true);
+    } else {
+      nativeWindow.current = null;
+      setIsNativeWindow(false);
+    }
+  }, []);
+
+  const minimizeWindow = () => void nativeWindow.current?.minimize();
+  const toggleMaximizeWindow = () => void nativeWindow.current?.toggleMaximize();
+  const closeWindow = () => void nativeWindow.current?.close();
 
   const selected = documents.find((document) => document.id === selectedId) ?? documents[0];
   const visibleDocuments = useMemo(() => documents.filter((document) => document.folder === activeFolder && document.title.toLowerCase().includes(query.toLowerCase())), [activeFolder, documents, query]);
@@ -82,6 +143,26 @@ export default function GraphoShell() {
   const exportPdf = () => {
     // Print the actual canvas so the browser preserves the same visual layout.
     window.print();
+  };
+
+  const exportBackup = () => {
+    const payload = JSON.stringify({ version: 1, documents, selectedId, activeFolder }, null, 2);
+    const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "grapho-backup.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const resetLocalData = () => {
+    if (!window.confirm("Reset all local Grapho documents? This cannot be undone.")) return;
+    clearGraphoStorage();
+    history.current = { past: [], future: [] };
+    previousDocuments.current = initialDocuments;
+    setDocuments(initialDocuments);
+    setSelectedId("product-notes");
+    setActiveFolder("Projects");
   };
 
   const clearDocument = () => {
@@ -178,11 +259,46 @@ export default function GraphoShell() {
     setSelectionToolbar(null);
   };
 
-  const undo = () => document.execCommand("undo");
-  const redo = () => document.execCommand("redo");
+  const undo = useCallback(() => {
+    const previous = history.current.past.pop();
+    if (!previous) return;
+    history.current.future.push(documents);
+    previousDocuments.current = previous;
+    setDocuments(previous);
+  }, [documents]);
+
+  const redo = useCallback(() => {
+    const next = history.current.future.pop();
+    if (!next) return;
+    history.current.past.push(documents);
+    previousDocuments.current = next;
+    setDocuments(next);
+  }, [documents]);
+
+  useEffect(() => {
+    const handleEditorHistory = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key !== "z" && key !== "y") return;
+      event.preventDefault();
+      if (key === "y" || (key === "z" && event.shiftKey)) redo();
+      else undo();
+    };
+    window.addEventListener("keydown", handleEditorHistory);
+    return () => window.removeEventListener("keydown", handleEditorHistory);
+  }, [redo, undo]);
 
   return (
-    <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} relative min-h-screen overflow-hidden`}>
+    <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${isNativeWindow ? "is-native-window" : ""} relative min-h-screen overflow-hidden`}>
+      {isNativeWindow && <div className="grapho-native-titlebar" data-tauri-drag-region>
+        <div className="grapho-native-brand" data-tauri-drag-region><span><Hash size={11} /></span><b>Grapho</b></div>
+        <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>
+        <div className="grapho-native-window-controls">
+          <button onClick={minimizeWindow} aria-label="Minimize window">−</button>
+          <button onClick={toggleMaximizeWindow} aria-label="Maximize window">□</button>
+          <button className="is-close" onClick={closeWindow} aria-label="Close window">×</button>
+        </div>
+      </div>}
       <div className="grapho-canvas-grid pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
       <header className="hidden">
         <div className="flex items-center gap-2.5">
@@ -202,7 +318,6 @@ export default function GraphoShell() {
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grid size-8 place-items-center rounded-xl bg-[var(--grapho-foreground)] text-[var(--grapho-background)]"><Hash size={15} /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
-        <ToolbarButton label="Focus mode" icon={<AlignLeft size={16} />} onClick={() => setFocusMode((value) => !value)} />
         <ToolbarButton label="Document style" icon={<Type size={16} />} onClick={() => setStyleOpen((value) => !value)} />
         <ToolbarButton label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} icon={theme === "dark" ? <Moon size={16} /> : <Sun size={16} />} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
 
@@ -219,15 +334,15 @@ export default function GraphoShell() {
               </div>
               <label className="mt-3 flex h-10 items-center gap-2 rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] focus-within:bg-[var(--grapho-control-hover)]"><Search size={13} className="shrink-0 text-[var(--grapho-faint)]" /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search documents" placeholder="Search documents" className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[var(--grapho-faint)]" /><kbd className="text-[8px] text-[var(--grapho-faint)]">⌘ K</kbd></label>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Workspace</span><button type="button" aria-label="Add folder" className="hover:text-[var(--grapho-foreground)]"><Plus size={12} /></button></div>
-              <div className="mt-2 space-y-1">{folders.map((folder) => <button key={folder} type="button" onClick={() => setActiveFolder(folder)} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[10px] transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}>{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button>)}</div>
+              <div className="grapho-project-list mt-2 space-y-1">{folders.map((folder) => <button key={folder} type="button" onClick={() => setActiveFolder(folder)} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-left text-[10px] transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}>{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button>)}</div>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>{activeFolder}</span><span>{visibleDocuments.length}</span></div>
-              <div className="mt-2 space-y-1">{visibleDocuments.map((document) => <button key={document.id} type="button" onClick={() => setSelectedId(document.id)} className={`group flex w-full items-start gap-2 rounded-lg px-2.5 py-2.5 text-left transition-colors ${selectedId === document.id ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}><FileText size={13} className="mt-0.5 shrink-0 text-[var(--grapho-faint)]" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px]">{document.title}</span><span className="mt-1 block text-[8px] text-[var(--grapho-faint)]">{document.updated}</span></span><MoreHorizontal size={13} className="mt-0.5 hidden shrink-0 text-[var(--grapho-faint)] group-hover:block" /></button>)}</div>
+              <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.map((document) => <button key={document.id} type="button" onClick={() => setSelectedId(document.id)} className={`group flex w-full items-start gap-2 rounded-lg px-2.5 py-2.5 text-left transition-colors ${selectedId === document.id ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}><FileText size={13} className="mt-0.5 shrink-0 text-[var(--grapho-faint)]" /><span className="min-w-0 flex-1"><span className="block truncate text-[10px]">{document.title}</span><span className="mt-1 block text-[8px] text-[var(--grapho-faint)]">{document.updated}</span></span><MoreHorizontal size={13} className="mt-0.5 hidden shrink-0 text-[var(--grapho-faint)] group-hover:block" /></button>)}</div>
               <div className="mt-auto border-t border-[var(--grapho-border)] pt-3"><button type="button" className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><Archive size={13} /> Archive<span className="ml-auto text-[8px] text-[var(--grapho-faint)]">0</span></button><button type="button" onClick={() => setHelpOpen(true)} className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><CircleHelp size={13} /> Help & shortcuts<span className="ml-auto rounded border border-[var(--grapho-border)] px-1.5 py-0.5 text-[7px] text-[var(--grapho-faint)]">?</span></button></div>
             </div>
           </motion.aside>}
         </AnimatePresence>
 
-        <main className="grapho-editor-scroll min-w-0 flex-1">
+        <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
           <div className="mx-auto max-w-4xl px-5 pb-32 pt-3 sm:px-12 sm:pt-6 lg:px-20">
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex items-center gap-2"><span>{activeFolder}</span><ChevronRight size={11} /><span className="text-[var(--grapho-muted)]">{selected.title}</span></div><div className="flex items-center gap-2"></div></div>
             <article className="relative min-h-[620px]" onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
@@ -258,6 +373,7 @@ export default function GraphoShell() {
                 </div>}
 
         <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
+          <span className="mx-2 flex shrink-0 items-center gap-1.5 text-[8px] text-[var(--grapho-faint)]"><span className={`size-1.5 rounded-full ${saveState === "saved" ? "bg-emerald-500" : saveState === "saving" ? "bg-amber-500" : "bg-red-500"}`} />{saveState === "saved" ? "Saved" : saveState === "saving" ? "Saving…" : "Could not save"}</span>
           <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} />
           <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} />
           <span className="mx-1 h-5 w-px shrink-0 bg-[var(--grapho-border)]" />
@@ -271,6 +387,8 @@ export default function GraphoShell() {
           <ToolbarButton label="Insert table" icon={<Table2 size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "table", "| Column 1 | Column 2 |\n| --- | --- |\n| | |\n")} />
           <motion.button type="button" onClick={exportPdf} whileHover={{ y: -2 }} whileTap={{ scale: .94 }} className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[var(--grapho-foreground)] px-3 text-[10px] text-[var(--grapho-background)] hover:opacity-80"><ArrowDown size={14} /> <span>PDF</span></motion.button>
           <ToolbarButton label="Clear document" icon={<Trash2 size={16} />} onClick={clearDocument} danger />
+          <ToolbarButton label="Export JSON backup" icon={<ArrowDown size={16} />} onClick={exportBackup} />
+          <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger />
         </motion.div>
 
         <AnimatePresence>{styleOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 240, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="fixed right-4 top-20 z-40 hidden max-h-[calc(100vh-6rem)] w-[280px] overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-2xl backdrop-blur-xl xl:block"><div className="h-full w-[240px] overflow-y-auto p-4 [scrollbar-width:none]"><div className="flex items-center justify-between text-[9px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Document style</span><button type="button" onClick={() => setStyleOpen(false)} aria-label="Close style panel"><X size={13} /></button></div><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Typography</div><StyleOption label="Body" value="Geist Mono" /><StyleOption label="Width" value="Readable" /><StyleOption label="Spacing" value="Relaxed" /><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Appearance</div><StyleOption label="Page" value="Warm white" /><StyleOption label="Accent" value="Blue" /><StyleOption label="Grid" value="Subtle" /><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Document</div><div className="mt-3 grid grid-cols-2 gap-2"><InfoStat label="Blocks" value={String(selected.blocks.length)} /><InfoStat label="Words" value={String(selected.blocks.reduce((count, block) => count + block.text.trim().split(/\\s+/).filter(Boolean).length, 0))} /></div></div><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Export</div><button type="button" onClick={exportPdf} className="mt-3 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><ArrowDown size={13} /> Export PDF</span><ChevronDown size={12} /></button><button type="button" className="mt-2 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><FileText size={13} /> Export Markdown</span><ChevronDown size={12} /></button></div></div></motion.aside>}</AnimatePresence>
