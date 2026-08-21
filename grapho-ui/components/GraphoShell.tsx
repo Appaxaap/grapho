@@ -399,8 +399,10 @@ export default function GraphoShell() {
     return () => window.removeEventListener("keydown", handleEditorHistory);
   }, [redo, undo]);
 
+  const modalOpen = Boolean(deleteTarget || renameTarget || paletteOpen || helpOpen);
+
   return (
-    <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${isNativeWindow ? "is-native-window" : ""} relative min-h-screen overflow-hidden`}>
+    <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
       {isNativeWindow && <div className="grapho-native-titlebar" data-tauri-drag-region>
         <div className="grapho-native-brand" data-tauri-drag-region><span><Hash size={11} /></span><b>Grapho</b></div>
         <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>
