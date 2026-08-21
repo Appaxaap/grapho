@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   AlignLeft, Archive, ArrowDown, ChevronDown, ChevronRight, CircleHelp, FileText, Folder, FolderOpen, GripVertical, Hash, Image as ImageIcon, Link2, List, Menu, Minus, MoreHorizontal,
   Plus, Quote, Search, Settings2, Sparkles, Trash2,
-  Sun, Moon, Table2, Type, Undo2, Redo2, X,
+  Sun, Moon, SlidersHorizontal, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
 import "../grapho.css";
 import { clearGraphoStorage, loadGraphoStorage, saveGraphoStorage } from "../storage";
@@ -44,6 +44,7 @@ export default function GraphoShell() {
   const [selectionToolbar, setSelectionToolbar] = useState<{ top: number; left: number } | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const blockSequence = useRef(0);
@@ -213,6 +214,24 @@ export default function GraphoShell() {
   }, [selected.blocks.length, selected.id]);
 
   useEffect(() => {
+    const handlePaletteShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handlePaletteShortcut);
+    return () => window.removeEventListener("keydown", handlePaletteShortcut);
+  }, []);
+
+  useEffect(() => {
+    if (!paletteOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setPaletteOpen(false); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [paletteOpen]);
+
+  useEffect(() => {
     if (!helpOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setHelpOpen(false); };
     window.addEventListener("keydown", closeOnEscape);
@@ -354,7 +373,7 @@ export default function GraphoShell() {
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grid size-8 place-items-center rounded-xl bg-[var(--grapho-foreground)] text-[var(--grapho-background)]"><Hash size={15} /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
-        <ToolbarButton label="Document style" icon={<Type size={16} />} onClick={() => setStyleOpen((value) => !value)} />
+        <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
         <ToolbarButton label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} icon={theme === "dark" ? <Moon size={16} /> : <Sun size={16} />} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
 
       </motion.div>
@@ -432,6 +451,12 @@ export default function GraphoShell() {
         <AnimatePresence>{styleOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 240, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="fixed right-4 top-20 z-40 hidden max-h-[calc(100vh-6rem)] w-[280px] overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-2xl backdrop-blur-xl xl:block"><div className="h-full w-[240px] overflow-y-auto p-4 [scrollbar-width:none]"><div className="flex items-center justify-between text-[9px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Document style</span><button type="button" onClick={() => setStyleOpen(false)} aria-label="Close style panel"><X size={13} /></button></div><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Typography</div><StyleOption label="Body" value="Geist Mono" /><StyleOption label="Width" value="Readable" /><StyleOption label="Spacing" value="Relaxed" /><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Appearance</div><StyleOption label="Page" value="Warm white" /><StyleOption label="Accent" value="Blue" /><StyleOption label="Grid" value="Subtle" /><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Document</div><div className="mt-3 grid grid-cols-2 gap-2"><InfoStat label="Blocks" value={String(selected.blocks.length)} /><InfoStat label="Words" value={String(selected.blocks.reduce((count, block) => count + block.text.trim().split(/\\s+/).filter(Boolean).length, 0))} /></div></div><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Export</div><button type="button" onClick={exportPdf} className="mt-3 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><ArrowDown size={13} /> Export PDF</span><ChevronDown size={12} /></button><button type="button" className="mt-2 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><FileText size={13} /> Export Markdown</span><ChevronDown size={12} /></button></div></div></motion.aside>}</AnimatePresence>
       </div>
       <AnimatePresence>
+        {paletteOpen && <motion.div className="fixed inset-0 z-[110] grid place-items-center bg-black/35 p-4 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setPaletteOpen(false); }}>
+          <motion.section role="dialog" aria-modal="true" aria-label="Command palette" initial={{ opacity: 0, y: 14, scale: .97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .98 }} className="grapho-glass w-full max-w-lg overflow-hidden rounded-3xl p-2">
+            <div className="flex items-center gap-3 border-b border-[var(--grapho-border)] px-3 py-3"><Search size={16} className="text-[var(--grapho-faint)]" /><input autoFocus aria-label="Command palette search" placeholder="Search commands…" className="min-w-0 flex-1 bg-transparent text-sm text-[var(--grapho-foreground)] outline-none placeholder:text-[var(--grapho-faint)]" /><kbd className="rounded-md border border-[var(--grapho-border)] px-1.5 py-1 text-[9px] text-[var(--grapho-faint)]">ESC</kbd></div>
+            <div className="p-2"><PaletteAction icon={<Plus size={15} />} label="New document" hint="Create a document in the current folder" onClick={() => { createDocument(); setPaletteOpen(false); }} /><PaletteAction icon={<Search size={15} />} label="Search documents" hint="Find documents and content" onClick={() => { setSidebarOpen(true); setPaletteOpen(false); }} /><PaletteAction icon={<SlidersHorizontal size={15} />} label="Workspace tools" hint="Open document and export tools" onClick={() => { setStyleOpen(true); setPaletteOpen(false); }} /><PaletteAction icon={<Sun size={15} />} label="Toggle theme" hint="Switch between light and dark mode" onClick={() => { setTheme((value) => value === "dark" ? "light" : "dark"); setPaletteOpen(false); }} /><PaletteAction icon={<CircleHelp size={15} />} label="Help and shortcuts" hint="View keyboard shortcuts" onClick={() => { setHelpOpen(true); setPaletteOpen(false); }} /></div>
+          </motion.section>
+        </motion.div>}
         {helpOpen && <motion.div className="fixed inset-0 z-[100] grid place-items-center bg-black/20 p-4 backdrop-blur-md" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="grapho-help-title" initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .97 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-glass w-full max-w-xl overflow-hidden rounded-3xl">
             <header className="flex items-start justify-between border-b border-[var(--grapho-border)] px-5 py-5 sm:px-7"><div><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Grapho workspace</div><h2 id="grapho-help-title" className="mt-2 text-2xl font-semibold tracking-[-.06em]">Help & shortcuts</h2><p className="mt-2 text-[12px] leading-5 text-[var(--grapho-muted)]">Write naturally. Grapho keeps the structure out of your way.</p></div><button type="button" onClick={() => setHelpOpen(false)} aria-label="Close help" className="grid size-9 place-items-center rounded-xl text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><X size={15} /></button></header>
@@ -581,6 +606,10 @@ function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["typ
     <input ref={searchRef} value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search block commands" placeholder="Filter commands…" className="mb-1 h-8 w-full rounded-lg bg-[var(--grapho-control)] px-2.5 text-[10px] text-[var(--grapho-foreground)] outline-none placeholder:text-[var(--grapho-faint)]" />
     <div className="max-h-64 overflow-y-auto">{filtered.map((command, index) => <button key={`${command.label}-${command.type}`} type="button" onMouseEnter={() => setActiveIndex(index)} onClick={() => choose(index)} className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left ${index === activeIndex ? "bg-[var(--grapho-control-hover)]" : "hover:bg-[var(--grapho-control)]"}`}><span className="grid size-6 place-items-center rounded-md bg-[var(--grapho-control)] text-[var(--grapho-muted)]">{command.icon}</span><span><span className="block text-[9px] text-[var(--grapho-foreground)]">{command.label}</span><span className="block text-[8px] text-[var(--grapho-faint)]">{command.category} · {command.hint}</span></span></button>)}{!filtered.length && <div className="px-2.5 py-4 text-center text-[9px] text-[var(--grapho-faint)]">No matching commands</div>}</div>
   </div>;
+}
+
+function PaletteAction({ icon, label, hint, onClick }: { icon: React.ReactNode; label: string; hint: string; onClick: () => void }) {
+  return <button type="button" onClick={onClick} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-[var(--grapho-control-hover)]"><span className="grid size-9 place-items-center rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] text-[var(--grapho-muted)]">{icon}</span><span className="min-w-0 flex-1"><span className="block text-[11px] text-[var(--grapho-foreground)]">{label}</span><span className="mt-0.5 block text-[9px] text-[var(--grapho-faint)]">{hint}</span></span><ChevronRight size={14} className="text-[var(--grapho-faint)]" /></button>;
 }
 
 function ShortcutGroup({ title, items }: { title: string; items: string[][] }) {

@@ -348,6 +348,15 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Workspace toolbar and command palette
+
+- Added a centered `Ctrl+K`/`Cmd+K` command palette.
+- Added blurred modal backdrop and Grapho glass-panel styling.
+- Added commands for new document, search, workspace tools, theme, and help.
+- Renamed the top-toolbar document-style action to Workspace tools.
+- Replaced the ambiguous `T` icon with a sliders/tools icon.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Markdown and backup interchange
 
 - Added Markdown export for the selected document.

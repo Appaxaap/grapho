@@ -176,6 +176,13 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 - Focus-visible styling.
 - Accessible labels on key icon and native window controls.
 
+### Command palette
+
+- Open the command palette with `Ctrl+K` or `Cmd+K`.
+- Use the centered blurred modal to access common workspace actions.
+- Available actions include new document, search, workspace tools, theme switching, and help.
+- The top toolbar now uses a workspace-tools icon instead of the ambiguous `T` styling icon.
+
 ### Import and export
 
 - Export the selected document as Markdown.
