@@ -117,6 +117,9 @@
   .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
   .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 }
-.grapho-ui .grapho-glass { background: var(--grapho-panel); border: 1px solid var(--grapho-border); box-shadow: var(--grapho-shadow); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+.grapho-ui .grapho-glass { background: color-mix(in srgb, var(--grapho-panel) 78%, transparent); border: 1px solid color-mix(in srgb, var(--grapho-foreground) 12%, var(--grapho-border)); box-shadow: var(--grapho-shadow), inset 0 1px 0 color-mix(in srgb, white 10%, transparent); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); }
+.grapho-modal-backdrop { background: color-mix(in srgb, #000 38%, transparent); backdrop-filter: blur(14px) saturate(85%); -webkit-backdrop-filter: blur(14px) saturate(85%); }
+.grapho-dialog { box-shadow: 0 28px 90px rgba(0, 0, 0, .42), 0 2px 8px rgba(0, 0, 0, .18), inset 0 1px 0 color-mix(in srgb, white 12%, transparent); }
+.grapho-ui.grapho-dark .grapho-dialog { background: color-mix(in srgb, #202024 82%, transparent); }
 .grapho-ui .grapho-canvas-grid { background-image: linear-gradient(var(--grapho-border) 1px, transparent 1px), linear-gradient(90deg, var(--grapho-border) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, black, transparent 75%); opacity: .34; }
 @media (prefers-reduced-motion: reduce) { .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
