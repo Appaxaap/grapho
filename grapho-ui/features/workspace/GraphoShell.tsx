@@ -9,9 +9,9 @@ import {
   Plus, Quote, Search, Settings2, Sparkles, Trash2,
   Sun, Moon, SlidersHorizontal, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
-import "../grapho.css";
-import { clearGraphoStorage, loadGraphoStorage, saveGraphoStorage } from "../storage";
-import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem } from "../model";
+import "../../styles/grapho.css";
+import { clearGraphoStorage, loadGraphoStorage, saveGraphoStorage } from "../../persistence/storage";
+import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem } from "../../domain/model";
 
 type Theme = "dark" | "light";
 

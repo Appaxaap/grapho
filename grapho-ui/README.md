@@ -18,7 +18,14 @@ Standalone Grapho workspace UI based on the Ergastírio / Kýklos design languag
 
 ## Copying into another Next.js project
 
-Copy this folder into the target project and render `components/GraphoShell` from a client page. Import `grapho.css` once from the target app's global stylesheet or layout.
+The UI is organized by responsibility:
+
+- `domain/` — document and block contracts plus seed data.
+- `persistence/` — versioned local-storage adapter and validation.
+- `features/workspace/` — the client workspace composition and interactions.
+- `styles/` — Grapho design tokens, responsive rules, and native-window styles.
+
+Render `features/workspace/GraphoShell` from a client page. The workspace imports its own style entrypoint.
 
 Dependencies already used by the source project:
 
