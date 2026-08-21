@@ -432,6 +432,12 @@ export default function GraphoShell() {
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grid size-8 place-items-center rounded-xl bg-[var(--grapho-foreground)] text-[var(--grapho-background)]"><Hash size={15} /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
         <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
+        <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
+        <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
+        <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
+        <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} />
+        <ToolbarButton label="Export PDF" icon={<ArrowDown size={16} />} onClick={exportPdf} />
+        <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} icon={theme === "dark" ? <Moon size={16} /> : <Sun size={16} />} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
 
       </motion.div>
