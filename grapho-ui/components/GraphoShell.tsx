@@ -478,7 +478,7 @@ export default function GraphoShell() {
 
       <div className="relative z-10 flex min-h-screen">
         <AnimatePresence initial={false}>
-          {sidebarOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 280, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="hidden h-[calc(100vh-2rem)] shrink-0 overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-xl backdrop-blur-xl lg:sticky lg:top-4 lg:my-4 lg:ml-4 lg:block">
+          {sidebarOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 280, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="grapho-sidebar hidden h-[calc(100vh-2rem)] shrink-0 overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-xl backdrop-blur-xl lg:sticky lg:top-4 lg:my-4 lg:ml-4 lg:block">
             <div className="flex h-full w-[280px] flex-col overflow-y-auto p-3 [scrollbar-width:none]">
               <div className="flex h-11 items-center gap-2 px-1">
                 <span className="grid size-8 place-items-center rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] text-[var(--grapho-foreground)]"><FolderOpen size={14} /></span>
