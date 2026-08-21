@@ -348,6 +348,13 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Delete loading state
+
+- Added a `Deleting…` state to the native delete confirmation.
+- Disabled the delete action while deletion is in progress.
+- Added wait cursor and reduced opacity during the operation.
+- Validation: `npm run build` passed.
+
 ### 2026-08-21 — Remove empty-block placeholder
 
 - Removed the automatic “Start writing…” pseudo-placeholder from empty content blocks.
