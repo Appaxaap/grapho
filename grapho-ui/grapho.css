@@ -65,7 +65,7 @@
 .grapho-ui [contenteditable] { caret-color: var(--grapho-accent); }
 .grapho-title { letter-spacing: -0.08em; }
 .grapho-label { letter-spacing: 0.18em; }
-.grapho-ui [contenteditable]:empty::before { content: "Start writing, or type / for commands…"; color: var(--grapho-faint); pointer-events: none; }
+
 .grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; }
 .grapho-editor-scroll::after { content: ""; position: absolute; z-index: 40; right: 0; bottom: 0; left: 0; height: 72px; pointer-events: none; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--grapho-background) 28%, transparent)); }
 .grapho-project-list button { color: var(--grapho-muted); font-size: 12px; letter-spacing: -0.025em; }

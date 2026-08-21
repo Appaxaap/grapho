@@ -348,6 +348,12 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Remove empty-block placeholder
+
+- Removed the automatic “Start writing…” pseudo-placeholder from empty content blocks.
+- Empty blocks now remain visually clean until the user enters content.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Neutral dialog input focus
 
 - Removed blue focus borders from rename and slash-command inputs.
