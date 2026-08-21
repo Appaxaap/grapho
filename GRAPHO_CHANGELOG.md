@@ -348,6 +348,13 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Native delete confirmation and toast
+
+- Replaced browser delete confirmation with a Grapho-native dialog.
+- Added a non-blocking toast for successful deletion and protected last-document deletion.
+- Added accessible status feedback.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Native rename dialog
 
 - Replaced the browser `prompt()` rename flow with a Grapho-native modal.

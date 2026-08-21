@@ -47,6 +47,8 @@ export default function GraphoShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<DocumentItem | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<DocumentItem | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const blockSequence = useRef(0);
@@ -135,10 +137,18 @@ export default function GraphoShell() {
   };
 
   const deleteDocument = (documentId: string) => {
-    if (documents.length <= 1 || !window.confirm("Delete this document?")) return;
-    const remaining = documents.filter((document) => document.id !== documentId);
+    if (documents.length <= 1) { setToast("Keep at least one document in your workspace."); return; }
+    const target = documents.find((document) => document.id === documentId);
+    if (target) setDeleteTarget(target);
+  };
+
+  const commitDelete = () => {
+    if (!deleteTarget) return;
+    const remaining = documents.filter((document) => document.id !== deleteTarget.id);
     setDocuments(remaining);
-    if (selectedId === documentId) setSelectedId(remaining[0].id);
+    if (selectedId === deleteTarget.id) setSelectedId(remaining[0].id);
+    setDeleteTarget(null);
+    setToast("Document deleted");
   };
 
   const updateTitle = (title: string) => {
@@ -474,6 +484,8 @@ export default function GraphoShell() {
         <AnimatePresence>{styleOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 240, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="fixed right-4 top-20 z-40 hidden max-h-[calc(100vh-6rem)] w-[280px] overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-2xl backdrop-blur-xl xl:block"><div className="h-full w-[240px] overflow-y-auto p-4 [scrollbar-width:none]"><div className="flex items-center justify-between text-[9px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Document style</span><button type="button" onClick={() => setStyleOpen(false)} aria-label="Close style panel"><X size={13} /></button></div><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Typography</div><StyleOption label="Body" value="Geist Mono" /><StyleOption label="Width" value="Readable" /><StyleOption label="Spacing" value="Relaxed" /><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Appearance</div><StyleOption label="Page" value="Warm white" /><StyleOption label="Accent" value="Blue" /><StyleOption label="Grid" value="Subtle" /><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Document</div><div className="mt-3 grid grid-cols-2 gap-2"><InfoStat label="Blocks" value={String(selected.blocks.length)} /><InfoStat label="Words" value={String(selected.blocks.reduce((count, block) => count + block.text.trim().split(/\\s+/).filter(Boolean).length, 0))} /></div></div><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Export</div><button type="button" onClick={exportPdf} className="mt-3 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><ArrowDown size={13} /> Export PDF</span><ChevronDown size={12} /></button><button type="button" className="mt-2 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><FileText size={13} /> Export Markdown</span><ChevronDown size={12} /></button></div></div></motion.aside>}</AnimatePresence>
       </div>
       <AnimatePresence>
+        {toast && <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="fixed bottom-20 left-1/2 z-[130] -translate-x-1/2 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-4 py-2.5 text-[10px] text-[var(--grapho-foreground)] shadow-xl" role="status">{toast}<button type="button" onClick={() => setToast(null)} className="ml-3 text-[var(--grapho-faint)]">×</button></motion.div>}
+        {deleteTarget && <motion.div className="fixed inset-0 z-[120] grid place-items-center bg-black/40 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setDeleteTarget(null); }}><motion.section role="dialog" aria-modal="true" aria-labelledby="delete-document-title" className="w-full max-w-md rounded-3xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-6 shadow-2xl"><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Workspace</div><h2 id="delete-document-title" className="mt-2 text-xl font-semibold">Delete document?</h2><p className="mt-3 text-[11px] leading-5 text-[var(--grapho-muted)]">“{deleteTarget.title}” will be removed from this workspace.</p><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDeleteTarget(null)} className="rounded-xl px-4 py-2.5 text-[11px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]">Cancel</button><button type="button" onClick={commitDelete} className="rounded-xl bg-red-500 px-4 py-2.5 text-[11px] text-white">Delete document</button></div></motion.section></motion.div>}
         {renameTarget && <motion.div className="fixed inset-0 z-[120] grid place-items-center bg-black/40 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setRenameTarget(null); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="rename-document-title" initial={{ opacity: 0, y: 12, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-md rounded-3xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-6 shadow-2xl">
             <div className="flex items-start justify-between"><div><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Document</div><h2 id="rename-document-title" className="mt-2 text-xl font-semibold tracking-[-.04em]">Rename document</h2></div><button type="button" onClick={() => setRenameTarget(null)} aria-label="Close rename dialog" className="grid size-8 place-items-center rounded-xl text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><X size={15} /></button></div>

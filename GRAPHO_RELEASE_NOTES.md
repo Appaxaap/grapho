@@ -178,6 +178,9 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 
 ### Visual polish
 
+- Document deletion now uses a Grapho-native confirmation dialog.
+- Added non-blocking toast feedback for document actions.
+
 - Document renaming now uses a native Grapho-styled dialog instead of a browser prompt.
 
 - Redesigned document rows with clearer cards, icons, metadata, and hover actions.
