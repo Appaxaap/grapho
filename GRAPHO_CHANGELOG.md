@@ -348,6 +348,12 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Full-text workspace search
+
+- Sidebar search now searches document titles, folders, block types, paragraphs, headings, quotes, lists, code, tables, and other block content.
+- Search remains scoped to the selected workspace folder.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Slash command navigation
 
 - Added command filtering/search to the block slash menu.

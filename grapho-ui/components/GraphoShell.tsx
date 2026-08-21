@@ -106,7 +106,15 @@ export default function GraphoShell() {
   const closeWindow = () => void nativeWindow.current?.close();
 
   const selected = documents.find((document) => document.id === selectedId) ?? documents[0];
-  const visibleDocuments = useMemo(() => documents.filter((document) => document.folder === activeFolder && document.title.toLowerCase().includes(query.toLowerCase())), [activeFolder, documents, query]);
+  const visibleDocuments = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return documents.filter((document) => {
+      if (document.folder !== activeFolder) return false;
+      if (!normalizedQuery) return true;
+      const searchableText = [document.title, document.folder, ...document.blocks.map((block) => `${block.type} ${block.text}`)].join(" ").toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    });
+  }, [activeFolder, documents, query]);
 
   const updateTitle = (title: string) => {
     setDocuments((current) => current.map((document) => {

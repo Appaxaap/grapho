@@ -75,6 +75,22 @@ The slash menu also supports:
 - Enter to select
 - Empty-result feedback
 
+### Search
+
+Sidebar search now searches across:
+
+- Document titles
+- Project/folder names
+- Paragraphs
+- Headings
+- Quotes
+- Lists
+- Code blocks
+- Tables
+- Other document block content
+
+Search remains scoped to the selected workspace folder.
+
 ### Undo and redo
 
 Undo and redo now operate on Grapho document state instead of relying only on browser content-editable history.
