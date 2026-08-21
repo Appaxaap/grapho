@@ -461,7 +461,7 @@ export default function GraphoShell() {
         </div>
       </header>
 
-      <motion.div initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed right-4 top-4 z-50 flex items-center gap-1 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-xl backdrop-blur-xl">
+      <motion.div initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-app-toolbar fixed right-4 top-4 z-50 flex items-center gap-1 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-xl backdrop-blur-xl">
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grid size-8 place-items-center rounded-xl bg-[var(--grapho-foreground)] text-[var(--grapho-background)]"><Hash size={15} /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         

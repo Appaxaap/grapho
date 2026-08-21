@@ -47,7 +47,8 @@
 
 .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { box-sizing: border-box; }
 .grapho-ui.is-native-window .grapho-editor-scroll { height: calc(100vh - 38px); margin-top: 38px; }
-.grapho-native-titlebar { z-index: 100; top: 0; right: 0; left: 0; display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-background) 92%, transparent); color: var(--grapho-muted); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); user-select: none; }
+.grapho-ui.is-native-window .grapho-app-toolbar { top: 52px; }
+.grapho-native-titlebar { position: fixed; z-index: 100; top: 0; right: 0; left: 0; display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-background) 92%, transparent); color: var(--grapho-muted); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); user-select: none; }
 .grapho-native-brand { display: flex; align-items: center; gap: 7px; min-width: 150px; font-size: 10px; }
 .grapho-native-brand span { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 6px; color: var(--grapho-background); background: var(--grapho-foreground); }
 .grapho-native-context { position: absolute; left: 50%; max-width: 40%; overflow: hidden; color: var(--grapho-faint); font-size: 9px; text-overflow: ellipsis; transform: translateX(-50%); white-space: nowrap; }
