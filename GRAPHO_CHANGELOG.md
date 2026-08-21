@@ -348,6 +348,13 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Native rename dialog
+
+- Replaced the browser `prompt()` rename flow with a Grapho-native modal.
+- Added keyboard Enter-to-save and Escape-to-cancel behavior.
+- Added accessible dialog labeling and styled input/actions.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Document row redesign
 
 - Reworked sidebar document rows into bordered cards.
