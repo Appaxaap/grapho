@@ -176,6 +176,11 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 - Focus-visible styling.
 - Accessible labels on key icon and native window controls.
 
+### Visual polish
+
+- Removed unintended backdrop blur from application panels and floating controls.
+- Kept the modal and toolbar hierarchy through solid surfaces, borders, and shadows.
+
 ### Document management
 
 - Rename documents from the sidebar.
