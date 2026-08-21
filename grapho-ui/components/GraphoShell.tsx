@@ -50,6 +50,7 @@ export default function GraphoShell() {
   const [deleteTarget, setDeleteTarget] = useState<DocumentItem | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [busyAction, setBusyAction] = useState<"importing" | "resetting" | "exporting" | null>(null);
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const [isHydrated, setIsHydrated] = useState(false);
@@ -212,8 +213,13 @@ export default function GraphoShell() {
   };
 
   const exportPdf = () => {
+    setBusyAction("exporting");
     // Print the actual canvas so the browser preserves the same visual layout.
     window.print();
+    window.setTimeout(() => {
+      setBusyAction(null);
+      setToast("PDF export ready");
+    }, 450);
   };
 
   const downloadFile = (filename: string, content: string, type: string) => {
@@ -225,7 +231,14 @@ export default function GraphoShell() {
     URL.revokeObjectURL(url);
   };
 
-  const exportMarkdown = () => downloadFile(`${selected.title || "grapho-document"}.md`, documentToMarkdown(selected), "text/markdown");
+  const exportMarkdown = () => {
+    setBusyAction("exporting");
+    downloadFile(`${selected.title || "grapho-document"}.md`, documentToMarkdown(selected), "text/markdown");
+    window.setTimeout(() => {
+      setBusyAction(null);
+      setToast("Markdown export ready");
+    }, 450);
+  };
 
   const exportBackup = () => {
     const payload = JSON.stringify({ version: 1, documents, selectedId, activeFolder }, null, 2);
@@ -236,6 +249,8 @@ export default function GraphoShell() {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
+    setBusyAction("importing");
+    setToast("Importing backup…");
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -246,21 +261,35 @@ export default function GraphoShell() {
         setActiveFolder(value.activeFolder ?? value.documents[0].folder);
         history.current = { past: [], future: [] };
         previousDocuments.current = value.documents;
+        setBusyAction(null);
+        setToast("Backup imported");
       } catch {
-        window.alert("This backup file is invalid or unsupported.");
+        setBusyAction(null);
+        setToast("Backup is invalid or unsupported");
       }
+    };
+    reader.onerror = () => {
+      setBusyAction(null);
+      setToast("Could not read backup file");
     };
     reader.readAsText(file);
   };
 
   const resetLocalData = () => {
+    if (busyAction) return;
     if (!window.confirm("Reset all local Grapho documents? This cannot be undone.")) return;
-    clearGraphoStorage();
-    history.current = { past: [], future: [] };
-    previousDocuments.current = initialDocuments;
-    setDocuments(initialDocuments);
-    setSelectedId("product-notes");
-    setActiveFolder("Projects");
+    setBusyAction("resetting");
+    setToast("Resetting local data…");
+    window.setTimeout(() => {
+      clearGraphoStorage();
+      history.current = { past: [], future: [] };
+      previousDocuments.current = initialDocuments;
+      setDocuments(initialDocuments);
+      setSelectedId("product-notes");
+      setActiveFolder("Projects");
+      setBusyAction(null);
+      setToast("Local data reset");
+    }, 420);
   };
 
   const clearDocument = () => {
@@ -440,8 +469,8 @@ export default function GraphoShell() {
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
         <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
-        <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} />
-        <ToolbarButton label="Export PDF" icon={<ArrowDown size={16} />} onClick={exportPdf} />
+        <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} disabled={busyAction !== null} />
+        <ToolbarButton label="Export PDF" icon={<ArrowDown size={16} />} onClick={exportPdf} disabled={busyAction !== null} />
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} icon={theme === "dark" ? <Moon size={16} /> : <Sun size={16} />} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
 
@@ -511,14 +540,14 @@ export default function GraphoShell() {
           <ToolbarButton label="Clear document" icon={<Trash2 size={16} />} onClick={clearDocument} danger />
 
           <ToolbarButton label="Export JSON backup" icon={<ArrowDown size={16} />} onClick={exportBackup} />
-          <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} />
-          <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger />
+          <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} disabled={busyAction !== null} />
+          <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger disabled={busyAction !== null} />
         </motion.div>
 
         <AnimatePresence>{styleOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 240, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="fixed right-4 top-20 z-40 hidden max-h-[calc(100vh-6rem)] w-[280px] overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-2xl backdrop-blur-xl xl:block"><div className="h-full w-[240px] overflow-y-auto p-4 [scrollbar-width:none]"><div className="flex items-center justify-between text-[9px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Document style</span><button type="button" onClick={() => setStyleOpen(false)} aria-label="Close style panel"><X size={13} /></button></div><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Typography</div><StyleOption label="Body" value="Geist Mono" /><StyleOption label="Width" value="Readable" /><StyleOption label="Spacing" value="Relaxed" /><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Appearance</div><StyleOption label="Page" value="Warm white" /><StyleOption label="Accent" value="Blue" /><StyleOption label="Grid" value="Subtle" /><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Document</div><div className="mt-3 grid grid-cols-2 gap-2"><InfoStat label="Blocks" value={String(selected.blocks.length)} /><InfoStat label="Words" value={String(selected.blocks.reduce((count, block) => count + block.text.trim().split(/\\s+/).filter(Boolean).length, 0))} /></div></div><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Export</div><button type="button" onClick={exportPdf} className="mt-3 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><ArrowDown size={13} /> Export PDF</span><ChevronDown size={12} /></button><button type="button" className="mt-2 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><FileText size={13} /> Export Markdown</span><ChevronDown size={12} /></button></div></div></motion.aside>}</AnimatePresence>
       </div>
       <AnimatePresence>
-        {toast && <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="fixed bottom-20 left-1/2 z-[130] -translate-x-1/2 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-4 py-2.5 text-[10px] text-[var(--grapho-foreground)] shadow-xl" role="status">{toast}<button type="button" onClick={() => setToast(null)} className="ml-3 text-[var(--grapho-faint)]">×</button></motion.div>}
+        {toast && <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="fixed bottom-20 left-1/2 z-[130] flex items-center gap-2 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-4 py-2.5 text-[10px] text-[var(--grapho-foreground)] shadow-xl" role="status" aria-live="polite"><span className={busyAction ? "size-3 animate-spin rounded-full border-2 border-[var(--grapho-faint)] border-t-[var(--grapho-foreground)]" : "hidden"} aria-hidden="true" />{toast}{!busyAction && <button type="button" onClick={() => setToast(null)} aria-label="Dismiss notification" className="ml-1 text-[var(--grapho-faint)]">×</button>}</motion.div>}
         {deleteTarget && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[120] grid place-items-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (!deleting && event.target === event.currentTarget) setDeleteTarget(null); }}><motion.section role="dialog" aria-modal="true" aria-labelledby="delete-document-title" aria-busy={deleting} className="grapho-dialog grapho-glass w-full max-w-md rounded-3xl p-6"><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Workspace</div><h2 id="delete-document-title" className="mt-2 text-xl font-semibold">Delete document?</h2><p className="mt-3 text-[11px] leading-5 text-[var(--grapho-muted)]">“{deleteTarget.title}” will be removed from this workspace.</p><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDeleteTarget(null)} disabled={deleting} className="rounded-xl px-4 py-2.5 text-[11px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] disabled:cursor-not-allowed disabled:opacity-40">Cancel</button><button type="button" onClick={commitDelete} disabled={deleting} className="flex min-w-[132px] items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-[11px] text-white transition-opacity disabled:cursor-wait disabled:opacity-70"><span className={deleting ? "size-3.5 animate-spin rounded-full border-2 border-white/35 border-t-white" : "hidden"} aria-hidden="true" />{deleting ? "Deleting…" : "Delete document"}</button></div></motion.section></motion.div>}
         {renameTarget && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[120] grid place-items-center p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setRenameTarget(null); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="rename-document-title" initial={{ opacity: 0, y: 12, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="grapho-dialog grapho-glass w-full max-w-md rounded-3xl p-6">
