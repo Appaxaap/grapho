@@ -51,6 +51,7 @@ export default function GraphoShell() {
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
   const previousDocuments = useRef<DocumentItem[]>(initialDocuments);
   const nativeWindow = useRef<ReturnType<typeof getCurrentWindow> | null>(null);
+  const backupInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const stored = loadGraphoStorage();
@@ -153,14 +154,41 @@ export default function GraphoShell() {
     window.print();
   };
 
-  const exportBackup = () => {
-    const payload = JSON.stringify({ version: 1, documents, selectedId, activeFolder }, null, 2);
-    const url = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+  const downloadFile = (filename: string, content: string, type: string) => {
+    const url = URL.createObjectURL(new Blob([content], { type }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = "grapho-backup.json";
+    link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportMarkdown = () => downloadFile(`${selected.title || "grapho-document"}.md`, documentToMarkdown(selected), "text/markdown");
+
+  const exportBackup = () => {
+    const payload = JSON.stringify({ version: 1, documents, selectedId, activeFolder }, null, 2);
+    downloadFile("grapho-backup.json", payload, "application/json");
+  };
+
+  const importBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const value = JSON.parse(String(reader.result)) as { version?: number; documents?: DocumentItem[]; selectedId?: string; activeFolder?: string };
+        if (value.version !== 1 || !Array.isArray(value.documents) || !value.documents.length || value.documents.some((item) => !item.id || !item.title || !Array.isArray(item.blocks))) throw new Error("Invalid backup");
+        setDocuments(value.documents);
+        setSelectedId(value.documents.some((item) => item.id === value.selectedId) ? value.selectedId! : value.documents[0].id);
+        setActiveFolder(value.activeFolder ?? value.documents[0].folder);
+        history.current = { past: [], future: [] };
+        previousDocuments.current = value.documents;
+      } catch {
+        window.alert("This backup file is invalid or unsupported.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   const resetLocalData = () => {
@@ -395,7 +423,9 @@ export default function GraphoShell() {
           <ToolbarButton label="Insert table" icon={<Table2 size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "table", "| Column 1 | Column 2 |\n| --- | --- |\n| | |\n")} />
           <motion.button type="button" onClick={exportPdf} whileHover={{ y: -2 }} whileTap={{ scale: .94 }} className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[var(--grapho-foreground)] px-3 text-[10px] text-[var(--grapho-background)] hover:opacity-80"><ArrowDown size={14} /> <span>PDF</span></motion.button>
           <ToolbarButton label="Clear document" icon={<Trash2 size={16} />} onClick={clearDocument} danger />
+          <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} />
           <ToolbarButton label="Export JSON backup" icon={<ArrowDown size={16} />} onClick={exportBackup} />
+          <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} />
           <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger />
         </motion.div>
 
@@ -410,6 +440,7 @@ export default function GraphoShell() {
           </motion.section>
         </motion.div>}
       </AnimatePresence>
+      <input ref={backupInput} type="file" accept="application/json,.json" onChange={importBackup} className="hidden" aria-label="Import JSON backup" />
       <div className="grapho-print-page-number" aria-hidden="true">Page <span /></div>
       <div className="grapho-print-branding" aria-hidden="true">Grapho</div>
     </div>
@@ -450,6 +481,18 @@ function parseMarkdownBlocks(rawText: string, makeId: () => string): Block[] {
     index += 1;
   }
   return blocks;
+}
+
+function documentToMarkdown(document: DocumentItem) {
+  return [`# ${document.title}`, "", ...document.blocks.map((block) => {
+    if (block.type === "heading") return `## ${block.text}`;
+    if (block.type === "quote") return `> ${block.text}`;
+    if (block.type === "list") return block.text.split("\\n").map((line) => `- ${line}`).join("\\n");
+    if (block.type === "ordered-list") return block.text.split("\\n").map((line, index) => `${index + 1}. ${line}`).join("\\n");
+    if (block.type === "code") return "```\\n" + block.text + "\\n```";
+    if (block.type === "divider") return "---";
+    return block.text;
+  })].join("\\n\\n");
 }
 
 function cleanMarkdown(value: string) {

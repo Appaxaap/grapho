@@ -176,7 +176,15 @@ Redo history is cleared after a new edit, and history is capped at 100 states.
 - Focus-visible styling.
 - Accessible labels on key icon and native window controls.
 
-## Keyboard shortcuts currently available
+### Import and export
+
+- Export the selected document as Markdown.
+- Export a complete JSON workspace backup.
+- Import a JSON workspace backup from the browser.
+- Invalid backup files are rejected without replacing the current workspace.
+- PDF export remains available through the print action.
+
+### Keyboard shortcuts currently available
 
 | Shortcut | Action |
 | --- | --- |

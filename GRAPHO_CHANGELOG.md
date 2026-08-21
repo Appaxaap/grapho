@@ -348,6 +348,14 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Markdown and backup interchange
+
+- Added Markdown export for the selected document.
+- Added JSON backup import with schema validation.
+- Added invalid-backup feedback without replacing current data.
+- Added backup import history reset to avoid mixing imported and previous document states.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Full-text workspace search
 
 - Sidebar search now searches document titles, folders, block types, paragraphs, headings, quotes, lists, code, tables, and other block content.
