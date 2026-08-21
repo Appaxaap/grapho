@@ -80,7 +80,9 @@
 .grapho-print-branding { display: none; }
 .grapho-print-page-number { display: none; }
 .grapho-command-input:focus,
-.grapho-command-input:focus-visible { outline: none !important; border: 0 !important; box-shadow: none !important; }
+.grapho-command-input:focus-visible,
+[aria-label="Search block commands"]:focus,
+[aria-label="Search block commands"]:focus-visible { outline: none !important; border-color: var(--grapho-border) !important; box-shadow: none !important; }
 .grapho-selection-toolbar { scrollbar-width: none; }
 .grapho-selection-toolbar::-webkit-scrollbar { display: none; }
 

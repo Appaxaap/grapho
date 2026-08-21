@@ -348,6 +348,12 @@ Remaining:
 
 ## Change history
 
+### 2026-08-21 — Neutral dialog input focus
+
+- Removed blue focus borders from rename and slash-command inputs.
+- Kept focus visible through neutral Grapho border treatment.
+- Validation: production build pending after this change.
+
 ### 2026-08-21 — Centered action toolbar
 
 - Re-centered the primary editing toolbar in the writing canvas.
