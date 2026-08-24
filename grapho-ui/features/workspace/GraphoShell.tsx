@@ -47,6 +47,7 @@ export default function GraphoShell() {
   const nativeWindow = useRef<ReturnType<typeof getCurrentWindow> | null>(null);
   const latestWorkspace = useRef({ documents, selectedId, activeFolder });
   const backupInput = useRef<HTMLInputElement>(null);
+  const markdownInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const stored = loadGraphoStorage();
@@ -229,6 +230,35 @@ export default function GraphoShell() {
   const exportBackup = () => {
     const payload = JSON.stringify({ version: 1, documents, selectedId, activeFolder }, null, 2);
     downloadFile("grapho-backup.json", payload, "application/json");
+  };
+
+  const importMarkdown = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setBusyAction("importing");
+    setToast("Importing Markdown…");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const title = file.name.replace(/\\.md$/i, "").trim() || "Imported document";
+      const blocks = parseMarkdownBlocks(String(reader.result), () => `imported-${Date.now()}-${blockSequence.current++}`);
+      const imported: DocumentItem = {
+        id: `document-${Date.now()}`,
+        title,
+        folder: activeFolder,
+        updated: "Just now",
+        blocks: blocks.length ? blocks : [{ id: `imported-${Date.now()}`, type: "paragraph", text: "" }],
+      };
+      setDocuments((current) => [imported, ...current]);
+      setSelectedId(imported.id);
+      setBusyAction(null);
+      setToast("Markdown imported");
+    };
+    reader.onerror = () => {
+      setBusyAction(null);
+      setToast("Could not read Markdown file");
+    };
+    reader.readAsText(file);
   };
 
   const importBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -526,7 +556,8 @@ export default function GraphoShell() {
           <ToolbarButton label="Clear document" icon={<Trash2 size={16} />} onClick={clearDocument} danger />
 
           <ToolbarButton label="Export JSON backup" icon={<FileJson size={16} />} onClick={exportBackup} />
-          <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} disabled={busyAction !== null} />
+          <ToolbarButton label="Import Markdown" icon={<FileText size={16} />} onClick={() => markdownInput.current?.click()} disabled={busyAction !== null} />
+                    <ToolbarButton label="Import JSON backup" icon={<FolderOpen size={16} />} onClick={() => backupInput.current?.click()} disabled={busyAction !== null} />
           <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger disabled={busyAction !== null} />
         </motion.div>
 
@@ -556,6 +587,7 @@ export default function GraphoShell() {
           </motion.section>
         </motion.div>}
       </AnimatePresence>
+      <input ref={markdownInput} type="file" accept="text/markdown,.md,text/plain" onChange={importMarkdown} className="hidden" aria-label="Import Markdown file" />
       <input ref={backupInput} type="file" accept="application/json,.json" onChange={importBackup} className="hidden" aria-label="Import JSON backup" />
       <div className="grapho-print-page-number" aria-hidden="true">Page <span /></div>
       <div className="grapho-print-branding" aria-hidden="true">Grapho</div>
