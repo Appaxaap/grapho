@@ -547,7 +547,7 @@ export default function GraphoShell() {
         </AnimatePresence>
 
         <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
-          <div className="mx-auto max-w-4xl px-5 pb-32 pt-3 sm:px-12 sm:pt-6 lg:px-20">
+          <div className="mx-auto max-w-4xl px-5 pb-32 pt-10 sm:px-12 sm:pt-14 lg:px-20 lg:pt-16">
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex items-center gap-2"><span>{activeFolder}</span><ChevronRight size={11} /><span className="text-[var(--grapho-muted)]">{selected.title}</span></div><div className="flex items-center gap-2"></div></div>
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
