@@ -489,7 +489,7 @@ export default function GraphoShell() {
   return (
     <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
       {isNativeWindow && <div className="grapho-native-titlebar" data-tauri-drag-region>
-        <div className="grapho-native-brand" data-tauri-drag-region><span><Hash size={11} /></span><b>Grapho</b></div>
+        <div className="grapho-native-brand" data-tauri-drag-region><span className="grapho-brand-mark"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><b>Grapho</b></div>
         <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>
         <div className="grapho-native-window-controls">
           <button className="is-close" type="button" onClick={closeWindow} aria-label="Close window" title="Close"><span aria-hidden="true" /></button>
@@ -514,7 +514,7 @@ export default function GraphoShell() {
 
       <motion.div initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-app-toolbar fixed right-4 top-4 z-50 flex items-center gap-1 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-xl backdrop-blur-xl">
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
-        <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grid size-8 place-items-center rounded-xl bg-[var(--grapho-foreground)] text-[var(--grapho-background)]"><Hash size={15} /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
+        <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grapho-brand-mark grid size-8 place-items-center overflow-hidden rounded-xl"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
         <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
