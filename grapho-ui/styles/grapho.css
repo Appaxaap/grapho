@@ -8,17 +8,17 @@
   --grapho-size-body: 17px;
   --grapho-size-small: 10px;
   --grapho-leading-body: 1.9;
-  --grapho-background: #f3f3f1;
-  --grapho-foreground: #161617;
+  --grapho-background: #F8FAFC;
+  --grapho-foreground: #0E1116;
   --grapho-panel: rgba(255, 255, 255, .82);
   --grapho-panel-solid: #fff;
-  --grapho-control: rgba(118, 118, 128, .09);
-  --grapho-control-hover: rgba(118, 118, 128, .15);
-  --grapho-border: rgba(0, 0, 0, .075);
-  --grapho-muted: #71717a;
-  --grapho-faint: #a1a1aa;
-  --grapho-accent: #1677ff;
-  --grapho-accent-soft: rgba(22, 119, 255, .12);
+  --grapho-control: rgba(107, 114, 128, .09);
+  --grapho-control-hover: rgba(207, 232, 216, .62);
+  --grapho-border: rgba(229, 231, 235, .92);
+  --grapho-muted: #6B7280;
+  --grapho-faint: #9CA3AF;
+  --grapho-accent: #6BA587;
+  --grapho-accent-soft: rgba(207, 232, 216, .72);
   --grapho-shadow: 0 20px 55px rgba(0, 0, 0, .065), 0 1px 2px rgba(0, 0, 0, .025);
   --grapho-font-sans: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --grapho-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -31,17 +31,17 @@
 }
 
 .grapho-ui.grapho-dark {
-  --grapho-background: #0d0d0e;
-  --grapho-foreground: #f5f5f7;
-  --grapho-panel: rgba(25, 25, 28, .78);
-  --grapho-panel-solid: #18181b;
-  --grapho-control: rgba(255, 255, 255, .07);
-  --grapho-control-hover: rgba(255, 255, 255, .11);
-  --grapho-border: rgba(255, 255, 255, .09);
-  --grapho-muted: #a1a1aa;
-  --grapho-faint: #71717a;
-  --grapho-accent: #3b82f6;
-  --grapho-accent-soft: rgba(59, 130, 246, .16);
+  --grapho-background: #0E1116;
+  --grapho-foreground: #F8FAFC;
+  --grapho-panel: rgba(29, 35, 42, .78);
+  --grapho-panel-solid: #1D232A;
+  --grapho-control: rgba(229, 231, 235, .07);
+  --grapho-control-hover: rgba(107, 165, 135, .18);
+  --grapho-border: rgba(229, 231, 235, .12);
+  --grapho-muted: #9CA3AF;
+  --grapho-faint: #6B7280;
+  --grapho-accent: #6BA587;
+  --grapho-accent-soft: rgba(107, 165, 135, .18);
   --grapho-shadow: 0 24px 60px rgba(0, 0, 0, .34), 0 1px 2px rgba(0, 0, 0, .2);
 }
 
