@@ -667,7 +667,9 @@ function parseMarkdownBlocks(rawText: string, makeId: () => string): Block[] {
 }
 
 function documentToMarkdown(document: DocumentItem) {
-  return [`# ${document.title}`, "", ...document.blocks.map((block) => {
+  const title = document.title.trim() || "Untitled document";
+  const blocks = document.blocks.length ? document.blocks : [{ id: "empty", type: "paragraph" as const, text: "" }];
+  return [`# ${title}`, "", ...blocks.map((block) => {
     if (block.type === "heading") return `## ${block.text}`;
     if (block.type === "quote") return `> ${block.text}`;
     if (block.type === "list") return block.text.split("\\n").map((line) => `- ${line}`).join("\\n");
