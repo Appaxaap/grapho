@@ -41,3 +41,12 @@ export function saveGraphoStorage(payload: GraphoStoragePayload) {
 export function clearGraphoStorage() {
   window.localStorage.removeItem(GRAPHO_STORAGE_KEY);
 }
+
+export function getGraphoStorageDiagnostics() {
+  try {
+    const raw = window.localStorage.getItem(GRAPHO_STORAGE_KEY);
+    return { available: true, present: Boolean(raw), bytes: raw ? new Blob([raw]).size : 0 };
+  } catch {
+    return { available: false, present: false, bytes: 0 };
+  }
+}
