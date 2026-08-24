@@ -12,6 +12,8 @@ export type DocumentItem = {
   folder: string;
   updated: string;
   blocks: Block[];
+  trashed?: boolean;
+  deletedAt?: string;
 };
 
 export const WORKSPACE_FOLDERS = ["Projects", "Personal", "Archive"] as const;
