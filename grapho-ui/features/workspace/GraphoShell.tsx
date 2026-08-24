@@ -269,6 +269,33 @@ export default function GraphoShell() {
     reader.readAsText(file);
   };
 
+  const importMarkdownFile = (file: File) => {
+    if (!file.name.toLowerCase().endsWith(".md") && file.type !== "text/markdown") {
+      setToast("Drop a Markdown file to import");
+      return;
+    }
+    setBusyAction("importing");
+    setToast("Importing Markdown…");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const title = file.name.replace(/\\.md$/i, "").trim() || "Imported document";
+      const blocks = parseMarkdownBlocks(String(reader.result), () => `imported-${Date.now()}-${blockSequence.current++}`);
+      const imported: DocumentItem = { id: `document-${Date.now()}`, title, folder: activeFolder, updated: "Just now", blocks: blocks.length ? blocks : [{ id: `imported-${Date.now()}`, type: "paragraph", text: "" }] };
+      setDocuments((current) => [imported, ...current]);
+      setSelectedId(imported.id);
+      setBusyAction(null);
+      setToast("Markdown imported");
+    };
+    reader.onerror = () => { setBusyAction(null); setToast("Could not read Markdown file"); };
+    reader.readAsText(file);
+  };
+
+  const handleMarkdownDrop = (event: React.DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file) importMarkdownFile(file);
+  };
+
   const importBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -522,7 +549,7 @@ export default function GraphoShell() {
         <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
           <div className="mx-auto max-w-4xl px-5 pb-32 pt-3 sm:px-12 sm:pt-6 lg:px-20">
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex items-center gap-2"><span>{activeFolder}</span><ChevronRight size={11} /><span className="text-[var(--grapho-muted)]">{selected.title}</span></div><div className="flex items-center gap-2"></div></div>
-            <article className="relative min-h-[620px]" onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
+            <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
 
               <div className="space-y-4">{selected.blocks.filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} className={`group relative rounded-lg transition-colors ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text) => updateBlock(block.id, text)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Select block" title="Select block" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
