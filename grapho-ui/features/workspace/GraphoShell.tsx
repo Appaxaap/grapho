@@ -499,7 +499,7 @@ export default function GraphoShell() {
           <button className="is-maximize" type="button" onClick={toggleMaximizeWindow} aria-label="Maximize window" title="Maximize"><span aria-hidden="true" /></button>
         </div>
       </div>}
-      <div className="grapho-canvas-grid pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
+      <div className="grapho-canvas-grid grapho-workspace-layer pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
       <header className="hidden">
         <div className="flex items-center gap-2.5">
           <button type="button" onClick={() => setSidebarOpen((value) => !value)} aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} className="grid size-9 place-items-center rounded-xl text-[var(--grapho-muted)] transition-colors hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]"><Menu size={16} /></button>
@@ -514,7 +514,7 @@ export default function GraphoShell() {
         </div>
       </header>
 
-      <motion.div initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-app-toolbar fixed right-4 top-4 z-50 flex items-center gap-1 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-xl backdrop-blur-xl">
+      <motion.div initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-app-toolbar grapho-workspace-layer fixed right-4 top-4 z-50 flex items-center gap-1 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-xl backdrop-blur-xl">
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grapho-brand-mark grid size-8 place-items-center overflow-hidden rounded-xl"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
@@ -529,7 +529,7 @@ export default function GraphoShell() {
 
       </motion.div>
 
-      <div className="relative z-10 flex min-h-screen">
+      <div className="grapho-workspace-layer relative z-10 flex min-h-screen">
         <AnimatePresence initial={false}>
           {sidebarOpen && <motion.aside initial={{ width: 0, opacity: 0 }} animate={{ width: 280, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="grapho-sidebar hidden h-[calc(100vh-2rem)] shrink-0 overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-xl backdrop-blur-xl lg:sticky lg:top-4 lg:my-4 lg:ml-4 lg:block">
             <div className="flex h-full w-[280px] flex-col overflow-y-auto p-3 [scrollbar-width:none]">
@@ -578,7 +578,7 @@ export default function GraphoShell() {
                   <button type="button" onClick={() => { document.execCommand("delete"); setSelectionToolbar(null); }} aria-label="Delete selected text" title="Delete selected text" className="grid size-9 place-items-center rounded-lg text-red-500 hover:bg-red-500/10"><Trash2 size={18} /></button>
                 </div>}
 
-        <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
+        <motion.div initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-workspace-layer fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] p-1.5 shadow-2xl backdrop-blur-xl [scrollbar-width:none]">
           <span className="mx-2 flex shrink-0 items-center gap-1.5 text-[8px] text-[var(--grapho-faint)]" role="status" aria-live="polite"><span className={`size-1.5 rounded-full ${saveState === "saved" ? "bg-emerald-500" : saveState === "saving" ? "bg-amber-500" : "bg-red-500"}`} />{saveState === "saved" ? "Saved" : saveState === "saving" ? "Saving…" : <><span>Could not save</span><button type="button" onClick={saveNow} className="ml-1 text-[var(--grapho-accent)] hover:underline">Retry</button></>}</span>
           <span className="mx-1 h-5 w-px shrink-0 bg-[var(--grapho-border)]" />
           <ToolbarButton label="Heading" icon={<Hash size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "heading")} />
