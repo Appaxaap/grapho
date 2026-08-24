@@ -1,6 +1,6 @@
 # Grapho Design System
 
-This document defines the visual and interaction language for Grapho across the browser and Tauri desktop application. It is the reference for designing new screens, components, states, and native surfaces.
+This document defines the visual and interaction language for Grapho across the browser and Tauri desktop application. It is the reference for designing new screens, components, states, and native surfaces. Color-specific decisions are defined in [`GRAPHO_COLOR_DESIGN_SYSTEM.md`](./GRAPHO_COLOR_DESIGN_SYSTEM.md), which is authoritative for the Grapho palette.
 
 ## 1. Product character
 
