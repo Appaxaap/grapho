@@ -130,7 +130,8 @@
   .grapho-ui table { break-inside: avoid; }
   .grapho-ui pre { break-inside: avoid; }
   .grapho-ui * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .grapho-print-page-number { display: none !important; }
+  .grapho-print-page-number { display: block !important; position: fixed; right: 0; bottom: -11mm; z-index: 60; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; letter-spacing: .04em; }
+  .grapho-print-page-number span::after { content: counter(page); }
   .grapho-print-header, .grapho-print-footer { display: flex; position: fixed; left: 0; right: 0; z-index: 50; justify-content: space-between; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; letter-spacing: .04em; }
   .grapho-print-header { top: -11mm; border-bottom: 1px solid #d4d4d8; padding-bottom: 3mm; }
   .grapho-print-footer { bottom: -11mm; border-top: 1px solid #d4d4d8; padding-top: 3mm; }
