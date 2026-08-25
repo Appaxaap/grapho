@@ -3,11 +3,26 @@ import type { DocumentItem } from "../domain/model";
 export const GRAPHO_STORAGE_KEY = "grapho.workspace.v1";
 export const GRAPHO_STORAGE_VERSION = 1;
 
+export type GraphoPreferences = {
+  editorWidth: "Readable" | "Wide";
+  editorSpacing: "Relaxed" | "Compact";
+  editorFont: "Sans" | "Mono" | "Serif";
+  editorSize: "Standard" | "Large";
+};
+
+export const defaultGraphoPreferences: GraphoPreferences = {
+  editorWidth: "Readable",
+  editorSpacing: "Relaxed",
+  editorFont: "Sans",
+  editorSize: "Standard",
+};
+
 export type GraphoStoragePayload = {
   version: number;
   documents: DocumentItem[];
   selectedId: string;
   activeFolder: string;
+  preferences?: GraphoPreferences;
 };
 
 function isBlock(value: unknown): boolean {

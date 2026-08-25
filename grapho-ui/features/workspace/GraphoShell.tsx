@@ -10,7 +10,7 @@ import {
   Sun, Moon, SlidersHorizontal, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
 import "../../styles/grapho.css";
-import { clearGraphoStorage, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage } from "../../persistence/storage";
+import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
 import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText } from "../../domain/operations";
 
@@ -53,7 +53,7 @@ export default function GraphoShell() {
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
   const previousDocuments = useRef<DocumentItem[]>(initialDocuments);
   const nativeWindow = useRef<ReturnType<typeof getCurrentWindow> | null>(null);
-  const latestWorkspace = useRef({ documents, selectedId, activeFolder });
+  const latestWorkspace = useRef<{ documents: DocumentItem[]; selectedId: string; activeFolder: string; preferences: GraphoPreferences }>({ documents, selectedId, activeFolder, preferences: defaultGraphoPreferences });
   const backupInput = useRef<HTMLInputElement>(null);
   const markdownInput = useRef<HTMLInputElement>(null);
 
@@ -64,6 +64,11 @@ export default function GraphoShell() {
         setDocuments(stored.documents);
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
         setActiveFolder(stored.activeFolder);
+        const preferences = { ...defaultGraphoPreferences, ...(stored.preferences ?? {}) };
+        setEditorWidth(preferences.editorWidth);
+        setEditorSpacing(preferences.editorSpacing);
+        setEditorFont(preferences.editorFont);
+        setEditorSize(preferences.editorSize);
       }
       hydrated.current = true;
       setIsHydrated(true);
@@ -83,12 +88,12 @@ export default function GraphoShell() {
   }, []);
 
   useEffect(() => {
-    latestWorkspace.current = { documents, selectedId, activeFolder };
+    latestWorkspace.current = { documents, selectedId, activeFolder, preferences: { editorWidth, editorSpacing, editorFont, editorSize } };
     if (!hydrated.current) return;
     setSaveState("saving");
     const timer = window.setTimeout(saveNow, 350);
     return () => window.clearTimeout(timer);
-  }, [documents, selectedId, activeFolder, saveNow]);
+  }, [documents, selectedId, activeFolder, editorWidth, editorSpacing, editorFont, editorSize, saveNow]);
 
   useEffect(() => {
     const flushSave = () => saveNow();
