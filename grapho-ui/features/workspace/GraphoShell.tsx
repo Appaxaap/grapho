@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
+import { isNativePersistenceAvailable, loadNativeWorkspace, saveNativeWorkspace } from "../../persistence/native";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
 import { SHORTCUTS } from "../../domain/shortcuts";
 import { ToolbarButton } from "../editor/ToolbarButton";
@@ -61,8 +62,11 @@ export default function GraphoShell() {
 
   useEffect(() => {
     const stored = loadGraphoStorage();
-    const hydrate = () => {
-      if (stored) {
+    const hydrate = async () => {
+      const nativeStored = isNativePersistenceAvailable() ? await loadNativeWorkspace() : null;
+      const source = nativeStored ?? stored;
+      if (source) {
+        const stored = source;
         setDocuments(stored.documents);
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
         setActiveFolder(stored.activeFolder);
@@ -75,14 +79,16 @@ export default function GraphoShell() {
       hydrated.current = true;
       setIsHydrated(true);
     };
-    const timer = window.setTimeout(hydrate, 0);
+    const timer = window.setTimeout(() => void hydrate(), 0);
     return () => window.clearTimeout(timer);
   }, []);
 
   const saveNow = useCallback(() => {
     if (!hydrated.current) return;
     try {
-      saveGraphoStorage({ version: 1, ...latestWorkspace.current });
+      const payload = { version: 1, ...latestWorkspace.current };
+      if (isNativePersistenceAvailable()) void saveNativeWorkspace(payload);
+      saveGraphoStorage(payload);
       setSaveState("saved");
     } catch {
       setSaveState("error");
