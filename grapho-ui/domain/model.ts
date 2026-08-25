@@ -46,6 +46,7 @@ export type DocumentItem = {
   id: string;
   title: string;
   folder: string;
+  parentDocumentId?: string | null;
   updated: string;
   blocks: Block[];
   slug?: string;
