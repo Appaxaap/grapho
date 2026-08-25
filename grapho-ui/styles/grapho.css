@@ -148,5 +148,5 @@
 .grapho-dialog input { border-color: color-mix(in srgb, var(--grapho-accent) 72%, var(--grapho-border)); background: color-mix(in srgb, var(--grapho-control) 88%, transparent); box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent); }
 .grapho-dialog input:focus { border-color: var(--grapho-accent); box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent); }
 .grapho-dialog header { border-color: var(--grapho-border); }
-.grapho-ui .grapho-canvas-grid { background-image: linear-gradient(var(--grapho-border) 1px, transparent 1px), linear-gradient(90deg, var(--grapho-border) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, black, transparent 75%); opacity: .34; }
+
 @media (prefers-reduced-motion: reduce) { .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

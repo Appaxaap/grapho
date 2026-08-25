@@ -602,7 +602,7 @@ export default function GraphoShell() {
           <button className="is-maximize" type="button" onClick={toggleMaximizeWindow} aria-label="Maximize window" title="Maximize"><span aria-hidden="true" /></button>
         </div>
       </div>}
-      <div className="grapho-canvas-grid grapho-workspace-layer pointer-events-none absolute inset-0 -z-0" aria-hidden="true" />
+
       <header className="hidden">
         <div className="flex items-center gap-2.5">
           <button type="button" onClick={() => setSidebarOpen((value) => !value)} aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} className="grid size-9 place-items-center rounded-xl text-[var(--grapho-muted)] transition-colors hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]"><Menu size={16} /></button>
