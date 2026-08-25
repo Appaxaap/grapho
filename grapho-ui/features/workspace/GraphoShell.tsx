@@ -12,6 +12,7 @@ import {
 import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
+import { SHORTCUTS } from "../../domain/shortcuts";
 import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText } from "../../domain/operations";
 
 type Theme = "dark" | "light";
@@ -434,15 +435,20 @@ export default function GraphoShell() {
   }, [selected.blocks.length, selected.id]);
 
   useEffect(() => {
-    const handlePaletteShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setPaletteOpen(true);
-      }
+    const handleShortcut = (event: KeyboardEvent) => {
+      const definition = SHORTCUTS.find((shortcut) => shortcut.key.toLowerCase() === event.key.toLowerCase() && Boolean(shortcut.mod) === (event.metaKey || event.ctrlKey) && Boolean(shortcut.shift) === event.shiftKey);
+      if (!definition) return;
+      event.preventDefault();
+      if (definition.action === "new-document") createDocument();
+      if (definition.action === "search") setPaletteOpen(true);
+      if (definition.action === "focus-mode") setFocusMode((value) => !value);
+      if (definition.action === "sidebar") setSidebarOpen((value) => !value);
+      if (definition.action === "theme") setTheme((value) => value === "dark" ? "light" : "dark");
+      if (definition.action === "help") setHelpOpen(true);
     };
-    window.addEventListener("keydown", handlePaletteShortcut);
-    return () => window.removeEventListener("keydown", handlePaletteShortcut);
-  }, []);
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [createDocument]);
 
   useEffect(() => {
     if (!paletteOpen) return;
