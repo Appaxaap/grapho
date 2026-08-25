@@ -5,7 +5,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "motion/react";
 
 import {
-  AlignLeft, Archive, ChevronDown, ChevronRight, CircleHelp, FileDown, FileJson, FileText, Folder, FolderOpen, GripVertical, Hash, Image as ImageIcon, Link2, List, Menu, Minus, MoreHorizontal,
+  AlignLeft, Archive, ChevronDown, ChevronRight, CircleHelp, FileCode, FileDown, FileJson, FileText, Folder, FolderOpen, GripVertical, Hash, Image as ImageIcon, Link2, List, Menu, Minus, MoreHorizontal,
   FolderPlus, Plus, Quote, Search, Settings2, Sparkles, Trash2,
   Sun, Moon, SlidersHorizontal, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
@@ -293,6 +293,18 @@ export default function GraphoShell() {
       setBusyAction(null);
       setToast("Markdown export ready");
     }, 450);
+  };
+
+  const exportHtml = () => {
+    setBusyAction("exporting");
+    downloadFile(`${selected.title || "grapho-document"}.html`, documentToHtml(selected), "text/html");
+    window.setTimeout(() => { setBusyAction(null); setToast("HTML export ready"); }, 450);
+  };
+
+  const exportPlainText = () => {
+    setBusyAction("exporting");
+    downloadFile(`${selected.title || "grapho-document"}.txt`, documentToPlainText(selected), "text/plain");
+    window.setTimeout(() => { setBusyAction(null); setToast("Plain text export ready"); }, 450);
   };
 
   const exportBackup = () => {
@@ -612,6 +624,8 @@ export default function GraphoShell() {
         <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
         <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
         <ToolbarButton label="Export Markdown" icon={<FileText size={16} />} onClick={exportMarkdown} disabled={busyAction !== null} />
+        <ToolbarButton label="Export HTML" icon={<FileCode size={16} />} onClick={exportHtml} disabled={busyAction !== null} />
+        <ToolbarButton label="Export plain text" icon={<AlignLeft size={16} />} onClick={exportPlainText} disabled={busyAction !== null} />
         <ToolbarButton label="Export PDF" icon={<FileDown size={16} />} onClick={exportPdf} disabled={busyAction !== null} />
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`} icon={theme === "dark" ? <Moon size={16} /> : <Sun size={16} />} onClick={() => setTheme(theme === "dark" ? "light" : "dark")} />
@@ -769,6 +783,39 @@ function documentToMarkdown(document: DocumentItem) {
     if (block.type === "divider") return "---";
     return block.text;
   })].join("\\n\\n");
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+}
+
+function documentToPlainText(document: DocumentItem) {
+  return [document.title.trim() || "Untitled document", ...document.blocks.map((block) => {
+    if (block.type === "divider") return "--------------------";
+    if (block.type === "todo") return `${block.checked ? "[x]" : "[ ]"} ${block.text}`;
+    if (block.type === "list") return block.text.split("\\n").map((line) => `• ${line}`).join("\\n");
+    if (block.type === "ordered-list") return block.text.split("\\n").map((line, index) => `${index + 1}. ${line}`).join("\\n");
+    return block.text;
+  })].join("\\n\\n");
+}
+
+function documentToHtml(document: DocumentItem) {
+  const title = escapeHtml(document.title.trim() || "Untitled document");
+  const body = document.blocks.map((block) => {
+    const text = escapeHtml(block.text).replace(/\\n/g, "<br>");
+    if (block.type === "heading") return `<h2>${text}</h2>`;
+    if (block.type === "quote") return `<blockquote>${text}</blockquote>`;
+    if (block.type === "list") return `<ul>${block.text.split("\\n").map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`;
+    if (block.type === "ordered-list") return `<ol>${block.text.split("\\n").map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ol>`;
+    if (block.type === "todo") return `<p class=\"todo\">${block.checked ? "☑" : "☐"} ${text}</p>`;
+    if (block.type === "toggle") return `<details${block.collapsed ? "" : " open"}><summary>${text}</summary></details>`;
+    if (block.type === "callout") return `<aside>${text}</aside>`;
+    if (block.type === "code") return `<pre><code>${text}</code></pre>`;
+    if (block.type === "divider") return "<hr>";
+    if (block.type === "table") return `<pre>${text}</pre>`;
+    return `<p>${text}</p>`;
+  }).join("\\n");
+  return `<!doctype html><html><head><meta charset=\"utf-8\"><title>${title}</title><style>body{max-width:760px;margin:48px auto;padding:0 24px;font:16px/1.7 system-ui,sans-serif;color:#1d232a}h1{line-height:1.15}blockquote,aside{border-left:3px solid #6ba587;padding:8px 16px;background:#f0f6f2}pre{padding:16px;background:#f3f4f6;overflow:auto}li{margin:4px 0}</style></head><body><h1>${title}</h1>${body}</body></html>`;
 }
 
 function cleanMarkdown(value: string) {
