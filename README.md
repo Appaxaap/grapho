@@ -1,6 +1,21 @@
 # Grapho
 
-Grapho is a calm, local-first writing workspace for documents, notes, and structured ideas. It runs in the browser and as a native Tauri desktop application.
+Grapho is a modern writing app for making documents that are ready to share.
+
+> **Write beautifully. Organize simply. Export professionally.**
+
+It is a document-first, local-first workspace for turning a blank page into a polished document—without Notion-style database complexity or Obsidian-style plugin configuration.
+
+Grapho runs in the browser and as a native Tauri desktop application.
+
+Grapho is designed around four product pillars:
+
+- **Write** — a focused, block-based writing canvas.
+- **Organize** — folders, nested documents, and simple hierarchy.
+- **Refine** — rich formatting, todos, toggles, links, and document styles.
+- **Deliver** — Markdown, HTML, plain text, JSON backup, and print/PDF output.
+
+Grapho is free and open-source software in preparation. See the licensing note below before redistributing it.
 
 Grapho is designed around three product promises:
 
@@ -10,7 +25,7 @@ Grapho is designed around three product promises:
 
 ## Status
 
-Grapho is an actively developed early-stage project. The core workspace, local persistence, autosave, undo/redo, Markdown import/export, Trash/restore, browser mode, and Tauri desktop packaging are implemented. Some roadmap features remain in progress.
+Grapho is an actively developed early-stage project. The core writing workspace, local persistence, native filesystem adapter, autosave, undo/redo, structured blocks, document hierarchy, backlinks, search, import/export, print layout, browser mode, and Tauri desktop packaging are implemented. The editor and workspace shell are still being incrementally extracted into smaller modules, and native runtime/package validation remains part of ongoing development.
 
 See:
 
@@ -27,16 +42,22 @@ See:
 - Browser and Tauri desktop modes.
 - Custom native Tauri title bar and window controls.
 - Dark and light themes.
-- Structured blocks: paragraphs, headings, quotes, lists, code, tables, callouts, and dividers.
+- Structured blocks: paragraphs, headings, quotes, lists, todos, toggles, code, tables, callouts, dividers, and page breaks.
+- Rich-text marks: bold, italic, underline, strike-through, inline code, highlights, and links.
 - Markdown paste and Markdown file import.
 - Markdown drag-and-drop import.
-- Markdown export and JSON backup export/import.
+- Markdown, HTML, and plain-text export.
+- JSON backup export/import.
+- Native filesystem workspace storage in Tauri, with browser local-storage fallback.
 - Trash and document restore.
 - Document-level undo and redo.
-- Slash command block menu.
-- Searchable workspace sidebar.
+- Slash command block menu with filtering and keyboard navigation.
+- Human-friendly document links and derived backlinks.
+- Nested documents and block hierarchy with indent/outdent controls.
+- Searchable workspace sidebar with categorized full-text results.
+- Centralized workspace shortcuts and editor formatting shortcuts.
 - Command palette with `Ctrl+K` / `Cmd+K`.
-- PDF export through the browser print flow.
+- PDF export through the browser print flow with page breaks, headers, footers, page numbering, and print-safe layout.
 - Glass dialogs, operation feedback, and accessible status states.
 - RPM and DEB desktop bundles for Linux.
 
@@ -110,6 +131,7 @@ grapho/
 ├── grapho-ui/
 │   ├── domain/                  # Framework-independent document model
 │   ├── persistence/             # Versioned local storage and diagnostics
+│   ├── features/editor/         # Reusable editor controls and editor UI
 │   ├── features/workspace/      # Workspace composition and interactions
 │   └── styles/                  # Grapho design tokens and UI styles
 ├── public/Branding/             # Public logo assets
@@ -168,9 +190,15 @@ The lint command may scan generated Tauri artifacts under `src-tauri/target`; ge
 
 ## Data and privacy
 
-Grapho is local-first. The browser implementation uses versioned browser storage. The desktop wrapper currently uses the webview storage layer and native window capabilities; native application-data storage is a planned adapter boundary.
+Grapho is local-first and does not require an account or server connection for basic writing.
 
-Grapho does not require an account or server connection for basic writing. Users are responsible for exporting backups of important documents while native storage migration and recovery features continue to evolve.
+- Browser mode uses versioned `localStorage` persistence.
+- Tauri desktop mode uses a native JSON workspace at the application data directory.
+- Native writes use an atomic temporary-file replacement.
+- Markdown and JSON backup export provide portable recovery paths.
+- No analytics, hosted account, or cloud workspace is required by the current application.
+
+Users are responsible for keeping backups of important documents while the storage and recovery system continues to evolve.
 
 ## Contributing
 
@@ -197,6 +225,6 @@ chore: maintain tooling or release metadata
 
 ## License
 
-Add the project's chosen open-source license file before publishing the repository publicly. Until then, do not assume that the repository's source code has a license merely because individual dependencies or font assets are permissively licensed.
+The repository currently does **not** contain a source-code license file. Until the project owner adds a chosen license, the source should be treated as **all rights reserved** despite the project’s FOSS goal.
 
-Third-party licenses remain governed by their respective packages. The bundled Inter font is distributed under the SIL Open Font License.
+Before public redistribution, add the selected license as `LICENSE`, review the branding/logo terms separately, and add third-party notices where required. Third-party packages remain governed by their respective licenses. The bundled Inter font is distributed under the SIL Open Font License.
