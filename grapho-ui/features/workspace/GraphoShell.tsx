@@ -280,7 +280,18 @@ export default function GraphoShell() {
       return { ...document, updated: "Just now", blocks: [...document.blocks.slice(0, index + 1), newBlock, ...document.blocks.slice(index + 1)] };
     }));
     setCommandBlockId(null);
-    window.setTimeout(() => document.querySelector<HTMLElement>(`[data-grapho-block-id="${newBlock.id}"]`)?.focus(), 0);
+    window.setTimeout(() => {
+      const target = document.querySelector<HTMLElement>(`[data-grapho-block-id="${newBlock.id}"]`);
+      target?.focus();
+      if (target) {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        range.collapse(true);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    }, 0);
   };
 
   const exportPdf = () => {
