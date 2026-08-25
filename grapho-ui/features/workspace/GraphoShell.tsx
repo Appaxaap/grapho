@@ -12,7 +12,7 @@ import {
 import "../../styles/grapho.css";
 import { clearGraphoStorage, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage } from "../../persistence/storage";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
-import { blockInlineContent, mergeInlineContent, moveBlock, plainInlineText } from "../../domain/operations";
+import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText } from "../../domain/operations";
 
 type Theme = "dark" | "light";
 
@@ -212,6 +212,21 @@ export default function GraphoShell() {
       parentId = documents.find((item) => item.id === parentId)?.parentDocumentId;
     }
     return Math.min(depth, 4);
+  };
+
+  const backlinks = useMemo(() => documentBacklinks(documents, selected.id), [documents, selected.id]);
+
+  const insertDocumentLink = () => {
+    const choices = documents.filter((document) => document.id !== selected.id && !document.trashed);
+    if (!choices.length) { setToast("Create another document before adding a document link"); return; }
+    const requested = window.prompt(`Link to document:\n${choices.map((document) => document.title).join("\n")}`, choices[0].title);
+    if (!requested) return;
+    const target = choices.find((document) => document.title.toLowerCase() === requested.trim().toLowerCase()) ?? choices.find((document) => document.title.toLowerCase().includes(requested.trim().toLowerCase()));
+    if (!target) { setToast("Document not found"); return; }
+    const block = selected.blocks[selected.blocks.length - 1];
+    if (!block) return;
+    updateBlock(block.id, `${block.text}${block.text ? " " : ""}[[${target.title}]]`, block.content);
+    setToast(`Linked to ${target.title}`);
   };
 
   const documentPath = (document: DocumentItem) => {
@@ -608,7 +623,7 @@ export default function GraphoShell() {
 
         <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
           <div className={`mx-auto ${editorWidth === "Wide" ? "max-w-6xl" : "max-w-4xl"} px-5 pb-32 pt-10 sm:px-12 sm:pt-14 lg:px-20 lg:pt-16 ${editorSpacing === "Compact" ? "[--grapho-leading-body:1.55]" : "[--grapho-leading-body:1.9]"}`}>
-            <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex min-w-0 items-center gap-2"><span>{activeFolder}</span>{documentPath(selected).map((item, index) => <span key={`${item}-${index}`} className="flex min-w-0 items-center gap-2"><ChevronRight size={11} /><span className={index === documentPath(selected).length - 1 ? "truncate text-[var(--grapho-muted)]" : "truncate"}>{item}</span></span>)}</div><div className="flex items-center gap-2"></div></div>
+            <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex min-w-0 items-center gap-2"><span>{activeFolder}</span>{documentPath(selected).map((item, index) => <span key={`${item}-${index}`} className="flex min-w-0 items-center gap-2"><ChevronRight size={11} /><span className={index === documentPath(selected).length - 1 ? "truncate text-[var(--grapho-muted)]" : "truncate"}>{item}</span></span>)}</div><div className="flex items-center gap-2"></div></div>{backlinks.length > 0 && <div className="mb-8 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40 px-3 py-2.5"><div className="flex items-center gap-2 text-[8px] uppercase tracking-[.14em] text-[var(--grapho-faint)]"><Link2 size={12} /> Referenced by</div><div className="mt-2 flex flex-wrap gap-1.5">{backlinks.map((backlink) => <button key={`${backlink.documentId}-${backlink.blockId}`} type="button" onClick={() => setSelectedId(backlink.documentId)} className="rounded-lg bg-[var(--grapho-control)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]">{documents.find((document) => document.id === backlink.documentId)?.title ?? "Document"}</button>)}</div></div>}
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
 
@@ -644,7 +659,7 @@ export default function GraphoShell() {
           <ToolbarButton label="Code block" icon={<Type size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "code")} />
           <ToolbarButton label="Bulleted list" icon={<List size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "list")} />
           <span className="mx-1 h-5 w-px shrink-0 bg-[var(--grapho-border)]" />
-          <ToolbarButton label="Insert link" icon={<Link2 size={16} />} />
+          <ToolbarButton label="Insert document link" icon={<Link2 size={16} />} onClick={insertDocumentLink} />
           <ToolbarButton label="Insert image" icon={<ImageIcon size={16} />} />
           <ToolbarButton label="Insert table" icon={<Table2 size={16} />} onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id, "table", "| Column 1 | Column 2 |\n| --- | --- |\n| | |\n")} />
 
