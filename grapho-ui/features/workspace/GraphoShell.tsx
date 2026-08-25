@@ -939,7 +939,7 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
     lastValue.current = value;
   }, [content, value]);
 
-  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} data-placeholder={label === "Paragraph block" && !value ? "Start writing…" : undefined} contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
+  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
