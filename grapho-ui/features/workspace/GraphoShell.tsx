@@ -13,7 +13,7 @@ import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
 import { SHORTCUTS } from "../../domain/shortcuts";
-import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText } from "../../domain/operations";
+import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText, visibleBlocks } from "../../domain/operations";
 
 type Theme = "dark" | "light";
 
@@ -501,6 +501,20 @@ export default function GraphoShell() {
     setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === blockId ? { ...block, collapsed } : block) }));
   };
 
+  const indentBlock = (blockId: string) => {
+    const index = selected.blocks.findIndex((block) => block.id === blockId);
+    const previous = selected.blocks[index - 1];
+    if (!previous) return;
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === blockId ? { ...block, parentId: previous.id } : block) }));
+  };
+
+  const outdentBlock = (blockId: string) => {
+    const block = selected.blocks.find((item) => item.id === blockId);
+    if (!block?.parentId) return;
+    const parent = selected.blocks.find((item) => item.id === block.parentId);
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((item) => item.id === blockId ? { ...item, parentId: parent?.parentId ?? null } : item) }));
+  };
+
   const moveBlockByOffset = (blockId: string, offset: number) => {
     const index = selected.blocks.findIndex((block) => block.id === blockId);
     const targetIndex = index + offset;
@@ -536,6 +550,8 @@ export default function GraphoShell() {
     // Leave undo/redo to the browser's native contentEditable history. React
     // receives the resulting input event and persists the reverted text.
     if (event.key === "Escape") setCommandBlockId(null);
+    if (event.key === "Tab" && !event.shiftKey) { event.preventDefault(); indentBlock(block.id); return; }
+    if (event.key === "Tab" && event.shiftKey) { event.preventDefault(); outdentBlock(block.id); return; }
     if ((event.metaKey || event.ctrlKey) && event.shiftKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
       event.preventDefault();
       moveBlockByOffset(block.id, event.key === "ArrowUp" ? -1 : 1);
@@ -679,7 +695,7 @@ export default function GraphoShell() {
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
 
-              <div className="space-y-4">{selected.blocks.filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} draggable={false} onDragOver={(event) => { event.preventDefault(); setDropTargetBlockId(block.id); }} onDrop={(event) => { event.preventDefault(); dropBlock(block.id); }} className={`group relative rounded-lg border-t-2 transition-colors ${dropTargetBlockId === block.id ? "border-[var(--grapho-accent)]" : "border-transparent"} ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text, content) => updateBlock(block.id, text, content)} onToggle={() => setBlockChecked(block.id, !block.checked)} onCollapse={(collapsed) => setBlockCollapsed(block.id, collapsed)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" draggable onDragStart={(event) => { event.stopPropagation(); setDraggingBlockId(block.id); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", block.id); }} onDragEnd={() => { setDraggingBlockId(null); setDropTargetBlockId(null); }} onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Drag or select block" title="Drag block to reorder" className="pointer-events-auto grid size-6 cursor-grab place-items-center rounded-md hover:bg-[var(--grapho-control)] active:cursor-grabbing"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
+              <div className="space-y-4">{visibleBlocks(selected).filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} draggable={false} onDragOver={(event) => { event.preventDefault(); setDropTargetBlockId(block.id); }} onDrop={(event) => { event.preventDefault(); dropBlock(block.id); }} className={`group relative rounded-lg border-t-2 transition-colors ${dropTargetBlockId === block.id ? "border-[var(--grapho-accent)]" : "border-transparent"} ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text, content) => updateBlock(block.id, text, content)} onToggle={() => setBlockChecked(block.id, !block.checked)} onCollapse={(collapsed) => setBlockCollapsed(block.id, collapsed)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" draggable onDragStart={(event) => { event.stopPropagation(); setDraggingBlockId(block.id); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", block.id); }} onDragEnd={() => { setDraggingBlockId(null); setDropTargetBlockId(null); }} onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Drag or select block" title="Drag block to reorder" className="pointer-events-auto grid size-6 cursor-grab place-items-center rounded-md hover:bg-[var(--grapho-control)] active:cursor-grabbing"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
               <button type="button" onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id)} className="mt-6 flex items-center gap-2 text-[10px] text-[var(--grapho-faint)] hover:text-[var(--grapho-muted)]"><Plus size={13} /> Add block</button>
             </article>
           </div>
