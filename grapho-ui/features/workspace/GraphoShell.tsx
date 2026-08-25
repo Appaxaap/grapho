@@ -13,6 +13,7 @@ import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
 import { SHORTCUTS } from "../../domain/shortcuts";
+import { ToolbarButton } from "../editor/ToolbarButton";
 import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText, visibleBlocks } from "../../domain/operations";
 
 type Theme = "dark" | "light";
@@ -1005,9 +1006,7 @@ function InfoStat({ label, value }: { label: string; value: string }) {
   return <div className="rounded-xl bg-[var(--grapho-control)] px-3 py-2.5"><div className="text-[8px] text-[var(--grapho-faint)]">{label}</div><div className="mt-1 text-sm font-semibold tracking-[-.04em] text-[var(--grapho-foreground)]">{value}</div></div>;
 }
 
-function ToolbarButton({ label, icon, onClick, danger = false, disabled = false }: { label: string; icon: React.ReactNode; onClick?: () => void; danger?: boolean; disabled?: boolean }) {
-  return <motion.button type="button" aria-label={label} title={disabled ? `${label} unavailable` : label} onClick={onClick} disabled={disabled} whileHover={disabled ? undefined : { y: -2 }} whileTap={disabled ? undefined : { scale: .92 }} className={`grid size-9 shrink-0 items-center justify-center rounded-xl transition-colors disabled:cursor-not-allowed disabled:opacity-30 ${danger ? "text-red-500 hover:bg-red-500/10" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]"}`}>{icon}</motion.button>;
-}
+
 
 function StyleOption({ label, value, onClick }: { label: string; value: string; onClick: () => void }) {
   return <button type="button" onClick={onClick} className="mt-2 flex w-full items-center justify-between rounded-lg px-2 py-2.5 text-left text-[9px] hover:bg-[var(--grapho-control)]"><span className="text-[var(--grapho-muted)]">{label}</span><span className="text-[var(--grapho-faint)]">{value}</span></button>;
