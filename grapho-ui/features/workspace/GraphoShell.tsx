@@ -67,7 +67,7 @@ export default function GraphoShell() {
       const source = nativeStored ?? stored;
       if (source) {
         const stored = source;
-        setDocuments(stored.documents);
+        setDocuments(stored.documents.map((document) => document.blocks.length && ["todo", "toggle"].includes(document.blocks[document.blocks.length - 1].type) ? { ...document, blocks: [...document.blocks, { id: `block-${document.id}-writing`, type: "paragraph" as const, text: "" }] } : document));
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
         setActiveFolder(stored.activeFolder);
         const preferences = { ...defaultGraphoPreferences, ...(stored.preferences ?? {}) };
@@ -496,7 +496,14 @@ export default function GraphoShell() {
   };
 
   const changeBlockType = (blockId: string, type: Block["type"]) => {
-    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, blocks: document.blocks.map((block) => block.id === blockId ? { ...block, type, checked: type === "todo" ? Boolean(block.checked) : undefined, collapsed: type === "toggle" ? Boolean(block.collapsed) : undefined, text: block.text.replace(/^(?:#{1,6}|>|[-*+]|\d+[.)]|\[\s?[xX]?\]|```)+\s*/, "") } : block), updated: "Just now" }));
+    setDocuments((current) => current.map((document) => {
+      if (document.id !== selected.id) return document;
+      const blocks = document.blocks.map((block) => block.id === blockId ? { ...block, type, checked: type === "todo" ? Boolean(block.checked) : undefined, collapsed: type === "toggle" ? Boolean(block.collapsed) : undefined, text: block.text.replace(/^(?:#{1,6}|>|[-*+]|\d+[.)]|\[\s?[xX]?\]|```)+\s*/, "") } : block);
+      const changedIndex = blocks.findIndex((block) => block.id === blockId);
+      const changed = blocks[changedIndex];
+      if (changed && (type === "todo" || type === "toggle") && changedIndex === blocks.length - 1) blocks.push({ id: `block-${selected.id}-${blockSequence.current++}`, type: "paragraph", text: "" });
+      return { ...document, blocks, updated: "Just now" };
+    }));
     setCommandBlockId(null);
     window.setTimeout(() => document.querySelector<HTMLElement>(`[data-grapho-block-id="${blockId}"]`)?.focus(), 0);
   };
