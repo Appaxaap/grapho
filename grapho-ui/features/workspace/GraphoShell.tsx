@@ -560,13 +560,10 @@ export default function GraphoShell() {
   };
 
   const handleBlockKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, block: Block) => {
-    if ((event.metaKey || event.ctrlKey) && ["b", "i", "u", "k"].includes(event.key.toLowerCase())) {
+    if ((event.metaKey || event.ctrlKey) && ["b", "i", "u"].includes(event.key.toLowerCase())) {
       event.preventDefault();
-      const command = event.key.toLowerCase() === "b" ? "bold" : event.key.toLowerCase() === "i" ? "italic" : event.key.toLowerCase() === "u" ? "underline" : "createLink";
-      if (command === "createLink") {
-        const url = window.prompt("Link URL");
-        if (url) applySelectionFormat(command, url);
-      } else applySelectionFormat(command);
+      const command = event.key.toLowerCase() === "b" ? "bold" : event.key.toLowerCase() === "i" ? "italic" : "underline";
+      applySelectionFormat(command);
       return;
     }
     if (event.key === "/") {
