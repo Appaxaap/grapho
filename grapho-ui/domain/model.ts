@@ -1,9 +1,45 @@
-export type BlockType = "paragraph" | "heading" | "quote" | "list" | "ordered-list" | "callout" | "table" | "code" | "divider";
+export type BlockType =
+  | "paragraph"
+  | "heading"
+  | "quote"
+  | "list"
+  | "ordered-list"
+  | "todo"
+  | "toggle"
+  | "callout"
+  | "table"
+  | "code"
+  | "divider";
 
+export type TextMark =
+  | { type: "bold" }
+  | { type: "italic" }
+  | { type: "underline" }
+  | { type: "strike" }
+  | { type: "code" }
+  | { type: "highlight"; color?: string }
+  | { type: "link"; href: string; documentId?: string; blockId?: string };
+
+export type InlineText = {
+  text: string;
+  marks?: TextMark[];
+};
+
+/**
+ * Blocks intentionally remain flat in storage. `parentId` gives us a stable,
+ * cycle-safe hierarchy without coupling persistence to a recursive React tree.
+ * `text` remains supported while the rich-text editor is migrated incrementally.
+ */
 export type Block = {
   id: string;
   type: BlockType;
   text: string;
+  content?: InlineText[];
+  parentId?: string | null;
+  position?: string;
+  checked?: boolean;
+  collapsed?: boolean;
+  level?: number;
 };
 
 export type DocumentItem = {
@@ -12,6 +48,10 @@ export type DocumentItem = {
   folder: string;
   updated: string;
   blocks: Block[];
+  slug?: string;
+  aliases?: string[];
+  createdAt?: string;
+  updatedAt?: string;
   trashed?: boolean;
   deletedAt?: string;
 };
