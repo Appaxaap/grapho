@@ -406,9 +406,17 @@ export default function GraphoShell() {
   };
 
   const changeBlockType = (blockId: string, type: Block["type"]) => {
-    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, blocks: document.blocks.map((block) => block.id === blockId ? { ...block, type, text: block.text.replace(/^(?:#{1,6}|>|[-*+]|\d+[.)]|```)+\s*/, "") } : block), updated: "Just now" }));
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, blocks: document.blocks.map((block) => block.id === blockId ? { ...block, type, checked: type === "todo" ? Boolean(block.checked) : undefined, collapsed: type === "toggle" ? Boolean(block.collapsed) : undefined, text: block.text.replace(/^(?:#{1,6}|>|[-*+]|\d+[.)]|\[\s?[xX]?\]|```)+\s*/, "") } : block), updated: "Just now" }));
     setCommandBlockId(null);
     window.setTimeout(() => document.querySelector<HTMLElement>(`[data-grapho-block-id="${blockId}"]`)?.focus(), 0);
+  };
+
+  const setBlockChecked = (blockId: string, checked: boolean) => {
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === blockId ? { ...block, checked } : block) }));
+  };
+
+  const setBlockCollapsed = (blockId: string, collapsed: boolean) => {
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === blockId ? { ...block, collapsed } : block) }));
   };
 
   const handleBlockKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, block: Block) => {
@@ -438,7 +446,7 @@ export default function GraphoShell() {
     }
     if (event.key === " " && block.type === "paragraph") {
       const shortcut = block.text.trim();
-      const types: Record<string, Block["type"]> = { "#": "heading", "##": "heading", "###": "heading", ">": "quote", "-": "list", "*": "list", "+": "list" };
+      const types: Record<string, Block["type"]> = { "#": "heading", "##": "heading", "###": "heading", ">": "quote", "-": "list", "*": "list", "+": "list", "[]": "todo", "[ ]": "todo", "[x]": "todo", "[X]": "todo" };
       if (types[shortcut]) changeBlockType(block.id, types[shortcut]);
       else if (/^\d+[.)]$/.test(shortcut)) changeBlockType(block.id, "ordered-list");
       else if (shortcut === "```") changeBlockType(block.id, "code");
@@ -555,7 +563,7 @@ export default function GraphoShell() {
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
 
-              <div className="space-y-4">{selected.blocks.filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} className={`group relative rounded-lg transition-colors ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text) => updateBlock(block.id, text)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Select block" title="Select block" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
+              <div className="space-y-4">{selected.blocks.filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} className={`group relative rounded-lg transition-colors ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text, content) => updateBlock(block.id, text, content)} onToggle={() => setBlockChecked(block.id, !block.checked)} onCollapse={(collapsed) => setBlockCollapsed(block.id, collapsed)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Select block" title="Select block" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
               <button type="button" onClick={() => addBlockAfter(selected.blocks[selected.blocks.length - 1].id)} className="mt-6 flex items-center gap-2 text-[10px] text-[var(--grapho-faint)] hover:text-[var(--grapho-muted)]"><Plus size={13} /> Add block</button>
             </article>
           </div>
@@ -700,13 +708,15 @@ function renderInlineMarkdown(value: string) {
   return parts.map((part, index) => part.startsWith("**") && part.endsWith("**") ? <strong key={index}>{part.slice(2, -2)}</strong> : part);
 }
 
-function EditorBlock({ block, orderedIndex, onChange, onKeyDown, onPaste }: { block: Block; orderedIndex?: number; onChange: (text: string, content?: InlineText[]) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
+function EditorBlock({ block, orderedIndex, onChange, onToggle, onCollapse, onKeyDown, onPaste }: { block: Block; orderedIndex?: number; onChange: (text: string, content?: InlineText[]) => void; onToggle: () => void; onCollapse: (collapsed: boolean) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
   const editable = (className: string, label: string) => <EditableContent blockId={block.id} value={block.text} content={blockInlineContent(block)} label={label} className={className} onChange={onChange} onKeyDown={onKeyDown} onPaste={onPaste} />;
 
   if (block.type === "heading") return editable("text-3xl font-semibold leading-tight tracking-[-.06em] sm:text-4xl", "Heading block");
   if (block.type === "quote") return <div className="flex gap-3 border-l-2 border-[var(--grapho-accent)] bg-[var(--grapho-accent-soft)] px-4 py-3"><Quote size={15} className="mt-1 shrink-0 text-[var(--grapho-accent)]" />{editable("text-[15px] italic leading-7 text-[var(--grapho-muted)]", "Quote block")}</div>;
   if (block.type === "list") return <div className="flex gap-3"><div className="w-5 shrink-0 pt-1 text-[var(--grapho-faint)]">•</div>{editable("whitespace-pre-wrap text-[15px] leading-8 text-[var(--grapho-muted)]", "Bulleted list block")}</div>;
   if (block.type === "ordered-list") return <div className="flex gap-3"><div className="w-5 shrink-0 pt-1 text-right text-[var(--grapho-faint)]">{orderedIndex ?? 1}.</div>{editable("whitespace-pre-wrap text-[15px] leading-8 text-[var(--grapho-muted)]", "Numbered list block")}</div>;
+  if (block.type === "todo") return <div className="flex items-start gap-3"><button type="button" onClick={onToggle} aria-label={block.checked ? "Mark todo incomplete" : "Mark todo complete"} aria-pressed={block.checked} className={`mt-2 grid size-4 shrink-0 place-items-center rounded border ${block.checked ? "border-[var(--grapho-accent)] bg-[var(--grapho-accent)] text-[var(--grapho-background)]" : "border-[var(--grapho-border)] bg-transparent"}`}>{block.checked ? "✓" : ""}</button>{editable(`text-[15px] leading-8 ${block.checked ? "text-[var(--grapho-faint)] line-through" : "text-[var(--grapho-muted)]"}`, "To-do block")}</div>;
+  if (block.type === "toggle") return <div className="rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40"><div className="flex items-start gap-2 px-3 py-2"><button type="button" onClick={() => onCollapse(!block.collapsed)} aria-label={block.collapsed ? "Expand toggle" : "Collapse toggle"} aria-expanded={!block.collapsed} className="mt-2 grid size-5 shrink-0 place-items-center rounded-md text-xs text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)]">{block.collapsed ? "›" : "⌄"}</button>{editable("text-[15px] font-medium leading-8 text-[var(--grapho-foreground)]", "Toggle block")}</div></div>;
   if (block.type === "code") return <pre className="my-3 overflow-x-auto rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] p-4 text-[13px] leading-6 text-[var(--grapho-muted)]"><code>{block.text}</code></pre>;
   if (block.type === "divider") return <hr className="my-5 border-0 border-t border-[var(--grapho-border)]" />;
   if (block.type === "table") return <MarkdownTableBlock text={block.text} />;
@@ -792,6 +802,8 @@ function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["typ
     { type: "heading", category: "Basic", label: "Heading 2", hint: "Section title", icon: <Hash size={13} /> },
     { type: "list", category: "Lists", label: "Bulleted list", hint: "Simple list", icon: <List size={13} /> },
     { type: "ordered-list", category: "Lists", label: "Numbered list", hint: "Ordered steps", icon: <List size={13} /> },
+    { type: "todo", category: "Lists", label: "To-do", hint: "Track one item", icon: <span>☐</span> },
+    { type: "toggle", category: "Lists", label: "Toggle", hint: "Collapsible section", icon: <ChevronRight size={13} /> },
     { type: "quote", category: "Basic", label: "Quote", hint: "Highlight a thought", icon: <Quote size={13} /> },
     { type: "callout", category: "Basic", label: "Callout", hint: "Bring attention", icon: <Sparkles size={13} /> },
     { type: "code", category: "Advanced", label: "Code block", hint: "Monospaced code", icon: <Type size={13} /> },
