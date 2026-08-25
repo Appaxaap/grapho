@@ -22,6 +22,7 @@ export type GraphoStoragePayload = {
   documents: DocumentItem[];
   selectedId: string;
   activeFolder: string;
+  folders?: string[];
   preferences?: GraphoPreferences;
 };
 
