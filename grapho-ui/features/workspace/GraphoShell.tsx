@@ -781,6 +781,7 @@ function documentToMarkdown(document: DocumentItem) {
     if (block.type === "ordered-list") return block.text.split("\\n").map((line, index) => `${index + 1}. ${line}`).join("\\n");
     if (block.type === "code") return "```\\n" + block.text + "\\n```";
     if (block.type === "divider") return "---";
+    if (block.type === "page-break") return "\\n<!-- page break -->\\n";
     return block.text;
   })].join("\\n\\n");
 }
@@ -792,6 +793,7 @@ function escapeHtml(value: string) {
 function documentToPlainText(document: DocumentItem) {
   return [document.title.trim() || "Untitled document", ...document.blocks.map((block) => {
     if (block.type === "divider") return "--------------------";
+    if (block.type === "page-break") return "\\n[Page break]\\n";
     if (block.type === "todo") return `${block.checked ? "[x]" : "[ ]"} ${block.text}`;
     if (block.type === "list") return block.text.split("\\n").map((line) => `• ${line}`).join("\\n");
     if (block.type === "ordered-list") return block.text.split("\\n").map((line, index) => `${index + 1}. ${line}`).join("\\n");
@@ -812,6 +814,7 @@ function documentToHtml(document: DocumentItem) {
     if (block.type === "callout") return `<aside>${text}</aside>`;
     if (block.type === "code") return `<pre><code>${text}</code></pre>`;
     if (block.type === "divider") return "<hr>";
+    if (block.type === "page-break") return `<div class=\"grapho-page-break\" aria-label=\"Page break\"></div>`;
     if (block.type === "table") return `<pre>${text}</pre>`;
     return `<p>${text}</p>`;
   }).join("\\n");
@@ -846,6 +849,7 @@ function EditorBlock({ block, orderedIndex, onChange, onToggle, onCollapse, onKe
   if (block.type === "toggle") return <div className="rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40"><div className="flex items-start gap-2 px-3 py-2"><button type="button" onClick={() => onCollapse(!block.collapsed)} aria-label={block.collapsed ? "Expand toggle" : "Collapse toggle"} aria-expanded={!block.collapsed} className="mt-2 grid size-5 shrink-0 place-items-center rounded-md text-xs text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)]">{block.collapsed ? "›" : "⌄"}</button>{editable("text-[15px] font-medium leading-8 text-[var(--grapho-foreground)]", "Toggle block")}</div></div>;
   if (block.type === "code") return <pre className="my-3 overflow-x-auto rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] p-4 text-[13px] leading-6 text-[var(--grapho-muted)]"><code>{block.text}</code></pre>;
   if (block.type === "divider") return <hr className="my-5 border-0 border-t border-[var(--grapho-border)]" />;
+  if (block.type === "page-break") return <div className="grapho-page-break my-6 flex items-center justify-center text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Page break</div>;
   if (block.type === "table") return <MarkdownTableBlock text={block.text} />;
   return editable("text-[15px] leading-8 text-[var(--grapho-muted)] sm:text-[17px]", "Paragraph block");
 }
@@ -936,6 +940,7 @@ function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["typ
     { type: "code", category: "Advanced", label: "Code block", hint: "Monospaced code", icon: <Type size={13} /> },
     { type: "table", category: "Advanced", label: "Table", hint: "Structured rows and columns", icon: <Table2 size={13} /> },
     { type: "divider", category: "Basic", label: "Divider", hint: "Separate sections", icon: <Minus size={13} /> },
+    { type: "page-break", category: "Publishing", label: "Page break", hint: "Start a new printed page", icon: <FileDown size={13} /> },
   ];
   const filtered = commands.filter((command) => `${command.label} ${command.hint} ${command.category}`.toLowerCase().includes(query.toLowerCase()));
   useEffect(() => { searchRef.current?.focus(); }, []);

@@ -9,7 +9,8 @@ export type BlockType =
   | "callout"
   | "table"
   | "code"
-  | "divider";
+  | "divider"
+  | "page-break";
 
 export type TextMark =
   | { type: "bold" }

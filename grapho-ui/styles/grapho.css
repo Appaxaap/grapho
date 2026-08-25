@@ -93,6 +93,8 @@
 .grapho-document-list button > span span:last-child { color: var(--grapho-faint); font-family: var(--grapho-font-sans); font-size: 9px; }
 .grapho-print-branding { display: none; }
 .grapho-print-page-number { display: none; }
+.grapho-page-break { min-height: 28px; border-top: 1px dashed var(--grapho-border); }
+@media print { .grapho-page-break { break-before: page; page-break-before: always; border: 0 !important; min-height: 0 !important; } }
 .grapho-command-input:focus,
 .grapho-command-input:focus-visible,
 [aria-label="Search block commands"]:focus,
