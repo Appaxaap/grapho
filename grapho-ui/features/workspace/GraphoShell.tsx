@@ -729,6 +729,8 @@ export default function GraphoShell() {
       </AnimatePresence>
       <input ref={markdownInput} type="file" accept="text/markdown,.md,text/plain" onChange={importMarkdown} className="hidden" aria-label="Import Markdown file" />
       <input ref={backupInput} type="file" accept="application/json,.json" onChange={importBackup} className="hidden" aria-label="Import JSON backup" />
+      <div className="grapho-print-header" aria-hidden="true"><span>Grapho</span><strong>{selected.title}</strong></div>
+      <div className="grapho-print-footer" aria-hidden="true"><span>{activeFolder}</span><span>Grapho document</span></div>
       <div className="grapho-print-page-number" aria-hidden="true">Page <span /></div>
       <div className="grapho-print-branding" aria-hidden="true">Grapho</div>
     </div>

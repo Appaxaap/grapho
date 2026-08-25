@@ -92,6 +92,7 @@
 .grapho-document-list button > span span:first-child { color: inherit; font-family: var(--grapho-font-sans); font-size: 11px; font-weight: 560; letter-spacing: -0.015em; }
 .grapho-document-list button > span span:last-child { color: var(--grapho-faint); font-family: var(--grapho-font-sans); font-size: 9px; }
 .grapho-print-branding { display: none; }
+.grapho-print-header, .grapho-print-footer { display: none; }
 .grapho-print-page-number { display: none; }
 .grapho-page-break { min-height: 28px; border-top: 1px dashed var(--grapho-border); }
 @media print { .grapho-page-break { break-before: page; page-break-before: always; border: 0 !important; min-height: 0 !important; } }
@@ -130,6 +131,9 @@
   .grapho-ui pre { break-inside: avoid; }
   .grapho-ui * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   .grapho-print-page-number { display: none !important; }
+  .grapho-print-header, .grapho-print-footer { display: flex; position: fixed; left: 0; right: 0; z-index: 50; justify-content: space-between; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; letter-spacing: .04em; }
+  .grapho-print-header { top: -11mm; border-bottom: 1px solid #d4d4d8; padding-bottom: 3mm; }
+  .grapho-print-footer { bottom: -11mm; border-top: 1px solid #d4d4d8; padding-top: 3mm; }
   .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
   .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 }
