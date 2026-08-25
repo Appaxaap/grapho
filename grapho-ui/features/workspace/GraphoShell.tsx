@@ -280,6 +280,7 @@ export default function GraphoShell() {
       return { ...document, updated: "Just now", blocks: [...document.blocks.slice(0, index + 1), newBlock, ...document.blocks.slice(index + 1)] };
     }));
     setCommandBlockId(null);
+    window.setTimeout(() => document.querySelector<HTMLElement>(`[data-grapho-block-id="${newBlock.id}"]`)?.focus(), 0);
   };
 
   const exportPdf = () => {
