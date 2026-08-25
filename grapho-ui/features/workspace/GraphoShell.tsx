@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import "../../styles/grapho.css";
 import { clearGraphoStorage, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage } from "../../persistence/storage";
-import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem } from "../../domain/model";
+import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
+import { blockInlineContent, mergeInlineContent, plainInlineText } from "../../domain/operations";
 
 type Theme = "dark" | "light";
 
@@ -188,8 +189,8 @@ export default function GraphoShell() {
     }));
   };
 
-  const updateBlock = (id: string, text: string) => {
-    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === id ? { ...block, text } : block) }));
+  const updateBlock = (id: string, text: string, content?: InlineText[]) => {
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.map((block) => block.id === id ? { ...block, text, content } : block) }));
   };
 
   const createDocument = () => {
@@ -699,8 +700,8 @@ function renderInlineMarkdown(value: string) {
   return parts.map((part, index) => part.startsWith("**") && part.endsWith("**") ? <strong key={index}>{part.slice(2, -2)}</strong> : part);
 }
 
-function EditorBlock({ block, orderedIndex, onChange, onKeyDown, onPaste }: { block: Block; orderedIndex?: number; onChange: (text: string) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
-  const editable = (className: string, label: string) => <EditableContent blockId={block.id} value={block.text} label={label} className={className} onChange={onChange} onKeyDown={onKeyDown} onPaste={onPaste} />;
+function EditorBlock({ block, orderedIndex, onChange, onKeyDown, onPaste }: { block: Block; orderedIndex?: number; onChange: (text: string, content?: InlineText[]) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
+  const editable = (className: string, label: string) => <EditableContent blockId={block.id} value={block.text} content={blockInlineContent(block)} label={label} className={className} onChange={onChange} onKeyDown={onKeyDown} onPaste={onPaste} />;
 
   if (block.type === "heading") return editable("text-3xl font-semibold leading-tight tracking-[-.06em] sm:text-4xl", "Heading block");
   if (block.type === "quote") return <div className="flex gap-3 border-l-2 border-[var(--grapho-accent)] bg-[var(--grapho-accent-soft)] px-4 py-3"><Quote size={15} className="mt-1 shrink-0 text-[var(--grapho-accent)]" />{editable("text-[15px] italic leading-7 text-[var(--grapho-muted)]", "Quote block")}</div>;
@@ -732,17 +733,53 @@ function EditableDocumentTitle({ value, onChange }: { value: string; onChange: (
   />;
 }
 
-function EditableContent({ blockId, value, label, className, onChange, onKeyDown, onPaste }:  { blockId: string; value: string; label: string; className: string; onChange: (value: string) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
+function EditableContent({ blockId, value, content, label, className, onChange, onKeyDown, onPaste }: { blockId: string; value: string; content: InlineText[]; label: string; className: string; onChange: (value: string, content?: InlineText[]) => void; onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void; onPaste: (event: React.ClipboardEvent<HTMLDivElement>) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   const lastValue = useRef(value);
 
   useEffect(() => {
-    if (!ref.current) return;
-    if (ref.current.textContent !== value) ref.current.textContent = value;
+    if (!ref.current || document.activeElement === ref.current) return;
+    ref.current.replaceChildren(...content.map((span, index) => inlineSpanNode(span, index)));
     lastValue.current = value;
-  }, [value]);
+  }, [content, value]);
 
-  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { lastValue.current = event.currentTarget.textContent ?? ""; onChange(lastValue.current); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
+  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
+}
+
+function inlineSpanNode(span: InlineText, key: number): Node {
+  let node: Node = document.createTextNode(span.text);
+  for (const mark of span.marks ?? []) {
+    const element = document.createElement(mark.type === "bold" ? "strong" : mark.type === "italic" ? "em" : mark.type === "underline" ? "u" : mark.type === "strike" ? "s" : mark.type === "code" ? "code" : mark.type === "highlight" ? "mark" : "a");
+    if (mark.type === "highlight" && mark.color) element.style.backgroundColor = mark.color;
+    if (mark.type === "link") { element.setAttribute("href", mark.href); element.setAttribute("target", "_blank"); element.setAttribute("rel", "noreferrer"); }
+    element.appendChild(node);
+    node = element;
+  }
+  return node;
+}
+
+function readInlineContent(root: HTMLElement): InlineText[] {
+  const result: InlineText[] = [];
+  const visit = (node: Node, marks: TextMark[]) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? "";
+      if (text) result.push({ text, marks: marks.length ? marks : undefined });
+      return;
+    }
+    const element = node as HTMLElement;
+    const nextMarks = [...marks];
+    const tag = element.tagName.toLowerCase();
+    if (tag === "strong" || tag === "b") nextMarks.push({ type: "bold" });
+    if (tag === "em" || tag === "i") nextMarks.push({ type: "italic" });
+    if (tag === "u") nextMarks.push({ type: "underline" });
+    if (tag === "s" || tag === "strike") nextMarks.push({ type: "strike" });
+    if (tag === "code") nextMarks.push({ type: "code" });
+    if (tag === "mark") nextMarks.push({ type: "highlight", color: element.style.backgroundColor || undefined });
+    if (tag === "a") nextMarks.push({ type: "link", href: element.getAttribute("href") ?? "" });
+    node.childNodes.forEach((child) => visit(child, nextMarks));
+  };
+  root.childNodes.forEach((child) => visit(child, []));
+  return mergeInlineContent(result);
 }
 
 function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["type"]) => void; onDismiss: () => void }) {
