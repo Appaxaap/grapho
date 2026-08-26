@@ -476,6 +476,7 @@ export default function GraphoShell() {
       if (!definition) return;
       event.preventDefault();
       if (definition.action === "new-document") createDocument();
+      if (definition.action === "new-workspace") { setWorkspaceDraft(""); setWorkspaceDialogOpen(true); }
       if (definition.action === "search") setPaletteOpen(true);
       if (definition.action === "focus-mode") setFocusMode((value) => !value);
       if (definition.action === "sidebar") setSidebarOpen((value) => !value);
@@ -494,11 +495,15 @@ export default function GraphoShell() {
   }, [paletteOpen]);
 
   useEffect(() => {
-    if (!helpOpen) return;
-    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setHelpOpen(false); };
+    if (!helpOpen && !workspaceDialogOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (workspaceDialogOpen) setWorkspaceDialogOpen(false);
+      else setHelpOpen(false);
+    };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [helpOpen]);
+  }, [helpOpen, workspaceDialogOpen]);
 
   useEffect(() => {
     const handleBlockDelete = (event: KeyboardEvent) => {
@@ -665,7 +670,7 @@ export default function GraphoShell() {
     return () => window.removeEventListener("keydown", handleEditorHistory);
   }, [redo, undo]);
 
-  const modalOpen = Boolean(deleteTarget || renameTarget || paletteOpen || helpOpen);
+  const modalOpen = Boolean(deleteTarget || renameTarget || paletteOpen || helpOpen || workspaceDialogOpen);
 
   return (
     <div className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
@@ -801,7 +806,7 @@ export default function GraphoShell() {
         {helpOpen && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[100] grid place-items-center bg-black/35 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="grapho-help-title" initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .97 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-dialog grapho-glass w-full max-w-lg overflow-hidden rounded-2xl p-2">
             <header className="flex items-start justify-between border-b border-[var(--grapho-border)] px-3 py-3"><div><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Grapho workspace</div><h2 id="grapho-help-title" className="mt-1 text-base font-semibold tracking-[-.03em]">Help & shortcuts</h2><p className="mt-2 text-[12px] leading-5 text-[var(--grapho-muted)]">Write naturally. Grapho keeps the structure out of your way.</p></div><button type="button" onClick={() => setHelpOpen(false)} aria-label="Close help" className="grid size-9 place-items-center rounded-xl text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><X size={15} /></button></header>
-            <div className="grid gap-5 px-3 py-5 sm:grid-cols-2"><ShortcutGroup title="Writing" items={[["Enter", "New block"], ["Backspace", "Remove empty block"], ["/", "Open block menu"], ["Shift + Enter", "New line"]]} /><ShortcutGroup title="Formatting" items={[["Select text", "Open formatting toolbar"], ["⌘ / Ctrl + B", "Bold selection"], ["⌘ / Ctrl + I", "Italic selection"], ["Delete", "Delete selected block"]]} /><ShortcutGroup title="Markdown" items={[["# + Space", "Heading"], ["> + Space", "Quote"], ["- + Space", "Bulleted list"], ["1. + Space", "Numbered list"]]} /><ShortcutGroup title="Workspace" items={[["Click handle", "Select a block"], ["PDF", "Print canvas to PDF"], ["T", "Open document style"], ["Esc", "Close menus"]]} /></div>
+            <div className="grid gap-5 px-3 py-5 sm:grid-cols-2"><ShortcutGroup title="Writing" items={[["Enter", "New block"], ["Backspace", "Remove empty block"], ["/", "Open block menu"], ["Shift + Enter", "New line"]]} /><ShortcutGroup title="Formatting" items={[["Select text", "Open formatting toolbar"], ["⌘ / Ctrl + B", "Bold selection"], ["⌘ / Ctrl + I", "Italic selection"], ["Delete", "Delete selected block"]]} /><ShortcutGroup title="Markdown" items={[["# + Space", "Heading"], ["> + Space", "Quote"], ["- + Space", "Bulleted list"], ["1. + Space", "Numbered list"]]} /><ShortcutGroup title="Workspace" items={[["Click handle", "Select a block"], ["PDF", "Print canvas to PDF"], ["T", "Open document style"], ["Mod + Shift + W", "New workspace"], ["Esc", "Close menus"]]} /></div>
             <footer className="flex items-center justify-between border-t border-[var(--grapho-border)] bg-[var(--grapho-control)] px-3 py-3 text-[8px] text-[var(--grapho-faint)]"><span>Local-first · no account required</span><button type="button" onClick={() => setHelpOpen(false)} className="rounded-lg px-2.5 py-1.5 text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]">Done</button></footer>
           </motion.section>
         </motion.div>}
