@@ -25,7 +25,7 @@
   min-height: 100vh;
   background: var(--grapho-background);
   color: var(--grapho-foreground);
-  font-family: var(--grapho-font-sans);
+  font-family: var(--grapho-font);
   letter-spacing: -0.015em;
 }
 
