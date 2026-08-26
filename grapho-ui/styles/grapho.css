@@ -88,7 +88,10 @@
 .grapho-project-list button > span:first-of-type { font-weight: 520; }
 .grapho-project-list button > span:last-child { color: var(--grapho-faint); font-size: 9px; }
 .grapho-document-list button { min-height: 48px; color: var(--grapho-muted); }
-.grapho-document-list button:hover, .grapho-document-list button[class*="text-[var(--grapho-foreground)]"] { color: var(--grapho-foreground); background: var(--grapho-control-hover); }
+.grapho-document-list > div.group > button:first-child:hover { color: var(--grapho-foreground); background: var(--grapho-control-hover); }
+.grapho-document-list > div.group > div button:hover { color: var(--grapho-foreground); background: var(--grapho-control); }
+.grapho-document-list > div.group > button:first-child:focus-visible,
+.grapho-document-list > div.group > div button:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 1px; }
 .grapho-document-list button > span span:first-child { color: inherit; font-family: var(--grapho-font-sans); font-size: 11px; font-weight: 560; letter-spacing: -0.015em; }
 .grapho-document-list button > span span:last-child { color: var(--grapho-faint); font-family: var(--grapho-font-sans); font-size: 9px; }
 .grapho-document-list button.grapho-empty-action { min-height: 0; background: transparent; }
