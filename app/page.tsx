@@ -31,18 +31,18 @@ export default function PublicSite() {
       <section className="studio-hero" aria-labelledby="hero-title">
         <div className="studio-copy">
           <div className="site-eyebrow"><span className="site-dot" /> A focused writing studio</div>
-          <h1 id="hero-title">Write something<br /><em>worth sharing.</em></h1>
+          <h1 id="hero-title"><span>Write something</span><br /><em><span>worth sharing.</span></em></h1>
           <p>A beautiful, local-first writing app for turning ideas into finished documents. Write without distractions, organize naturally, and export work that looks as good as it reads.</p>
           <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
           <div className="site-hero-note"><LockKeyhole size={13} /> Open source · local-first · no account required</div>
         </div>
-        <div className="cinema-stage" aria-label="Grapho desktop writing experience">
+        <div className="cinema-stage" aria-label="Grapho desktop writing experience"><div className="cinema-ambient" aria-hidden="true" /><div className="cinema-scanline" aria-hidden="true" />
           <div className="cinema-window-bar"><span className="cinema-lights"><i /><i /><i /></span><span>Product Brief</span><span>Saved locally</span></div>
           <div className="cinema-workspace">
             <aside><div className="cinema-library">Library <b>+</b></div><div className="cinema-search">Search documents</div><small>WORKSPACE</small><div className="cinema-folder active">Projects <span>3</span></div><div className="cinema-folder">Personal <span>1</span></div><small>PROJECTS</small><div className="cinema-document active">Product Brief</div><div className="cinema-document">Launch notes</div></aside>
             <article><div className="cinema-meta">PROJECTS / PRODUCT BRIEF</div><div className="cinema-kicker">DOCUMENT · READY TO SHARE</div><h2>Build a quieter<br />way to write.</h2><p>A focused document experience for turning a clear idea into work another person can use.</p><h3>What matters</h3><ul><li>Writing stays in the foreground</li><li>Structure remains understandable</li><li>The finished document travels well</li></ul><div className="cinema-callout">Your workspace. Your documents. Your computer.</div></article>
           </div>
-          <div className="cinema-toolbar"><span>Saved</span><i /> <b>B</b><em>I</em><span>H</span><span>↗</span></div>
+          <div className="cinema-save-signal" aria-hidden="true"><i /> Local file updated</div><div className="cinema-toolbar"><span>Saved</span><i /> <b>B</b><em>I</em><span>H</span><span>↗</span></div>
         </div>
       </section>
 
