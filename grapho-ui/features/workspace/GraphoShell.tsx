@@ -891,11 +891,13 @@ function parseMarkdownBlocks(rawText: string, makeId: () => string): Block[] {
       blocks.push({ id: makeId(), type: "code", text: codeLines.join("\n") });
       continue;
     }
-    if (index + 1 < lines.length && /^\s*\|/.test(line) && /^\s*\|?\s*:?-{3,}/.test(lines[index + 1])) {
+    const isTableRow = (value: string) => /^\s*\|/.test(value.trim());
+    const isTableSeparator = (value: string) => isTableRow(value) && value.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").every((cell) => /^\s*:?-{3,}:?\s*$/.test(cell));
+    if (index + 1 < lines.length && isTableRow(line) && isTableSeparator(lines[index + 1])) {
       const rows: string[] = [];
-      while (index < lines.length && /^\s*\|/.test(lines[index].trim())) {
+      while (index < lines.length && isTableRow(lines[index])) {
         const row = lines[index].trim();
-        if (!/^\s*\|?\s*:?-{3,}/.test(row)) rows.push(row);
+        if (!isTableSeparator(row)) rows.push(row);
         index += 1;
       }
       blocks.push({ id: makeId(), type: "table", text: rows.join("\n") });
