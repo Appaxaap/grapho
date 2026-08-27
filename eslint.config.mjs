@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     // Local browser-validation tooling (not app code).
     ".pwtools/**",
     ".pwbrowsers/**",
+    // Generated Tauri/Rust output is not application source.
+    "src-tauri/target/**",
+    "src-tauri/gen/**",
   ]),
 ]);
 
