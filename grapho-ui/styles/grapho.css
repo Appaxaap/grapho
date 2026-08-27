@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
+@font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin-ext.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
 /* Grapho-local typography and design tokens. The compact monospace stack keeps
    the workspace consistent and works without network access. */
 .grapho-ui {
-  --grapho-font: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --grapho-font-display: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --grapho-font: "Grapho Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --grapho-font-display: "Grapho Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --grapho-size-body: 17px;
   --grapho-size-small: 10px;
   --grapho-leading-body: 1.9;
