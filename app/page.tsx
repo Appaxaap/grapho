@@ -35,13 +35,13 @@ export default function PublicSite() {
           <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
           <div className="site-hero-note"><LockKeyhole size={13} /> Open source · local-first · no account required</div>
         </div>
-        <div className="studio-artifact" aria-label="A finished document made in Grapho">
-          <div className="studio-paper-meta"><span>GRAPHO / ESSAY</span><span>04 · 18 · 2026</span></div>
-          <div className="studio-paper-kicker">A NOTE ON FINISHING</div>
-          <h2>Ideas become useful<br />when they leave<br />the notebook.</h2>
-          <p>Writing is not only a way to remember. It is a way to shape a thought until another person can hold it.</p>
-          <blockquote>Make the structure quiet.<br />Make the meaning clear.</blockquote>
-          <div className="studio-paper-footer"><span>Ready to share</span><span>01</span></div>
+        <div className="cinema-stage" aria-label="Grapho desktop writing experience">
+          <div className="cinema-window-bar"><span className="cinema-lights"><i /><i /><i /></span><span>Product Brief</span><span>Saved locally</span></div>
+          <div className="cinema-workspace">
+            <aside><div className="cinema-library">Library <b>+</b></div><div className="cinema-search">Search documents</div><small>WORKSPACE</small><div className="cinema-folder active">Projects <span>3</span></div><div className="cinema-folder">Personal <span>1</span></div><small>PROJECTS</small><div className="cinema-document active">Product Brief</div><div className="cinema-document">Launch notes</div></aside>
+            <article><div className="cinema-meta">PROJECTS / PRODUCT BRIEF</div><div className="cinema-kicker">DOCUMENT · READY TO SHARE</div><h2>Build a quieter<br />way to write.</h2><p>A focused document experience for turning a clear idea into work another person can use.</p><h3>What matters</h3><ul><li>Writing stays in the foreground</li><li>Structure remains understandable</li><li>The finished document travels well</li></ul><div className="cinema-callout">Your workspace. Your documents. Your computer.</div></article>
+          </div>
+          <div className="cinema-toolbar"><span>Saved</span><i /> <b>B</b><em>I</em><span>H</span><span>↗</span></div>
         </div>
       </section>
 
