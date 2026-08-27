@@ -27,17 +27,22 @@ export default function PublicSite() {
         <button className="site-menu" type="button" aria-label="Open navigation menu" title="Open navigation menu"><Menu size={18} /></button>
       </nav>
 
-      <section className="site-hero" aria-labelledby="hero-title">
-        <div className="site-eyebrow"><span className="site-dot" /> A focused writing studio</div>
-        <h1 id="hero-title">Make something<br /><em>worth sharing.</em></h1>
-        <p className="site-hero-copy">Grapho is a modern, local-first writing app for turning blank pages into finished documents.</p>
-        <div className="site-actions"><a className="site-button site-button-primary" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer">Explore on GitHub <ArrowRight size={16} /></a><Link className="site-button site-button-quiet" href="/app">Open Grapho</Link></div>
-        <div className="site-hero-note"><LockKeyhole size={13} /> Your writing stays on your machine.</div>
-      </section>
-
-      <section className="site-editor-preview" aria-label="Grapho writing workspace preview">
-        <div className="preview-sidebar"><div className="preview-sidebar-head"><span className="site-mark small"><img src="/Branding/png-logo.png" alt="" /></span><span>Library</span><span className="preview-plus">+</span></div><div className="preview-search">⌕ &nbsp; Search documents</div><div className="preview-label">Workspace</div><div className="preview-folder active">▾ &nbsp; Projects</div><div className="preview-folder">▸ &nbsp; Personal</div><div className="preview-folder">▸ &nbsp; Archive</div></div>
-        <div className="preview-canvas"><div className="preview-meta">PROJECTS &nbsp; / &nbsp; PRODUCT NOTES</div><div className="preview-kicker">DOCUMENT · MARKDOWN COMPATIBLE</div><h2>A clear place<br />to think.</h2><p className="preview-line">Write naturally. Grapho keeps the structure out of your way.</p><div className="preview-block"><span className="preview-check">✓</span><span>Ship a document that feels finished</span></div><div className="preview-block muted">Start writing here…</div></div>
+      <section className="studio-hero" aria-labelledby="hero-title">
+        <div className="studio-copy">
+          <div className="site-eyebrow"><span className="site-dot" /> A focused writing studio</div>
+          <h1 id="hero-title">Write the thing<br />you came to <em>make.</em></h1>
+          <p>Grapho gives ideas a quiet place to become clear, structured, and ready to share—without turning writing into workspace management.</p>
+          <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
+          <div className="site-hero-note"><LockKeyhole size={13} /> Local-first. No account required.</div>
+        </div>
+        <div className="studio-artifact" aria-label="A finished document made in Grapho">
+          <div className="studio-paper-meta"><span>GRAPHO / ESSAY</span><span>04 · 18 · 2026</span></div>
+          <div className="studio-paper-kicker">A NOTE ON FINISHING</div>
+          <h2>Ideas become useful<br />when they leave<br />the notebook.</h2>
+          <p>Writing is not only a way to remember. It is a way to shape a thought until another person can hold it.</p>
+          <blockquote>Make the structure quiet.<br />Make the meaning clear.</blockquote>
+          <div className="studio-paper-footer"><span>Ready to share</span><span>01</span></div>
+        </div>
       </section>
 
       <section className="site-section" id="features" aria-labelledby="features-title"><div className="site-section-heading"><span className="site-eyebrow">The whole workflow</span><h2 id="features-title">From blank page<br />to finished document.</h2></div><div className="site-feature-grid">{features.map(([title, copy, Icon]) => <article className="site-feature" key={title}><span className="site-feature-icon"><Icon size={17} /></span><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
