@@ -2,10 +2,11 @@ import Link from "next/link";
 import { ArrowRight, Check, GitBranch, LockKeyhole, Menu, PenLine, Sparkles, WandSparkles } from "lucide-react";
 import "./site.css";
 
-const features = [
-  ["Write without friction", "A calm, structured canvas that gets out of the way while you think.", PenLine],
-  ["Organize simply", "Projects, workspaces, documents, and nested blocks—without database ceremony.", Sparkles],
-  ["Deliver with confidence", "Export meaningful documents to Markdown, HTML, plain text, and PDF.", WandSparkles],
+const workflow = [
+  ["01", "Write", "A calm, structured canvas that keeps the document in the foreground.", PenLine, "Start with a clear page"],
+  ["02", "Organize", "Projects, folders, and documents—nothing more complicated than necessary.", Sparkles, "Projects / Product brief"],
+  ["03", "Refine", "Shape hierarchy, typography, links, tables, quotes, and callouts in context.", WandSparkles, "Heading · Quote · Table"],
+  ["04", "Deliver", "Export meaningful work to PDF, Markdown, HTML, or plain text.", ArrowRight, "PDF · MD · HTML · TXT"],
 ] as const;
 
 const capabilities = ["Structured blocks", "Rich text formatting", "Markdown import and export", "Local full-text search", "Document backlinks", "Print-ready PDF export"];
@@ -47,7 +48,7 @@ export default function PublicSite() {
 
       <section className="site-ownership" aria-labelledby="ownership-title"><div className="ownership-copy"><span className="site-eyebrow"><span className="site-dot" /> Local by design</span><h2 id="ownership-title">Your writing has<br />a home. <em>Yours.</em></h2><p>Grapho keeps the document close to you—from the first line to the finished export. No connection is required to open, edit, organize, or deliver your work.</p><div className="ownership-principles"><span>Local storage</span><span>Offline editing</span><span>Portable exports</span></div></div><div className="ownership-flow" aria-label="A document moving through a local Grapho workflow"><div className="ownership-machine"><span className="ownership-machine-top"><i /><i /><i /><b>grapho.local</b></span><div className="ownership-file"><small>PRODUCT BRIEF</small><strong>A clearer way<br />to write.</strong><span>Saved on this computer</span></div></div><div className="ownership-path"><span>WRITE</span><i /><span>KEEP</span><i /><span>EXPORT</span></div></div></section>
 
-      <section className="site-section" id="features" aria-labelledby="features-title"><div className="site-section-heading"><span className="site-eyebrow">The whole workflow</span><h2 id="features-title">From blank page<br />to finished document.</h2></div><div className="site-feature-grid">{features.map(([title, copy, Icon]) => <article className="site-feature" key={title}><span className="site-feature-icon"><Icon size={17} /></span><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
+      <section className="site-workflow" id="features" aria-labelledby="features-title"><div className="workflow-heading"><span className="site-eyebrow"><span className="site-dot" /> The whole workflow</span><h2 id="features-title">A document should<br />move <em>forward.</em></h2><p>Grapho supports the complete path from an unfinished thought to work that is ready to leave the editor.</p></div><div className="workflow-track">{workflow.map(([number, title, copy, Icon, preview]) => <article className="workflow-step" key={title}><div className="workflow-number">{number}</div><div className="workflow-content"><span className="workflow-icon"><Icon size={15} /></span><h3>{title}</h3><p>{copy}</p></div><div className={`workflow-preview workflow-preview-${number}`}><small>{preview}</small>{number === "01" && <><strong>Product brief</strong><i /><i className="short" /></>}{number === "02" && <><span>▾ Projects</span><span className="selected">&nbsp;&nbsp;Product brief</span><span>▸ Personal</span></>}{number === "03" && <><b>B</b><em>I</em><span>H2</span><span>↗</span></>}{number === "04" && <><strong>Ready to share</strong><span>Export document →</span></>}</div></article>)}</div></section>
 
       <section className="site-problem" aria-labelledby="problem-title"><div><span className="site-eyebrow">A focused alternative</span><h2 id="problem-title">Writing shouldn&apos;t feel like managing software.</h2><p>Sometimes you just want to sit down and write. Grapho keeps the interface focused on the document—not everything around it.</p></div><div className="site-less-more"><div><span>Less</span><p>Dashboards<br />Databases<br />Configuration<br />Distractions</p></div><div><span>More</span><p>Writing<br />Structure<br />Beautiful documents<br />Ownership</p></div></div></section>
 
