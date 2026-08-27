@@ -958,10 +958,10 @@ function documentToHtml(document: DocumentItem) {
     if (block.type === "code") return `<pre><code>${text}</code></pre>`;
     if (block.type === "divider") return "<hr>";
     if (block.type === "page-break") return `<div class=\"grapho-page-break\" aria-label=\"Page break\"></div>`;
-    if (block.type === "table") return `<pre>${text}</pre>`;
+    if (block.type === "table") return markdownTableToHtml(block.text);
     return `<p>${text}</p>`;
   }).join("\\n");
-  return `<!doctype html><html><head><meta charset=\"utf-8\"><title>${title}</title><style>body{max-width:760px;margin:48px auto;padding:0 24px;font:16px/1.7 system-ui,sans-serif;color:#1d232a}h1{line-height:1.15}blockquote,aside{border-left:3px solid #6ba587;padding:8px 16px;background:#f0f6f2}pre{padding:16px;background:#f3f4f6;overflow:auto}li{margin:4px 0}</style></head><body><h1>${title}</h1>${body}</body></html>`;
+  return `<!doctype html><html><head><meta charset=\"utf-8\"><title>${title}</title><style>body{max-width:760px;margin:48px auto;padding:0 24px;font:16px/1.7 system-ui,sans-serif;color:#1d232a}h1{line-height:1.15}blockquote,aside{border-left:3px solid #6ba587;padding:8px 16px;background:#f0f6f2}pre{padding:16px;background:#f3f4f6;overflow:auto}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}th,td{border:1px solid #d4d4d8;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f3f4f6;font-weight:600}li{margin:4px 0}</style></head><body><h1>${title}</h1>${body}</body></html>`;
 }
 
 function cleanMarkdown(value: string) {
@@ -973,7 +973,15 @@ function MarkdownTableBlock({ text }: { text: string }) {
   const normalizedRows = rows.length ? rows : [["Column 1", "Column 2"], ["", ""]];
   const columns = Math.max(...normalizedRows.map((row) => row.length), 2);
   const paddedRows = normalizedRows.map((row) => [...row, ...Array.from({ length: columns - row.length }, () => "")]);
-  return <div className="my-4 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]"><table className="w-full min-w-[1200px] border-collapse text-left text-[11px] leading-5"><thead><tr>{paddedRows[0].map((cell, index) => <th key={`${cell}-${index}`} className={`whitespace-nowrap border-b border-[var(--grapho-border)] px-4 py-3 align-top font-semibold text-[var(--grapho-foreground)] ${index === columns - 1 ? "min-w-[380px]" : index === columns - 3 ? "min-w-[280px]" : "min-w-[110px]"}`}>{renderInlineMarkdown(cell || `Column ${index + 1}`)}</th>)}</tr></thead><tbody>{paddedRows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className={`break-words px-4 py-3 align-top text-[var(--grapho-muted)] ${cellIndex === columns - 1 ? "min-w-[380px]" : cellIndex === columns - 3 ? "min-w-[280px]" : "min-w-[110px]"}`}>{renderInlineMarkdown(cell || " ")}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="my-4 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]"><table className="w-full min-w-[1400px] border-collapse text-left text-[11px] leading-5"><thead><tr>{paddedRows[0].map((cell, index) => <th key={`${cell}-${index}`} className={`whitespace-nowrap border-b border-[var(--grapho-border)] px-4 py-3 align-top font-semibold text-[var(--grapho-foreground)] ${index === columns - 1 ? "min-w-[380px]" : index === columns - 3 ? "min-w-[280px]" : "min-w-[110px]"}`}>{renderInlineMarkdown(cell || `Column ${index + 1}`)}</th>)}</tr></thead><tbody>{paddedRows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className={`break-words px-4 py-3 align-top text-[var(--grapho-muted)] ${cellIndex === columns - 1 ? "min-w-[380px]" : cellIndex === columns - 3 ? "min-w-[280px]" : "min-w-[110px]"}`}>{renderInlineMarkdown(cell || " ")}</td>)}</tr>)}</tbody></table></div>;
+}
+
+function markdownTableToHtml(value: string) {
+  const rows = value.split("\n").filter(Boolean).map((row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim()));
+  if (!rows.length) return "";
+  const header = rows[0].map((cell) => `<th>${escapeHtml(cell)}</th>`).join("");
+  const body = rows.slice(1).filter((row) => !row.every((cell) => /^:?-{3,}:?$/.test(cell))).map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+  return `<table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
 function renderInlineMarkdown(value: string) {
