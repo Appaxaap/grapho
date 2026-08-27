@@ -30,6 +30,7 @@
   },
   "bundle": {
     "active": true,
+    "icon": ["icons/icon.png"],
     "targets": ["rpm", "deb"],
     "createUpdaterArtifacts": false
   }
