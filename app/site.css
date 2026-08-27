@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-.site-shell { --site-bg:#0e1116; --site-panel:#151a20; --site-border:rgba(248,250,252,.12); --site-text:#f8fafc; --site-muted:#a5adb8; --site-faint:#697381; --site-accent:#6ba587; min-height:100vh; overflow:hidden; background:var(--site-bg); color:var(--site-text); font-family:var(--grapho-font); letter-spacing:-.015em; }
+@font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin-ext.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+.site-shell { --grapho-font:"Grapho Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; --site-bg:#0e1116; --site-panel:#151a20; --site-border:rgba(248,250,252,.12); --site-text:#f8fafc; --site-muted:#a5adb8; --site-faint:#697381; --site-accent:#6ba587; min-height:100vh; overflow:hidden; background:var(--site-bg); color:var(--site-text); font-family:var(--grapho-font); letter-spacing:-.015em; }
 .site-shell a { color:inherit; text-decoration:none; }
 .site-nav { display:flex; align-items:center; justify-content:space-between; max-width:1160px; margin:auto; padding:24px 28px; }
 .site-brand { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; letter-spacing:-.04em; }
