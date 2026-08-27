@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* Grapho-local typography and design tokens. Inter Variable is bundled locally
-   so the UI remains consistent and works without network access. */
+/* Grapho-local typography and design tokens. The compact monospace stack keeps
+   the workspace consistent and works without network access. */
 .grapho-ui {
-  --grapho-font: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --grapho-font-display: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --grapho-font: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --grapho-font-display: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --grapho-size-body: 17px;
   --grapho-size-small: 10px;
   --grapho-leading-body: 1.9;
