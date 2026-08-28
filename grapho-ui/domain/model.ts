@@ -43,7 +43,7 @@ export type Block = {
   level?: number;
 };
 
-export type DocumentType = "generic" | "account-register" | "project-brief" | "meeting-notes" | "research-brief" | "checklist";
+export type DocumentType = "generic" | "account-register" | "project-brief" | "meeting-notes" | "research-brief" | "checklist" | "voiceover-script";
 export type DocumentTypeConfidence = "low" | "medium" | "high";
 export type RecognizedField = { key: string; label: string; value: string; blockId: string; confidence: DocumentTypeConfidence };
 export type DocumentIntelligenceIssue = { id: string; category: "completeness" | "consistency"; severity: "info" | "warning" | "error"; title: string; detail: string; blockId?: string; fieldKey?: string };

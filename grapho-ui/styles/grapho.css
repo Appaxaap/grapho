@@ -95,6 +95,8 @@
 .grapho-intelligence-head, .grapho-intelligence-score { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
 .grapho-intelligence-head strong { display: block; margin-top: .3rem; color: var(--grapho-foreground); font-size: .85rem; text-transform: capitalize; }
 .grapho-action-list { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
+.grapho-production-stat { display: inline-flex; align-items: baseline; gap: .35rem; padding: .55rem .7rem; border: 1px solid var(--grapho-border); border-radius: 100px; color: var(--grapho-muted); font-size: .6rem; }
+.grapho-production-stat b { color: var(--grapho-accent); font-size: .8rem; }
 .grapho-action-list button { padding: .55rem .7rem; border: 1px solid var(--grapho-border); border-radius: 100px; background: var(--grapho-control); color: var(--grapho-muted); font-size: .65rem; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease; }
 .grapho-action-list button:hover { background: var(--grapho-control-hover); color: var(--grapho-foreground); transform: translateY(-1px); }
 .grapho-intelligence-head > span, .grapho-intelligence-score span, .grapho-intelligence-fields > span, .grapho-intelligence-warning > span { color: var(--grapho-faint); font-size: .6rem; }

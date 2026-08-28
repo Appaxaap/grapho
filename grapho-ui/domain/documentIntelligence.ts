@@ -8,6 +8,7 @@ const rules: [DocumentType, RegExp[], number][] = [
   ["meeting-notes", [/attendees|agenda/i, /decisions?|action items?|next steps?/i, /\b20\d{2}\b|\b\d{1,2}[/-]\d{1,2}\b/i], 3],
   ["research-brief", [/question|hypothesis/i, /findings?|evidence/i, /sources?|references?/i], 3],
   ["checklist", [/\[\s?[x ]\s?\]|todo|checklist/i], 2],
+  ["voiceover-script", [/episode|voiceover|documentary|script/i, /\b(I'm|I've|we|I)\b/i, /so\.\.\.|welcome back|thank you/i], 2],
 ];
 
 export function detectDocumentType(document: DocumentItem): Detection {
