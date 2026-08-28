@@ -177,7 +177,8 @@
 .grapho-document-list button.grapho-empty-action { min-height: 0; background: transparent; }
 .grapho-document-list button.grapho-empty-action:hover { background: var(--grapho-control); color: var(--grapho-accent); }
 .grapho-document-list button.grapho-empty-action:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
-.grapho-app-toolbar { flex-direction: column; width: 52px; gap: 5px !important; padding: 7px !important; }
+.grapho-app-toolbar { right: 28px !important; flex-direction: column; width: 52px; gap: 5px !important; padding: 7px !important; }
+@media (max-width: 700px) { .grapho-app-toolbar { right: 14px !important; } }
 .grapho-app-toolbar > div:first-of-type { flex-direction: column; width: 100%; gap: 5px; margin: 0 !important; padding: 0 0 7px !important; border-right: 0 !important; border-bottom: 1px solid var(--grapho-border); }
 .grapho-app-toolbar > div:first-of-type span:last-child { display: none; }
 .grapho-app-toolbar > span { width: 22px; height: 1px; margin: 3px 0 !important; }
