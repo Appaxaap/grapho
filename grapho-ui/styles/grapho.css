@@ -94,15 +94,15 @@
 .grapho-account-context { display: flex; align-items: center; gap: .55rem; margin: -1.2rem 0 1.25rem; color: var(--grapho-faint); font-size: .62rem; }
 .grapho-account-context i { width: 2px; height: 2px; border-radius: 50%; background: var(--grapho-faint); }
 .grapho-account-context .grapho-account-view-toggle { margin-left: auto; }
-.grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0; padding: .2rem; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
-.grapho-account-view-toggle button { position: relative; padding: .35rem .7rem; border: 0; border-radius: 999px; color: var(--grapho-faint); font-size: .62rem; text-transform: capitalize; cursor: pointer; transition: color .28s ease, transform .42s cubic-bezier(.16,1.4,.3,1); }
-.grapho-account-view-toggle button::before { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: 999px; background: var(--grapho-foreground); opacity: 0; transform: translateX(0) scaleX(.55); filter: blur(1px); transition: opacity .25s ease, transform .48s cubic-bezier(.16,1.35,.3,1), border-radius .48s ease; }
+.grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0; padding: .2rem; border-radius: 100px; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
+.grapho-account-view-toggle button { position: relative; padding: .35rem .7rem; border: 0; border-radius: 100px; color: var(--grapho-faint); font-size: .62rem; text-transform: capitalize; cursor: pointer; transition: color .28s ease, transform .42s cubic-bezier(.16,1.4,.3,1); }
+.grapho-account-view-toggle button::before { content: ""; position: absolute; z-index: -1; inset: 0; border-radius: 100px; background: var(--grapho-foreground); opacity: 0; transform: translateX(0) scaleX(.55); filter: blur(1px); transition: opacity .25s ease, transform .48s cubic-bezier(.16,1.35,.3,1); }
 .grapho-account-view-toggle button:hover { color: var(--grapho-foreground); }
 .grapho-account-view-toggle button:active { transform: scale(.9, .78); }
 .grapho-account-view-toggle button.is-active { z-index: 1; color: var(--grapho-background); animation: grapho-liquid-settle .62s cubic-bezier(.16,1.45,.3,1); }
-.grapho-account-view-toggle button.is-active::before { opacity: 1; transform: translateX(0) scaleX(1.12); border-radius: 58% 42% 48% 52% / 46% 55% 45% 54%; animation: grapho-liquid-blob .62s cubic-bezier(.16,1.35,.3,1); }
+.grapho-account-view-toggle button.is-active::before { opacity: 1; transform: translateX(0) scaleX(1.12); border-radius: 100px; animation: none; }
 @keyframes grapho-liquid-settle { 0% { transform: scaleX(.72) scaleY(.82); } 38% { transform: scaleX(1.12) scaleY(.94); } 68% { transform: scaleX(.96) scaleY(1.04); } 100% { transform: scale(1); } }
-@keyframes grapho-liquid-blob { 0% { border-radius: 48% 52% 62% 38% / 55% 42% 58% 45%; } 45% { border-radius: 62% 38% 42% 58% / 42% 61% 39% 58%; } 100% { border-radius: 999px; } }
+
 /* Interactive surfaces use a consistent circular-rectangle language. */
 .grapho-ui button, .grapho-ui input, .grapho-ui textarea, .site-button { border-radius: 999px; }
 .grapho-ui .grapho-dialog, .grapho-ui .grapho-glass, .grapho-ui .grapho-account-record, .grapho-ui .grapho-account-summary { border-radius: 1.25rem; }
