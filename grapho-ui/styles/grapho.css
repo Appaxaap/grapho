@@ -90,6 +90,18 @@
 .grapho-account-summary-stats b { color: var(--grapho-foreground); font-weight: 600; }
 .grapho-account-progress { height: 3px; margin-top: .8rem; overflow: hidden; border-radius: 99px; background: var(--grapho-border); }
 .grapho-account-progress span { display: block; height: 100%; border-radius: inherit; background: var(--grapho-accent); transition: width .45s ease; }
+.grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0 0 1rem; padding: .2rem; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
+.grapho-account-view-toggle button { padding: .35rem .65rem; border: 0; border-radius: .45rem; color: var(--grapho-faint); font-size: .62rem; background: transparent; cursor: pointer; }
+.grapho-account-view-toggle button.is-active { background: var(--grapho-foreground); color: var(--grapho-background); }
+.grapho-account-record { padding: 1rem 0 1.2rem; border-bottom: 1px solid var(--grapho-border); }
+.grapho-account-record-top { display: flex; align-items: center; gap: .65rem; }
+.grapho-account-record-top strong { flex: 1; font-size: .85rem; color: var(--grapho-foreground); }
+.grapho-account-record-number { color: var(--grapho-faint); font-size: .65rem; }
+.grapho-account-status { padding: .25rem .45rem; border-radius: .4rem; font-size: .55rem; text-transform: uppercase; letter-spacing: .08em; background: var(--grapho-control); color: var(--grapho-faint); }
+.grapho-account-status.created { color: var(--grapho-accent); background: var(--grapho-accent-soft); }
+.grapho-account-record > .grapho-email-link { margin: .65rem 0 .55rem 1.75rem; }
+.grapho-account-record-fields { margin-left: 1.75rem; color: var(--grapho-muted); font-size: .68rem; line-height: 1.7; }
+.grapho-account-record-fields p { margin: .25rem 0; }
 .grapho-title { letter-spacing: -0.08em; }
 .grapho-label { letter-spacing: 0.18em; }
 
