@@ -317,6 +317,7 @@ export default function GraphoShell() {
   };
 
   const backlinks = useMemo(() => documentBacklinks(documents, selected.id), [documents, selected.id]);
+  const accountRegister = useMemo(() => detectAccountRegister(selected), [selected]);
 
   const insertDocumentLink = () => {
     const choices = documents.filter((document) => document.id !== selected.id && !document.trashed);
@@ -793,6 +794,7 @@ export default function GraphoShell() {
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex min-w-0 items-center gap-2"><span>{activeFolder}</span>{documentPath(selected).map((item, index) => <span key={`${item}-${index}`} className="flex min-w-0 items-center gap-2"><ChevronRight size={11} /><span className={index === documentPath(selected).length - 1 ? "truncate text-[var(--grapho-muted)]" : "truncate"}>{item}</span></span>)}</div><div className="flex items-center gap-2"></div></div>{backlinks.length > 0 && <div className="mb-8 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40 px-3 py-2.5"><div className="flex items-center gap-2 text-[8px] uppercase tracking-[.14em] text-[var(--grapho-faint)]"><Link2 size={12} /> Referenced by</div><div className="mt-2 flex flex-wrap gap-1.5">{backlinks.map((backlink) => <button key={`${backlink.documentId}-${backlink.blockId}`} type="button" onClick={() => setSelectedId(backlink.documentId)} className="rounded-lg bg-[var(--grapho-control)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]">{documents.find((document) => document.id === backlink.documentId)?.title ?? "Document"}</button>)}</div></div>}
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
+              {accountRegister && <AccountRegisterSummary stats={accountRegister} />}
 
               <div className="space-y-4">{visibleBlocks(selected).filter((block, index) => !(index === 0 && block.type === "heading" && block.text.trim() === selected.title.trim())).map((block, blockIndex) => <div key={block.id} draggable={false} onDragOver={(event) => { event.preventDefault(); setDropTargetBlockId(block.id); }} onDrop={(event) => { event.preventDefault(); dropBlock(block.id); }} className={`group relative rounded-lg border-t-2 transition-colors ${dropTargetBlockId === block.id ? "border-[var(--grapho-accent)]" : "border-transparent"} ${selectedBlockId === block.id ? "bg-[var(--grapho-accent-soft)] ring-1 ring-[var(--grapho-accent)]/30" : ""}`}><EditorBlock block={block} orderedIndex={block.type === "ordered-list" ? selected.blocks.slice(0, blockIndex).filter((item) => item.type === "ordered-list").length + 1 : undefined} onChange={(text, content) => updateBlock(block.id, text, content)} onToggle={() => setBlockChecked(block.id, !block.checked)} onCollapse={(collapsed) => setBlockCollapsed(block.id, collapsed)} onKeyDown={(event) => handleBlockKeyDown(event, block)} onPaste={(event) => { event.preventDefault(); pasteBlocks(block.id, event.clipboardData.getData("text/plain")); }} /><div className="pointer-events-none absolute -left-14 top-1 hidden items-center gap-1 text-[var(--grapho-faint)] group-hover:flex group-focus-within:flex"><button type="button" draggable onDragStart={(event) => { event.stopPropagation(); setDraggingBlockId(block.id); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", block.id); }} onDragEnd={() => { setDraggingBlockId(null); setDropTargetBlockId(null); }} onClick={(event) => { event.stopPropagation(); setSelectedBlockId(block.id); setSelectionToolbar(null); }} aria-label="Drag or select block" title="Drag block to reorder" className="pointer-events-auto grid size-6 cursor-grab place-items-center rounded-md hover:bg-[var(--grapho-control)] active:cursor-grabbing"><GripVertical size={13} /></button><button type="button" onClick={() => setCommandBlockId(block.id)} aria-label="Open block menu" className="pointer-events-auto grid size-6 place-items-center rounded-md hover:bg-[var(--grapho-control)]"><Plus size={13} /></button></div>{commandBlockId === block.id && <BlockCommandMenu onSelect={(type) => changeBlockType(block.id, type)} onDismiss={() => setCommandBlockId(null)} />}</div>)}</div>
 
@@ -964,8 +966,27 @@ function documentToHtml(document: DocumentItem) {
   return `<!doctype html><html><head><meta charset=\"utf-8\"><title>${title}</title><style>body{max-width:760px;margin:48px auto;padding:0 24px;font:16px/1.7 system-ui,sans-serif;color:#1d232a}h1{line-height:1.15}blockquote,aside{border-left:3px solid #6ba587;padding:8px 16px;background:#f0f6f2}pre{padding:16px;background:#f3f4f6;overflow:auto}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}th,td{border:1px solid #d4d4d8;padding:8px 10px;text-align:left;vertical-align:top}th{background:#f3f4f6;font-weight:600}li{margin:4px 0}</style></head><body><h1>${title}</h1>${body}</body></html>`;
 }
 
+type AccountRegisterStats = { total: number; created: number; proposed: number };
+
+function detectAccountRegister(document: DocumentItem): AccountRegisterStats | null {
+  const text = document.blocks.map((block) => block.text).join("\\n");
+  if (!/(?:mailbox|account)/i.test(document.title + "\\n" + text) || !/Division:/i.test(text) || !/Status:/i.test(text) || !/Purpose:/i.test(text)) return null;
+  const total = (text.match(/^\\s*\\d+[.)]\\s+/gm) ?? []).length;
+  if (!total) return null;
+  return { total, created: (text.match(/Status:\s*Created/gi) ?? []).length, proposed: (text.match(/Status:\s*Proposed/gi) ?? []).length };
+}
+
 function cleanMarkdown(value: string) {
   return value.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/__([^_]+)__/g, "$1").replace(/_([^_]+)_/g, "$1");
+}
+
+function AccountRegisterSummary({ stats }: { stats: AccountRegisterStats }) {
+  const progress = stats.total ? Math.round((stats.created / stats.total) * 100) : 0;
+  return <aside className="grapho-account-summary grapho-print-hide" aria-label="Account register summary">
+    <div className="grapho-account-summary-heading"><div><span className="grapho-label">Detected structure</span><strong>Account register</strong></div><span className="grapho-account-summary-count">{stats.total} records</span></div>
+    <div className="grapho-account-summary-stats"><span><b>{stats.created}</b> created</span><span><b>{stats.proposed}</b> proposed</span><span><b>{progress}%</b> setup</span></div>
+    <div className="grapho-account-progress" role="progressbar" aria-label={`${progress}% of accounts created`} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}><span style={{ width: `${progress}%` }} /></div>
+  </aside>;
 }
 
 function MarkdownTableBlock({ text }: { text: string }) {
