@@ -91,6 +91,14 @@
 .grapho-account-summary-stats b { color: var(--grapho-foreground); font-weight: 600; }
 .grapho-account-progress { height: 3px; margin-top: .8rem; overflow: hidden; border-radius: 99px; background: var(--grapho-border); }
 .grapho-account-progress span { display: block; height: 100%; border-radius: inherit; background: var(--grapho-accent); transition: width .45s ease; }
+.grapho-production-view { position: fixed; inset: 1rem; z-index: 100; overflow: auto; padding: clamp(1.5rem, 5vw, 5rem); border: 1px solid var(--grapho-border); border-radius: 1.5rem; background: var(--grapho-background); box-shadow: 0 30px 100px rgba(0,0,0,.45); animation: grapho-intelligence-in .4s cubic-bezier(.16,1,.3,1); }
+.grapho-production-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; max-width: 800px; margin: 0 auto 3rem; }
+.grapho-production-head h2 { margin-top: .5rem; color: var(--grapho-foreground); font-size: clamp(1.5rem, 4vw, 2.7rem); }
+.grapho-production-head p { margin-top: .6rem; color: var(--grapho-faint); font-size: .7rem; }
+.grapho-production-head button { padding: .55rem 1rem; border: 1px solid var(--grapho-border); border-radius: 100px; color: var(--grapho-muted); background: var(--grapho-control); font-size: .68rem; cursor: pointer; }
+.grapho-production-script { max-width: 800px; margin: auto; }
+.grapho-production-script p { max-width: 680px; margin: 0 0 1.5rem; color: var(--grapho-muted); font-family: var(--grapho-font-sans); font-size: clamp(1.05rem, 2vw, 1.45rem); line-height: 1.8; }
+.grapho-production-script p.is-opening { color: var(--grapho-foreground); font-size: clamp(1.3rem, 2.5vw, 1.8rem); }
 .grapho-intelligence-panel { margin-bottom: 1.25rem; padding: 1rem; border: 1px solid var(--grapho-border); border-radius: 1rem; background: color-mix(in srgb, var(--grapho-control) 58%, transparent); animation: grapho-intelligence-in .35s cubic-bezier(.16,1,.3,1); }
 .grapho-intelligence-head, .grapho-intelligence-score { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
 .grapho-intelligence-head strong { display: block; margin-top: .3rem; color: var(--grapho-foreground); font-size: .85rem; text-transform: capitalize; }
