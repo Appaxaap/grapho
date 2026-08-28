@@ -965,7 +965,7 @@ function documentToHtml(document: DocumentItem) {
 }
 
 function cleanMarkdown(value: string) {
-  return value.replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/__([^_]+)__/g, "$1").replace(/_([^_]+)_/g, "$1");
+  return value.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/__([^_]+)__/g, "$1").replace(/_([^_]+)_/g, "$1");
 }
 
 function MarkdownTableBlock({ text }: { text: string }) {
@@ -1039,11 +1039,30 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
+  if (!span.marks?.length && /[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/.test(span.text)) {
+    const fragment = document.createDocumentFragment();
+    const emailPattern = /[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/g;
+    let cursor = 0;
+    for (const match of span.text.matchAll(emailPattern)) {
+      const start = match.index ?? 0;
+      if (start > cursor) fragment.appendChild(document.createTextNode(span.text.slice(cursor, start)));
+      const email = match[0];
+      const link = document.createElement("a");
+      link.className = "grapho-email-link";
+      link.href = `mailto:${email}`;
+      link.textContent = email;
+      link.setAttribute("aria-label", `Email ${email}`);
+      fragment.appendChild(link);
+      cursor = start + email.length;
+    }
+    if (cursor < span.text.length) fragment.appendChild(document.createTextNode(span.text.slice(cursor)));
+    return fragment;
+  }
   let node: Node = document.createTextNode(span.text);
   for (const mark of span.marks ?? []) {
     const element = document.createElement(mark.type === "bold" ? "strong" : mark.type === "italic" ? "em" : mark.type === "underline" ? "u" : mark.type === "strike" ? "s" : mark.type === "code" ? "code" : mark.type === "highlight" ? "mark" : "a");
     if (mark.type === "highlight" && mark.color) element.style.backgroundColor = mark.color;
-    if (mark.type === "link") { element.setAttribute("href", mark.href); element.setAttribute("target", "_blank"); element.setAttribute("rel", "noreferrer"); }
+    if (mark.type === "link") { element.setAttribute("href", mark.href); element.setAttribute("target", mark.href.startsWith("mailto:") ? "_self" : "_blank"); element.setAttribute("rel", "noreferrer"); if (mark.href.startsWith("mailto:")) element.className = "grapho-email-link"; }
     element.appendChild(node);
     node = element;
   }
