@@ -52,5 +52,5 @@ next-env.d.ts
 /GRAPHO_RELEASE_NOTES.md
 /GRAPHO_ROADMAP.md
 /GRAPHO_UI_UX_RULES.md
-/grapho-ui/domain/documentIntelligence.ts
+
 /app/site/
