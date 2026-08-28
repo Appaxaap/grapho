@@ -80,6 +80,8 @@ Open [http://localhost:3000](http://localhost:3000).
 
 The public landing page is available at `/`. The writing workspace is available at `/app`.
 
+The repository intentionally publishes only the product source and required build files. Internal planning documents and the retired local `/site` route are kept outside public version control and are not part of the public application.
+
 ### Production browser build
 
 ```bash
@@ -109,6 +111,12 @@ src-tauri/target/release/bundle/rpm/
 Generated build output is intentionally ignored and should not be committed.
 
 ## Developer guide
+
+### Public repository scope
+
+The public repository contains the application source, native desktop boundary, public assets, tests, and required development configuration. Local-only planning documents, design references, release notes, and retired route files are ignored and are not expected to exist in a fresh clone.
+
+Do not re-add local-only files to a commit. If a private development note is needed, keep it outside the published repository.
 
 ### Architecture
 
@@ -183,7 +191,7 @@ Before submitting a change, run the checks relevant to the area you changed:
 - `npm run lint` for source quality checks
 - `npm run tauri:build:linux` for native packaging changes
 
-Do not commit `.next`, `out`, `node_modules`, `src-tauri/target`, local browser tooling, environment files, or internal planning documents.
+Do not commit `.next`, `out`, `node_modules`, `src-tauri/target`, local browser tooling, environment files, internal planning documents, retired route files, or private developer instructions.
 
 ## Data and privacy
 
