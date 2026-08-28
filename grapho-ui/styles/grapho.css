@@ -80,6 +80,12 @@
 .grapho-ui [contenteditable]:focus { box-shadow: none; border-radius: 0; }
 .grapho-ui [contenteditable] { caret-color: var(--grapho-accent); }
 .grapho-field-label { color: var(--grapho-foreground); font-weight: 650; }
+.grapho-status-badge { display: inline-flex; align-items: center; gap: .35em; padding: .18em .55em; border: 1px solid color-mix(in srgb, var(--grapho-accent) 38%, transparent); border-radius: 100px; background: color-mix(in srgb, var(--grapho-accent) 12%, transparent); color: var(--grapho-accent); font-weight: 600; }
+.grapho-status-badge::before { content: "●"; font-size: .65em; }
+.grapho-status-badge.proposed { border-color: rgba(201,166,107,.42); background: rgba(201,166,107,.12); color: #c9a66b; }
+.grapho-status-badge.proposed::before { content: "○"; }
+.grapho-status-badge.archived { color: var(--grapho-faint); border-color: var(--grapho-border); background: var(--grapho-control); }
+@media print { .grapho-ui .grapho-status-badge { border-color: #9bc8ae !important; background: #eef7f1 !important; color: #3f8662 !important; } .grapho-ui .grapho-status-badge.proposed { border-color: #c9a66b !important; background: #fbf5e9 !important; color: #8c6b2e !important; } }
 .grapho-email-link { display: inline-flex; align-items: center; margin: 0 .08em; padding: .08em .38em; border: 1px solid color-mix(in srgb, var(--grapho-accent) 38%, transparent); border-radius: .45em; background: color-mix(in srgb, var(--grapho-accent) 12%, transparent); color: var(--grapho-accent); text-decoration: none; transition: background-color .18s ease, border-color .18s ease; }
 .grapho-email-link::before { content: "↗"; margin-right: .28em; font-size: .72em; opacity: .72; }
 .grapho-email-link:hover { border-color: var(--grapho-accent); background: color-mix(in srgb, var(--grapho-accent) 20%, transparent); }

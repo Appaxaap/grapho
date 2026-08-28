@@ -1093,7 +1093,19 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
-  if (!span.marks?.length && /^\s*(Type|Division|Status|Purpose|Owner|Priority|Date|Category|Description):\s+/i.test(span.text)) {
+  if (!span.marks?.length && /^\s*Status:\s+/i.test(span.text)) {
+    const match = span.text.match(/^(\s*Status:\s*)(.+)$/i);
+    if (match) {
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(document.createTextNode(match[1]));
+      const status = document.createElement("span");
+      status.className = `grapho-status-badge ${match[2].trim().toLowerCase().replace(/\s+/g, "-")}`;
+      status.textContent = match[2].trim();
+      fragment.appendChild(status);
+      return fragment;
+    }
+  }
+  if (!span.marks?.length && /^\s*(Type|Division|Purpose|Owner|Priority|Date|Category|Description):\s+/i.test(span.text)) {
     const match = span.text.match(/^(\s*)([A-Za-z][\w /-]{1,30})(:\s+)/);
     if (match) {
       const fragment = document.createDocumentFragment();
