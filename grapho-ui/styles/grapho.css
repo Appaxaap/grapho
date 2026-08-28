@@ -91,7 +91,10 @@
 .grapho-account-summary-stats b { color: var(--grapho-foreground); font-weight: 600; }
 .grapho-account-progress { height: 3px; margin-top: .8rem; overflow: hidden; border-radius: 99px; background: var(--grapho-border); }
 .grapho-account-progress span { display: block; height: 100%; border-radius: inherit; background: var(--grapho-accent); transition: width .45s ease; }
-.grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0 0 1rem; padding: .2rem; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
+.grapho-account-context { display: flex; align-items: center; gap: .55rem; margin: -1.2rem 0 1.25rem; color: var(--grapho-faint); font-size: .62rem; }
+.grapho-account-context i { width: 2px; height: 2px; border-radius: 50%; background: var(--grapho-faint); }
+.grapho-account-context .grapho-account-view-toggle { margin-left: auto; }
+.grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0; padding: .2rem; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
 .grapho-account-view-toggle button { padding: .35rem .65rem; border: 0; border-radius: .45rem; color: var(--grapho-faint); font-size: .62rem; background: transparent; cursor: pointer; }
 .grapho-account-view-toggle button.is-active { background: var(--grapho-foreground); color: var(--grapho-background); }
 .grapho-register-tools { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .5rem; }
