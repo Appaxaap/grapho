@@ -91,6 +91,17 @@
 .grapho-account-summary-stats b { color: var(--grapho-foreground); font-weight: 600; }
 .grapho-account-progress { height: 3px; margin-top: .8rem; overflow: hidden; border-radius: 99px; background: var(--grapho-border); }
 .grapho-account-progress span { display: block; height: 100%; border-radius: inherit; background: var(--grapho-accent); transition: width .45s ease; }
+.grapho-intelligence-panel { margin-bottom: 1.25rem; padding: 1rem; border: 1px solid var(--grapho-border); border-radius: 1rem; background: color-mix(in srgb, var(--grapho-control) 58%, transparent); animation: grapho-intelligence-in .35s cubic-bezier(.16,1,.3,1); }
+.grapho-intelligence-head, .grapho-intelligence-score { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.grapho-intelligence-head strong { display: block; margin-top: .3rem; color: var(--grapho-foreground); font-size: .85rem; text-transform: capitalize; }
+.grapho-intelligence-head > span, .grapho-intelligence-score span, .grapho-intelligence-fields > span, .grapho-intelligence-warning > span { color: var(--grapho-faint); font-size: .6rem; }
+.grapho-intelligence-score { margin-top: 1rem; padding-top: .7rem; border-top: 1px solid var(--grapho-border); }
+.grapho-intelligence-score b { color: var(--grapho-accent); font-size: .75rem; }
+.grapho-intelligence-fields, .grapho-intelligence-warning { margin-top: .8rem; }
+.grapho-intelligence-fields p, .grapho-intelligence-warning p { margin-top: .3rem; color: var(--grapho-muted); font-size: .68rem; }
+.grapho-intelligence-warning p { color: #c9a66b; }
+.grapho-intelligence-clear { margin-top: .8rem; color: var(--grapho-accent); font-size: .65rem; }
+@keyframes grapho-intelligence-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 .grapho-account-context { display: flex; align-items: center; gap: .55rem; margin: -1.2rem 0 1.25rem; color: var(--grapho-faint); font-size: .62rem; }
 .grapho-account-context i { width: 2px; height: 2px; border-radius: 50%; background: var(--grapho-faint); }
 .grapho-account-context .grapho-account-view-toggle { margin-left: auto; }

@@ -13,6 +13,7 @@ import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
 import { isNativePersistenceAvailable, loadNativeWorkspace, saveNativeWorkspace } from "../../persistence/native";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
+import { analyzeDocument } from "../../domain/documentIntelligence";
 import { SHORTCUTS } from "../../domain/shortcuts";
 import { ToolbarButton } from "../editor/ToolbarButton";
 import { blockInlineContent, documentBacklinks, mergeInlineContent, moveBlock, plainInlineText, visibleBlocks } from "../../domain/operations";
@@ -44,6 +45,7 @@ export default function GraphoShell() {
   const [accountView, setAccountView] = useState<"document" | "register">("register");
     const [accountFilter, setAccountFilter] = useState<"all" | "created" | "proposed">("all");
     const [accountQuery, setAccountQuery] = useState("");
+    const [intelligenceOpen, setIntelligenceOpen] = useState(false);
   const [commandBlockId, setCommandBlockId] = useState<string | null>(null);
   const [selectionToolbar, setSelectionToolbar] = useState<{ top: number; left: number } | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
@@ -321,6 +323,7 @@ export default function GraphoShell() {
 
   const backlinks = useMemo(() => documentBacklinks(documents, selected.id), [documents, selected.id]);
   const accountRegister = useMemo(() => detectAccountRegister(selected), [selected]);
+  const intelligence = useMemo(() => analyzeDocument(selected, documents), [selected, documents]);
 
   const insertDocumentLink = () => {
     const choices = documents.filter((document) => document.id !== selected.id && !document.trashed);
@@ -761,6 +764,7 @@ export default function GraphoShell() {
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grapho-brand-mark grid size-8 place-items-center overflow-hidden rounded-xl"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
         <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
+        <ToolbarButton label="Document intelligence" icon={<Sparkles size={16} />} onClick={() => setIntelligenceOpen((value) => !value)} />
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
         <ToolbarButton label="Redo" icon={<Redo2 size={16} />} onClick={redo} disabled={isHydrated && history.current.future.length === 0} />
@@ -795,6 +799,7 @@ export default function GraphoShell() {
         <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
           <div style={{ ...(editorFont === "Mono" ? { fontFamily: "var(--grapho-font-mono)" } : editorFont === "Serif" ? { fontFamily: "Georgia, serif" } : {}), ...(editorSize === "Large" ? { fontSize: "18px" } : {}) }} className={`mx-auto ${editorWidth === "Wide" ? "max-w-6xl" : "max-w-4xl"} px-5 pb-32 pt-10 sm:px-12 sm:pt-14 lg:px-20 lg:pt-16 ${editorSpacing === "Compact" ? "[--grapho-leading-body:1.55]" : "[--grapho-leading-body:1.9]"}`}>
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex min-w-0 items-center gap-2"><span>{activeFolder}</span>{documentPath(selected).map((item, index) => <span key={`${item}-${index}`} className="flex min-w-0 items-center gap-2"><ChevronRight size={11} /><span className={index === documentPath(selected).length - 1 ? "truncate text-[var(--grapho-muted)]" : "truncate"}>{item}</span></span>)}</div><div className="flex items-center gap-2"></div></div>{backlinks.length > 0 && <div className="mb-8 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40 px-3 py-2.5"><div className="flex items-center gap-2 text-[8px] uppercase tracking-[.14em] text-[var(--grapho-faint)]"><Link2 size={12} /> Referenced by</div><div className="mt-2 flex flex-wrap gap-1.5">{backlinks.map((backlink) => <button key={`${backlink.documentId}-${backlink.blockId}`} type="button" onClick={() => setSelectedId(backlink.documentId)} className="rounded-lg bg-[var(--grapho-control)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]">{documents.find((document) => document.id === backlink.documentId)?.title ?? "Document"}</button>)}</div></div>}
+            {intelligenceOpen && <DocumentIntelligencePanel result={intelligence} />}
             <article className="relative min-h-[620px]" onDragOver={(event) => event.preventDefault()} onDrop={handleMarkdownDrop} onMouseUp={handleCanvasSelection} onClick={(event) => { if (event.target === event.currentTarget) { const last = event.currentTarget.querySelector<HTMLElement>("[data-grapho-block]:last-of-type"); last?.focus(); } }}>
               <div className="mb-10"><div className="grapho-label grapho-print-hide mb-3 text-[9px] uppercase text-[var(--grapho-faint)]">Document · Markdown compatible</div><EditableDocumentTitle value={selected.title} onChange={updateTitle} /><p className="grapho-print-hide mt-4 text-[10px] leading-5 text-[var(--grapho-muted)]">A calm, local-first place for ideas, notes, and long-form writing.</p></div>
               {accountRegister && <div className="grapho-account-context grapho-print-hide"><span>{accountRegister.total} accounts</span><i /> <span>{accountRegister.created} created</span><i /> <span>{accountRegister.proposed} proposed</span><div className="grapho-account-view-toggle" role="group" aria-label="Account register view"><button type="button" className={accountView === "document" ? "is-active" : ""} onClick={() => setAccountView("document")}>Document</button><button type="button" className={accountView === "register" ? "is-active" : ""} onClick={() => setAccountView("register")}>Register</button></div></div>}
@@ -981,6 +986,11 @@ function detectAccountRegister(document: DocumentItem): AccountRegisterStats | n
 
 function cleanMarkdown(value: string) {
   return value.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1").replace(/\*\*([^*]+)\*\*/g, "$1").replace(/\*([^*]+)\*/g, "$1").replace(/__([^_]+)__/g, "$1").replace(/_([^_]+)_/g, "$1");
+}
+
+function DocumentIntelligencePanel({ result }: { result: ReturnType<typeof analyzeDocument> }) {
+  const typeLabel = result.type === "generic" ? "General document" : result.type.replace(/-/g, " ");
+  return <aside className="grapho-intelligence-panel" aria-label="Document intelligence"><div className="grapho-intelligence-head"><div><span className="grapho-label">Document intelligence</span><strong>{typeLabel}</strong></div><span>{result.typeConfidence} confidence</span></div><div className="grapho-intelligence-score"><span>Completeness</span><b>{result.completeness.score}%</b></div>{result.recognizedFields.length > 0 && <div className="grapho-intelligence-fields"><span>Recognized fields</span><p>{result.recognizedFields.map((field) => field.label).filter((label, index, labels) => labels.indexOf(label) === index).join(" · ")}</p></div>}{result.completeness.missingFields.length > 0 && <div className="grapho-intelligence-warning"><span>Needs attention</span><p>{result.completeness.missingFields.join(" · ")}</p></div>}{result.issues.length === 0 && <p className="grapho-intelligence-clear">No consistency issues found.</p>}</aside>;
 }
 
 function AccountRegisterView({ blocks, filter, query, onFilterChange, onQueryChange }: { blocks: Block[]; filter: "all" | "created" | "proposed"; query: string; onFilterChange: (value: "all" | "created" | "proposed") => void; onQueryChange: (value: string) => void }) {
