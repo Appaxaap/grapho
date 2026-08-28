@@ -43,6 +43,12 @@ export type Block = {
   level?: number;
 };
 
+export type DocumentType = "generic" | "account-register" | "project-brief" | "meeting-notes" | "research-brief" | "checklist";
+export type DocumentTypeConfidence = "low" | "medium" | "high";
+export type RecognizedField = { key: string; label: string; value: string; blockId: string; confidence: DocumentTypeConfidence };
+export type DocumentIntelligenceIssue = { id: string; category: "completeness" | "consistency"; severity: "info" | "warning" | "error"; title: string; detail: string; blockId?: string; fieldKey?: string };
+export type DocumentIntelligenceResult = { version: 1; documentId: string; type: DocumentType; typeConfidence: DocumentTypeConfidence; recognizedFields: RecognizedField[]; completeness: { complete: boolean; score: number; missingFields: string[] }; issues: DocumentIntelligenceIssue[]; suggestedView: "document" | "account-register" | "table" | "checklist" | "outline" };
+
 export type DocumentItem = {
   id: string;
   title: string;

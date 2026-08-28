@@ -8,6 +8,14 @@ export function plainInlineText(content: InlineText[]): string {
   return content.map((span) => span.text).join("");
 }
 
+export function blockText(block: Block): string {
+  return block.content?.length ? plainInlineText(block.content) : block.text;
+}
+
+export function documentText(document: DocumentItem): string {
+  return visibleBlocks(document).map(blockText).join("\n");
+}
+
 export function normalizeMarks(marks: TextMark[] = []): TextMark[] {
   return [...marks].sort((a, b) => a.type.localeCompare(b.type));
 }
