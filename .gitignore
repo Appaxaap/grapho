@@ -43,3 +43,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local-only internal project notes and experimental features
+/GRAPHO_ARCHITECTURE.md
+/GRAPHO_CHANGELOG.md
+/GRAPHO_COLOR_DESIGN_SYSTEM.md
+/GRAPHO_DESIGN_SYSTEM.md
+/GRAPHO_RELEASE_NOTES.md
+/GRAPHO_ROADMAP.md
+/GRAPHO_UI_UX_RULES.md
+/grapho-ui/domain/documentIntelligence.ts
+/app/site/
