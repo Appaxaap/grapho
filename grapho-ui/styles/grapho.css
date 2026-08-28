@@ -161,7 +161,7 @@
   .grapho-ui article > button { display: none !important; }
   .grapho-ui main { width: 100% !important; }
   .grapho-ui main > div { max-width: none !important; padding: 0 !important; }
-  .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 22mm !important; }
+  .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 0 !important; }
   .grapho-ui [contenteditable] { color: #161617 !important; }
   .grapho-ui .grapho-field-label { color: #161617 !important; }
   .grapho-ui .grapho-email-link { border-color: #9bc8ae !important; background: #eef7f1 !important; color: #3f8662 !important; }
