@@ -1093,6 +1093,10 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
+  if (!span.marks?.length && /^\s*Priority:\s+/i.test(span.text)) {
+    const match = span.text.match(/^(\s*Priority:\s*)(.+)$/i);
+    if (match) { const fragment = document.createDocumentFragment(); fragment.appendChild(document.createTextNode(match[1])); const priority = document.createElement("span"); priority.className = `grapho-priority-value ${match[2].trim().toLowerCase()}`; priority.textContent = match[2].trim(); fragment.appendChild(priority); return fragment; }
+  }
   if (!span.marks?.length && /^\s*Status:\s+/i.test(span.text)) {
     const match = span.text.match(/^(\s*Status:\s*)(.+)$/i);
     if (match) {
@@ -1117,6 +1121,11 @@ function inlineSpanNode(span: InlineText, key: number): Node {
       fragment.appendChild(document.createTextNode(span.text.slice(match[0].length)));
       return fragment;
     }
+  }
+  if (!span.marks?.length && /(?:https?:\/\/|www\.)[^\s]+/i.test(span.text)) {
+    const fragment = document.createDocumentFragment(); const urlPattern = /(?:https?:\/\/|www\.)[^\s]+/gi; let cursor = 0;
+    for (const match of span.text.matchAll(urlPattern)) { const start = match.index ?? 0; if (start > cursor) fragment.appendChild(document.createTextNode(span.text.slice(cursor, start))); const label = match[0]; const link = document.createElement("a"); link.className = "grapho-smart-link"; link.href = label.startsWith("www.") ? `https://${label}` : label; link.target = "_blank"; link.rel = "noreferrer"; link.textContent = label; fragment.appendChild(link); cursor = start + label.length; }
+    if (cursor < span.text.length) fragment.appendChild(document.createTextNode(span.text.slice(cursor))); return fragment;
   }
   if (!span.marks?.length && /(?:\[[^\]]+\]\(mailto:[^)]+\)|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})/i.test(span.text)) {
     const displayText = span.text.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1");

@@ -80,6 +80,10 @@
 .grapho-ui [contenteditable]:focus { box-shadow: none; border-radius: 0; }
 .grapho-ui [contenteditable] { caret-color: var(--grapho-accent); }
 .grapho-field-label { color: var(--grapho-foreground); font-weight: 650; }
+.grapho-smart-link { color: var(--grapho-accent); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--grapho-accent) 45%, transparent); text-underline-offset: 3px; }
+.grapho-priority-value { color: var(--grapho-foreground); font-weight: 650; }
+.grapho-priority-value.high, .grapho-priority-value.urgent { color: #d78b80; }
+.grapho-priority-value.low { color: var(--grapho-faint); }
 .grapho-status-badge { display: inline-flex; align-items: center; gap: .35em; padding: .18em .55em; border: 1px solid color-mix(in srgb, var(--grapho-accent) 38%, transparent); border-radius: 100px; background: color-mix(in srgb, var(--grapho-accent) 12%, transparent); color: var(--grapho-accent); font-weight: 600; }
 .grapho-status-badge::before { content: "●"; font-size: .65em; }
 .grapho-status-badge.proposed { border-color: rgba(201,166,107,.42); background: rgba(201,166,107,.12); color: #c9a66b; }
