@@ -1039,13 +1039,14 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
-  if (!span.marks?.length && /[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/.test(span.text)) {
+  if (!span.marks?.length && /(?:\[[^\]]+\]\(mailto:[^)]+\)|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})/i.test(span.text)) {
+    const displayText = span.text.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1");
     const fragment = document.createDocumentFragment();
-    const emailPattern = /[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/g;
+    const emailPattern = /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g;
     let cursor = 0;
-    for (const match of span.text.matchAll(emailPattern)) {
+    for (const match of displayText.matchAll(emailPattern)) {
       const start = match.index ?? 0;
-      if (start > cursor) fragment.appendChild(document.createTextNode(span.text.slice(cursor, start)));
+      if (start > cursor) fragment.appendChild(document.createTextNode(displayText.slice(cursor, start)));
       const email = match[0];
       const link = document.createElement("a");
       link.className = "grapho-email-link";
@@ -1055,7 +1056,7 @@ function inlineSpanNode(span: InlineText, key: number): Node {
       fragment.appendChild(link);
       cursor = start + email.length;
     }
-    if (cursor < span.text.length) fragment.appendChild(document.createTextNode(span.text.slice(cursor)));
+    if (cursor < displayText.length) fragment.appendChild(document.createTextNode(displayText.slice(cursor)));
     return fragment;
   }
   let node: Node = document.createTextNode(span.text);
