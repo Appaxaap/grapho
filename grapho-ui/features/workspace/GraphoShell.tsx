@@ -973,9 +973,9 @@ function documentToHtml(document: DocumentItem) {
 type AccountRegisterStats = { total: number; created: number; proposed: number };
 
 function detectAccountRegister(document: DocumentItem): AccountRegisterStats | null {
-  const text = document.blocks.map((block) => block.text).join("\\n");
-  if (!/(?:mailbox|account)/i.test(document.title + "\\n" + text) || !/Division:/i.test(text) || !/Status:/i.test(text) || !/Purpose:/i.test(text)) return null;
-  const total = (text.match(/^\\s*\\d+[.)]\\s+/gm) ?? []).length;
+  const text = document.blocks.map((block) => block.text).join("\n");
+  if (!/(?:mailbox|account)/i.test(document.title + "\n" + text) || !/Division:/i.test(text) || !/Status:/i.test(text) || !/Purpose:/i.test(text)) return null;
+  const total = (text.match(/^\s*\d+[.)]\s+/gm) ?? []).length;
   if (!total) return null;
   return { total, created: (text.match(/Status:\s*Created/gi) ?? []).length, proposed: (text.match(/Status:\s*Proposed/gi) ?? []).length };
 }
