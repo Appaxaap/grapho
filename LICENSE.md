@@ -1,6 +1,6 @@
 # Licensing
 
-Grapho is released under the MIT License.
+Grapho is released under the MIT License. The copyright holder is Basim Basheer, also known as Appaxaap.
 
 The MIT License permits you to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the project, subject to preserving the copyright and permission notices.
 
