@@ -93,6 +93,12 @@
 .grapho-account-view-toggle { display: inline-flex; gap: .2rem; margin: 0 0 1rem; padding: .2rem; border: 1px solid var(--grapho-border); border-radius: .65rem; background: var(--grapho-control); }
 .grapho-account-view-toggle button { padding: .35rem .65rem; border: 0; border-radius: .45rem; color: var(--grapho-faint); font-size: .62rem; background: transparent; cursor: pointer; }
 .grapho-account-view-toggle button.is-active { background: var(--grapho-foreground); color: var(--grapho-background); }
+.grapho-register-tools { display: flex; justify-content: space-between; gap: .75rem; margin-bottom: .5rem; }
+.grapho-register-tools input { min-width: 0; flex: 1; padding: .55rem .7rem; border: 1px solid var(--grapho-border); border-radius: .55rem; background: var(--grapho-control); color: var(--grapho-foreground); font-size: .68rem; outline: none; }
+.grapho-register-tools input:focus { border-color: var(--grapho-accent); }
+.grapho-register-tools > div { display: flex; gap: .2rem; }
+.grapho-register-tools button { padding: .35rem .5rem; border: 0; border-radius: .45rem; background: transparent; color: var(--grapho-faint); font-size: .58rem; text-transform: capitalize; cursor: pointer; }
+.grapho-register-tools button.is-active { background: var(--grapho-control); color: var(--grapho-foreground); }
 .grapho-account-record { padding: 1rem 0 1.2rem; border-bottom: 1px solid var(--grapho-border); }
 .grapho-account-record-top { display: flex; align-items: center; gap: .65rem; }
 .grapho-account-record-top strong { flex: 1; font-size: .85rem; color: var(--grapho-foreground); }
