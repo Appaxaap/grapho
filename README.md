@@ -18,7 +18,7 @@ It is designed for people who want a calm writing canvas, simple document organi
 
 Grapho is an early-stage project under active development. The browser workspace, local persistence, rich document blocks, nested documents, search, import and export flows, print layout, and Tauri desktop packaging are available for development use.
 
-The project does not currently include a `LICENSE` file. Until the project owner adds a license, the source should be treated as all rights reserved. See [License](#license).
+Grapho is released under the MIT License. See [`LICENSE`](./LICENSE) for the full legal text and [`LICENSE.md`](./LICENSE.md) for project, branding, contribution, and third-party asset guidance.
 
 ## What Grapho includes
 
@@ -238,9 +238,13 @@ chore: maintain tooling
 
 ## License
 
-The repository currently does not contain a source-code license file. Until a license is selected and added as `LICENSE`, the source is not granted permission for redistribution or modification.
+Grapho is released under the [MIT License](./LICENSE).
 
-The project owner should add the chosen license before describing Grapho as legally licensed FOSS. Branding and logo terms should be reviewed separately. Third-party packages and fonts remain subject to their own licenses.
+The MIT License applies to the project source unless a file or directory contains a more specific notice. It permits use, modification, distribution, sublicensing, and commercial use while requiring preservation of the copyright and permission notices.
+
+The Grapho name, logo, icons, and other branding assets are separate from the source license. Modified distributions should use a distinct product name and must not imply official endorsement. Third-party packages, fonts, and assets remain subject to their own licenses.
+
+Read [`LICENSE.md`](./LICENSE.md) for detailed guidance on source code, branding, contributions, third-party dependencies, and redistribution.
 
 ## Closing thought
 
