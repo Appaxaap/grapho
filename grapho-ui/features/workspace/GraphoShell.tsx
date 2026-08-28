@@ -1072,6 +1072,19 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
+  if (!span.marks?.length && /^\s*(Type|Division|Status|Purpose|Owner|Priority|Date|Category|Description):\s+/i.test(span.text)) {
+    const match = span.text.match(/^(\s*)([A-Za-z][\w /-]{1,30})(:\s+)/);
+    if (match) {
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(document.createTextNode(match[1]));
+      const label = document.createElement("span");
+      label.className = "grapho-field-label";
+      label.textContent = match[2] + match[3];
+      fragment.appendChild(label);
+      fragment.appendChild(document.createTextNode(span.text.slice(match[0].length)));
+      return fragment;
+    }
+  }
   if (!span.marks?.length && /(?:\[[^\]]+\]\(mailto:[^)]+\)|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})/i.test(span.text)) {
     const displayText = span.text.replace(/\[([^\]]+)\]\((?:mailto:)?[^)]+\)/gi, "$1");
     const fragment = document.createDocumentFragment();
