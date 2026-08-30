@@ -73,12 +73,12 @@ html { scroll-behavior:smooth; }
 
 /* Intentional story beats replace the old one-size-fits-all section reveals. */
 /* Keep the motion language solid and editorial: no gradients, glow, or ambient effects. */
-.site-motion-ready .site-ownership,.site-motion-ready .site-workflow,.site-motion-ready .site-problem,.site-motion-ready .site-principles,.site-motion-ready .site-open,.site-motion-ready .site-final-cta,.site-motion-ready .workflow-step,.site-motion-ready .principles-proof p,.site-motion-ready .footer-navigation>div { opacity:0; transform:translateY(54px) scale(.985); animation:none !important; }
-.site-motion-ready .site-visible { opacity:1; transform:none; animation:site-scroll-reveal 1s cubic-bezier(.16,1,.3,1) both !important; }
+.site-motion-ready .site-ownership,.site-motion-ready .site-workflow,.site-motion-ready .site-problem,.site-motion-ready .site-principles,.site-motion-ready .site-open,.site-motion-ready .site-final-cta,.site-motion-ready .workflow-step,.site-motion-ready .principles-proof p,.site-motion-ready .footer-navigation>div { opacity:0; transform:translateY(68px) scale(.98); animation:none !important; }
+.site-motion-ready .site-visible { opacity:1; transform:none; animation:site-scroll-reveal 1.08s cubic-bezier(.16,1,.3,1) both !important; }
 .site-motion-ready .workflow-step:nth-child(2).site-visible { animation-delay:.08s !important; }
 .site-motion-ready .workflow-step:nth-child(3).site-visible { animation-delay:.16s !important; }
 .site-motion-ready .workflow-step:nth-child(4).site-visible { animation-delay:.24s !important; }
-@keyframes site-scroll-reveal { from { opacity:0; transform:translateY(54px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes site-scroll-reveal { from { opacity:0; transform:translateY(68px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 .site-motion-ready .workflow-step.site-visible { transition-delay:calc(var(--reveal-index, 0) * 70ms); }
 .site-motion-ready .site-workflow .workflow-step:nth-child(2) { --reveal-index:1; }
 .site-motion-ready .site-workflow .workflow-step:nth-child(3) { --reveal-index:2; }

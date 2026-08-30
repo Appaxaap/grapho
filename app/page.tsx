@@ -20,7 +20,7 @@ export default function PublicSite() {
     if (!shell || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     shell.classList.add("site-motion-ready");
     const items = shell.querySelectorAll<HTMLElement>(".site-ownership,.site-workflow,.site-problem,.site-principles,.site-open,.site-final-cta,.workflow-step,.principles-proof p,.footer-navigation > div");
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("site-visible"); observer.unobserve(entry.target); } }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("site-visible"); observer.unobserve(entry.target); } }), { threshold: 0.01, rootMargin: "0px 0px -18% 0px" });
     items.forEach((item) => observer.observe(item));
     return () => observer.disconnect();
   }, []);
