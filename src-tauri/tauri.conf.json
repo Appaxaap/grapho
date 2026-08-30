@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Grapho",
-  "version": "0.1.2",
-  "identifier": "com.grapho.desktop",
+  "version": "1.0.0",
+  "identifier": "com.codecx.grapho",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:3000",

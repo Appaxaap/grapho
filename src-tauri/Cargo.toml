@@ -1,6 +1,6 @@
 [package]
 name = "grapho"
-version = "0.1.2"
+version = "1.0.0"
 description = "Grapho native desktop workspace"
 authors = ["Grapho"]
 edition = "2021"
