@@ -8,6 +8,7 @@
 [![Local first](https://img.shields.io/badge/storage-local--first-6BA587?style=flat-square)](#data-and-privacy)
 [![Status](https://img.shields.io/badge/status-early%20development-C9A66B?style=flat-square)](#project-status)
 
+
 > **Write beautifully. Organize simply. Export professionally.**
 
 Grapho is a document-first, local-first writing application for turning ideas into finished documents.
