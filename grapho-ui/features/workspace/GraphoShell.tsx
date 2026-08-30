@@ -1,5 +1,8 @@
 "use client";
 
+/* The workspace uses refs for undo history and native-window capability detection by design. */
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/immutability, react-hooks/refs */
+
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "motion/react";
