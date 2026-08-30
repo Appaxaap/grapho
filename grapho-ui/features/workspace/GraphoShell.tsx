@@ -23,7 +23,7 @@ type Theme = "dark" | "light";
 const defaultFolders = [...WORKSPACE_FOLDERS];
 
 export default function GraphoShell() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>(() => typeof window !== "undefined" && window.localStorage.getItem("grapho-theme") === "light" ? "light" : "dark");
   const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
   const [selectedId, setSelectedId] = useState("product-notes");
   const [query, setQuery] = useState("");
@@ -63,6 +63,10 @@ export default function GraphoShell() {
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    window.localStorage.setItem("grapho-theme", theme);
+  }, [theme]);
   const blockSequence = useRef(0);
   const hydrated = useRef(false);
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
