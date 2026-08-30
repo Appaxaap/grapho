@@ -184,6 +184,14 @@
 .grapho-app-toolbar > span { width: 22px; height: 1px; margin: 3px 0 !important; }
 /* Keep the document-style surface clear of the vertical workspace rail. */
 .grapho-style-panel { right: 92px !important; top: 76px !important; }
+.grapho-style-option { cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease; }
+.grapho-style-option:hover { border-color: var(--grapho-border); background: var(--grapho-control-hover) !important; }
+.grapho-style-option:active { transform: scale(.985); }
+.grapho-style-option:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
+.grapho-style-option-label { font-weight: 500; }
+.grapho-style-option-value { font-size: 9px; }
+.grapho-style-option-arrow { display: grid; width: 17px; height: 17px; place-items: center; border: 1px solid var(--grapho-border); border-radius: 5px; color: var(--grapho-accent); font-size: 10px; line-height: 1; }
+@media (prefers-reduced-motion: reduce) { .grapho-style-option { transition: none; } }
 @media (max-width: 700px) { .grapho-style-panel { top: auto !important; right: 14px !important; bottom: 78px !important; left: 14px; width: auto !important; max-height: calc(100vh - 150px); } }
 .grapho-document-stats { color: var(--grapho-faint); font-size: 9px; white-space: nowrap; }
 .grapho-document-stats i { width: 2px; height: 2px; border-radius: 50%; background: currentColor; opacity: .7; }

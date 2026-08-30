@@ -1231,5 +1231,5 @@ function InfoStat({ label, value }: { label: string; value: string }) {
 
 
 function StyleOption({ label, value, onClick }: { label: string; value: string; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className="mt-2 flex w-full items-center justify-between rounded-lg px-2 py-2.5 text-left text-[9px] hover:bg-[var(--grapho-control)]"><span className="text-[var(--grapho-muted)]">{label}</span><span className="text-[var(--grapho-faint)]">{value}</span></button>;
+  return <button type="button" onClick={onClick} className="grapho-style-option mt-2 flex w-full items-center justify-between rounded-lg border border-transparent px-2.5 py-2.5 text-left text-[9px] hover:bg-[var(--grapho-control)]"><span className="grapho-style-option-label text-[var(--grapho-muted)]">{label}</span><span className="grapho-style-option-value flex items-center gap-2 text-[var(--grapho-foreground)]"><span>{value}</span><span className="grapho-style-option-arrow" aria-hidden="true">↕</span></span></button>;
 }
