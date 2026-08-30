@@ -188,6 +188,8 @@
 .grapho-app-toolbar > span { width: 22px; height: 1px; margin: 3px 0 !important; }
 /* Keep the document-style surface clear of the vertical workspace rail. */
 .grapho-style-panel { right: 92px !important; top: 76px !important; }
+.grapho-first-run-guide { right: 92px !important; max-width: min(280px, calc(100vw - 112px)); }
+@media (max-width: 700px) { .grapho-first-run-guide { right: 78px !important; max-width: calc(100vw - 96px); } }
 .grapho-style-option { cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease; }
 .grapho-style-option:hover { border-color: var(--grapho-border); background: var(--grapho-control-hover) !important; }
 .grapho-style-option:active { transform: scale(.985); }
