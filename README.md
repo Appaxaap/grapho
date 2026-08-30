@@ -1,6 +1,6 @@
 # Grapho
 
-![Grapho social preview](https://raw.githubusercontent.com/Appaxaap/grapho/main/public/Branding/Social%20Preview.png)
+<img width="1672" height="941" alt="Social Preview" src="https://github.com/user-attachments/assets/7bb45d35-03ce-4c16-b048-c9f2f6c325e5" />
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
