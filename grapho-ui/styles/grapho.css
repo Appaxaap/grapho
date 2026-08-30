@@ -160,7 +160,11 @@
 .grapho-label { letter-spacing: 0.18em; }
 
 
-.grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; }
+.grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--grapho-background); }
+.grapho-ui.grapho-soft-surface:not(.grapho-dark) { --grapho-background: #EEF1F3; }
+.grapho-ui.grapho-no-grid .grapho-editor-scroll { background-image: none; }
+.grapho-ui:not(.grapho-no-grid) .grapho-editor-scroll { background-image: linear-gradient(color-mix(in srgb, var(--grapho-border) 42%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--grapho-border) 42%, transparent) 1px, transparent 1px); background-size: 32px 32px; background-position: center top; }
+.grapho-ui .grapho-editor-scroll > div { position: relative; z-index: 1; }
 .grapho-editor-scroll::after { content: ""; position: absolute; z-index: 40; right: 0; bottom: 0; left: 0; height: 72px; pointer-events: none; background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--grapho-background) 28%, transparent)); }
 .grapho-project-list button { color: var(--grapho-muted); font-size: 12px; letter-spacing: -0.025em; }
 .grapho-project-list button:hover, .grapho-project-list button[class*="text-[var(--grapho-foreground)]"] { color: var(--grapho-foreground); }
