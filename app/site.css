@@ -100,6 +100,68 @@ html { scroll-behavior:smooth; }
 .studio-hero::before,.cinema-ambient,.cinema-scanline { display:none !important; }
 .site-dot { box-shadow:none !important; }
 .final-connector i { background:var(--site-accent) !important; }
+
+/* Hero direction: the marketing statement becomes a document, then Grapho assembles around it. */
+.takeover-hero { position:relative; max-width:1240px; min-height:calc(100vh - 76px); margin:0 auto; padding:82px 28px 130px; text-align:center; }
+.takeover-copy { position:relative; z-index:2; max-width:820px; margin:0 auto; }
+.takeover-copy h1 { margin:22px 0 24px; font-size:clamp(52px,8vw,104px); line-height:.91; letter-spacing:-.09em; font-weight:600; }
+.takeover-copy h1>span { display:block; overflow:hidden; padding-bottom:.08em; }
+.takeover-copy h1 em { display:inline-block; color:var(--site-accent); font-style:normal; }
+.takeover-copy>p { max-width:620px; margin:0 auto; color:var(--site-muted); font-size:13px; line-height:1.85; }
+.takeover-copy .site-actions { justify-content:center; }
+.takeover-copy .site-hero-note { justify-content:center; }
+.takeover-stage { position:relative; z-index:3; overflow:hidden; max-width:1120px; min-height:660px; margin:76px auto 0; border:1px solid var(--site-border); border-radius:18px; background:#0b0f14; text-align:left; box-shadow:0 48px 120px rgba(0,0,0,.48); transform-origin:50% 15%; }
+.takeover-window-bar { display:flex; align-items:center; justify-content:space-between; height:40px; padding:0 14px; border-bottom:1px solid var(--site-border); color:var(--site-faint); font-size:8px; }
+.takeover-lights { display:flex; gap:6px; }
+.takeover-lights i { width:7px; height:7px; border-radius:50%; background:#697381; }
+.takeover-local { display:flex; align-items:center; gap:6px; color:var(--site-accent); }
+.takeover-local i { width:5px; height:5px; border-radius:50%; background:var(--site-accent); }
+.takeover-interface { display:grid; grid-template-columns:210px 1fr; min-height:620px; }
+.takeover-sidebar { padding:22px 14px; border-right:1px solid var(--site-border); background:#12171d; color:var(--site-muted); font-size:9px; }
+.takeover-library { display:flex; justify-content:space-between; color:var(--site-text); font-size:11px; }
+.takeover-library b { font-size:16px; }
+.takeover-search { margin:18px 0 25px; padding:10px; border-radius:8px; background:#191f26; color:var(--site-faint); }
+.takeover-sidebar small { display:block; margin:20px 8px 7px; color:var(--site-faint); font-size:7px; letter-spacing:.16em; }
+.takeover-folder,.takeover-document { display:flex; justify-content:space-between; padding:9px 10px; border-radius:8px; transition:transform .2s ease,background .2s ease,color .2s ease; }
+.takeover-folder.active,.takeover-document.active { background:#1c2b25; color:var(--site-text); }
+.takeover-folder:hover,.takeover-document:hover { transform:translateX(3px); background:#1a2324; color:var(--site-text); }
+.takeover-canvas { display:grid; place-items:center; padding:48px; background:#0f141a; }
+.takeover-paper { width:min(100%,680px); min-height:530px; padding:38px clamp(34px,6vw,76px) 46px; background:#efeee9; color:#181b1f; box-shadow:0 24px 60px rgba(0,0,0,.36); }
+.takeover-meta { display:flex; justify-content:space-between; color:#777b75; font-size:7px; letter-spacing:.13em; }
+.takeover-paper>small { display:block; margin-top:62px; color:#797d77; font-size:7px; letter-spacing:.17em; }
+.takeover-paper h2 { margin:14px 0 24px; font-size:clamp(34px,4.5vw,58px); line-height:.96; letter-spacing:-.08em; }
+.takeover-paper h2 em { color:#47745e; font-style:normal; }
+.takeover-paper p,.takeover-paper li { color:#5e625d; font-size:10px; line-height:1.8; }
+.takeover-paper h3 { margin-top:30px; font-size:12px; }
+.takeover-paper ul { padding-left:17px; }
+.takeover-callout { margin-top:24px; padding:12px 14px; border-left:2px solid #6ba587; background:#e3e5df; color:#535852; font-size:9px; }
+.takeover-toolbar { position:absolute; bottom:18px; left:50%; display:flex; align-items:center; gap:13px; padding:10px 14px; border:1px solid var(--site-border); border-radius:11px; background:#151a20; color:var(--site-muted); font-size:8px; transform:translateX(-50%); }
+.takeover-toolbar i { width:1px; height:15px; background:var(--site-border); }
+.takeover-toolbar em { font-style:italic; }
+.takeover-promise { display:flex; justify-content:center; align-items:center; gap:10px; margin-top:26px; color:var(--site-faint); font-size:8px; letter-spacing:.05em; }
+.takeover-promise i { width:3px; height:3px; border-radius:50%; background:var(--site-accent); }
+@keyframes takeover-line { from { opacity:0; transform:translateY(115%); } to { opacity:1; transform:none; } }
+@keyframes takeover-enter { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:none; } }
+@keyframes takeover-sheet { 0% { opacity:0; transform:translateY(150px) scale(.62,.78); } 55% { opacity:1; transform:translateY(0) scale(.62,.78); } 100% { opacity:1; transform:none; } }
+@keyframes takeover-chrome { from { opacity:0; transform:translateX(-26px); } to { opacity:1; transform:none; } }
+@keyframes takeover-content { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+.takeover-copy .site-eyebrow { opacity:0; animation:takeover-enter .5s .18s both; }
+.takeover-copy h1>span:first-child { animation:takeover-line .8s .55s cubic-bezier(.16,1,.3,1) both; }
+.takeover-copy h1>span:last-child em { animation:takeover-line .8s .78s cubic-bezier(.16,1,.3,1) both; }
+.takeover-copy>p { opacity:0; animation:takeover-enter .65s 1.08s both; }
+.takeover-copy .site-actions { opacity:0; animation:takeover-enter .6s 1.3s both; }
+.takeover-copy .site-hero-note { opacity:0; animation:takeover-enter .55s 1.48s both; }
+.takeover-stage { opacity:0; animation:takeover-sheet 1.25s 1.72s cubic-bezier(.16,1,.3,1) both; }
+.takeover-window-bar { opacity:0; animation:takeover-content .45s 2.68s both; }
+.takeover-sidebar { opacity:0; animation:takeover-chrome .65s 2.82s cubic-bezier(.16,1,.3,1) both; }
+.takeover-paper>small,.takeover-paper h2,.takeover-paper p,.takeover-paper h3,.takeover-paper ul,.takeover-callout { opacity:0; animation:takeover-content .55s cubic-bezier(.16,1,.3,1) both; }
+.takeover-paper>small { animation-delay:2.55s; }.takeover-paper h2 { animation-delay:2.68s; }.takeover-paper p { animation-delay:2.86s; }.takeover-paper h3 { animation-delay:3s; }.takeover-paper ul { animation-delay:3.12s; }.takeover-callout { animation-delay:3.26s; }
+.takeover-toolbar { opacity:0; animation:takeover-enter .5s 3.42s both; }
+.takeover-local { opacity:0; animation:takeover-enter .45s 3.65s both; }
+.takeover-promise { opacity:0; animation:takeover-enter .55s 3.82s both; }
+@media (max-width:850px) { .takeover-hero { padding-top:70px; }.takeover-stage { min-height:590px; }.takeover-interface { grid-template-columns:165px 1fr; min-height:550px; }.takeover-canvas { padding:30px; }.takeover-paper { min-height:480px; padding-right:38px; padding-left:38px; } }
+@media (max-width:700px) { .takeover-hero { padding:58px 20px 100px; text-align:left; }.takeover-copy h1 { font-size:clamp(48px,15vw,68px); }.takeover-copy>p { margin-left:0; }.takeover-copy .site-actions,.takeover-copy .site-hero-note,.takeover-promise { justify-content:flex-start; }.takeover-stage { min-height:510px; margin-top:54px; border-radius:13px; }.takeover-interface { display:block; min-height:470px; }.takeover-sidebar { display:none; }.takeover-canvas { min-height:470px; padding:20px; }.takeover-paper { min-height:430px; padding:28px 24px 60px; }.takeover-paper>small { margin-top:40px; }.takeover-paper h2 { font-size:clamp(34px,11vw,48px); }.takeover-toolbar { bottom:12px; max-width:calc(100% - 24px); white-space:nowrap; }.takeover-promise { flex-wrap:wrap; gap:7px; } }
+@media (prefers-reduced-motion:reduce) { .takeover-copy .site-eyebrow,.takeover-copy h1>span:first-child,.takeover-copy h1>span:last-child em,.takeover-copy>p,.takeover-copy .site-actions,.takeover-copy .site-hero-note,.takeover-stage,.takeover-window-bar,.takeover-sidebar,.takeover-paper>small,.takeover-paper h2,.takeover-paper p,.takeover-paper h3,.takeover-paper ul,.takeover-callout,.takeover-toolbar,.takeover-local,.takeover-promise { opacity:1; transform:none; animation:none!important; } }
 .site-dot { box-shadow:none; animation:none; }
 .cinema-stage { box-shadow:0 55px 150px rgba(0,0,0,.52); }
 .cinema-stage:hover { box-shadow:0 65px 170px rgba(0,0,0,.56); }
