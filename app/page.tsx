@@ -47,6 +47,7 @@ export default function PublicSite() {
           <h1 id="hero-title"><span>Write something</span><br /><em><span>worth sharing.</span></em></h1>
           <p>A beautiful, local-first writing app for turning ideas into finished documents. Write without distractions, organize naturally, and export work that looks as good as it reads.</p>
           <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
+          <div className="site-hero-promise"><span>Write beautifully</span><i /><span>Organize simply</span><i /><span>Export professionally</span></div>
           <div className="site-hero-note"><LockKeyhole size={13} /> Open source · local-first · no account required</div>
         </div>
         <div className="cinema-stage" aria-label="Grapho desktop writing experience"><div className="cinema-ambient" aria-hidden="true" /><div className="cinema-scanline" aria-hidden="true" />
