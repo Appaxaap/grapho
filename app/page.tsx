@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, GitBranch, LockKeyhole, Menu, PenLine, Sparkles, WandSparkles } from "lucide-react";
 import "./site.css";
@@ -12,6 +15,16 @@ const workflow = [
 const capabilities = ["Structured blocks", "Rich text formatting", "Markdown import and export", "Local full-text search", "Document backlinks", "Print-ready PDF export"];
 
 export default function PublicSite() {
+  useEffect(() => {
+    const shell = document.querySelector<HTMLElement>(".site-shell");
+    if (!shell || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    shell.classList.add("site-motion-ready");
+    const items = shell.querySelectorAll<HTMLElement>(".site-ownership,.site-workflow,.site-problem,.site-principles,.site-open,.site-final-cta,.workflow-step,.principles-proof p,.footer-navigation > div");
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("site-visible"); observer.unobserve(entry.target); } }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    items.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <main className="site-shell" id="top">
       <nav className="site-nav" aria-label="Main navigation">
