@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, GitBranch, LockKeyhole, Menu, PenLine, Sparkles, WandSparkles } from "lucide-react";
 import "./site.css";
@@ -41,26 +42,18 @@ export default function PublicSite() {
         <Link className="site-menu" href="/app" aria-label="Open Grapho" title="Open Grapho"><Menu size={18} /></Link>
       </nav>
 
-      <section className="takeover-hero" aria-labelledby="hero-title">
-        <div className="takeover-copy">
+      <section className="landscape-hero" aria-labelledby="hero-title">
+        <Image className="landscape-hero-image" src="/images/grapho-landscape-hero.webp" alt="A quiet writing desk overlooking a mountain landscape" fill priority sizes="100vw" />
+        <div className="landscape-veil" aria-hidden="true" />
+        <div className="landscape-copy">
           <div className="site-eyebrow"><span className="site-dot" /> A focused writing studio</div>
           <h1 id="hero-title"><span>Write something</span><span><em>worth sharing.</em></span></h1>
           <p>A beautiful, local-first writing app for turning ideas into finished documents. Write without distractions, organize naturally, and export work that looks as good as it reads.</p>
-          <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
-          <div className="site-hero-note"><LockKeyhole size={13} /> Open source · local-first · no account required</div>
+          <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button landscape-source" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
         </div>
-
-        <div className="takeover-stage" aria-label="A document becoming the Grapho writing interface">
-          <div className="takeover-window-bar"><span className="takeover-lights"><i /><i /><i /></span><span>Grapho</span><span className="takeover-local"><i /> Saved locally</span></div>
-          <div className="takeover-interface">
-            <aside className="takeover-sidebar"><div className="takeover-library">Library <b>+</b></div><div className="takeover-search">Search documents</div><small>WORKSPACE</small><div className="takeover-folder active">Projects <span>3</span></div><div className="takeover-folder">Personal <span>1</span></div><small>PROJECTS</small><div className="takeover-document active">Worth sharing</div><div className="takeover-document">Launch notes</div></aside>
-            <div className="takeover-canvas">
-              <article className="takeover-paper"><div className="takeover-meta"><span>PROJECTS / WORTH SHARING</span><span>01</span></div><small>DOCUMENT · READY TO SHARE</small><h2>Write something<br /><em>worth sharing.</em></h2><p>A focused document experience for turning a clear idea into work another person can use.</p><h3>What matters</h3><ul><li>Writing stays in the foreground</li><li>Structure remains understandable</li><li>The finished document travels well</li></ul><div className="takeover-callout">Your workspace. Your documents. Your computer.</div></article>
-            </div>
-          </div>
-          <div className="takeover-toolbar" aria-label="Formatting toolbar"><span>Paragraph</span><i /><b>B</b><em>I</em><span>H2</span><span>↗</span></div>
-        </div>
-        <div className="takeover-promise"><span>Write beautifully</span><i /><span>Organize simply</span><i /><span>Export professionally</span></div>
+        <div className="landscape-document" aria-label="Grapho document preview"><div className="landscape-document-bar"><span>Product brief</span><span><i /> Saved locally</span></div><div className="landscape-document-page"><small>DOCUMENT · READY TO SHARE</small><strong>A quieter way<br />to write.</strong><p>Clear thinking, shaped into a document that is ready to leave the editor.</p></div></div>
+        <div className="landscape-footnote"><span><LockKeyhole size={12} /> Local-first · no account required</span><span>Write beautifully · Organize simply · Export professionally</span></div>
+        <a className="landscape-credit" href="https://unsplash.com/photos/brown-coat-on-hanger-stand-near-window-iOeVBH4zDas" target="_blank" rel="noreferrer">Photo by Hristo Sahatchiev on Unsplash</a>
       </section>
 
       <section className="site-ownership" aria-labelledby="ownership-title"><div className="ownership-copy"><span className="site-eyebrow"><span className="site-dot" /> Local by design</span><h2 id="ownership-title">Your writing has<br />a home. <em>Yours.</em></h2><p>Grapho keeps the document close to you—from the first line to the finished export. No connection is required to open, edit, organize, or deliver your work.</p><div className="ownership-principles"><span>Local storage</span><span>Offline editing</span><span>Portable exports</span></div></div><div className="ownership-flow" aria-label="A document moving through a local Grapho workflow"><div className="ownership-machine"><span className="ownership-machine-top"><i /><i /><i /><b>grapho.local</b></span><div className="ownership-file"><small>PRODUCT BRIEF</small><strong>A clearer way<br />to write.</strong><span>Saved on this computer</span></div></div><div className="ownership-path"><span>WRITE</span><i /><span>KEEP</span><i /><span>EXPORT</span></div></div></section>
