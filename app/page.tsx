@@ -21,13 +21,14 @@ export default function PublicSite() {
         <Link className="new-mobile-menu" href="/app" aria-label="Open Grapho"><Menu size={18} /></Link>
       </nav>
 
-      <section className="new-hero" aria-labelledby="new-hero-title">
-        <Image className="new-hero-image" src="/images/grapho-landscape-hero.webp" alt="A writing desk looking out over a mountain landscape" fill priority sizes="100vw" />
-        <div className="new-hero-cover" aria-hidden="true" />
-        <div className="new-hero-topline"><span>01 / A local-first writing space</span><span>For the work that matters</span></div>
-        <div className="new-hero-copy"><p className="new-kicker">A beautiful place to begin</p><h1 id="new-hero-title">Write freely.<br /><i>Make it yours.</i></h1><p className="new-hero-description">Grapho is a calm, local-first writing and document app for turning unfinished thoughts into work worth sharing.</p><div className="new-hero-actions"><Link className="new-pill new-pill-light" href="/app">Start writing <ArrowUpRight size={15} /></Link><a className="new-text-link" href="#product">Explore the product <span>↓</span></a></div></div>
-        <div className="new-hero-card" aria-label="Grapho document preview"><div className="new-card-top"><span><i /> Grapho</span><span>Product brief</span></div><div className="new-card-body"><small>01 — THE BEGINNING</small><strong>A clear place<br />for clear thinking.</strong><p>Ideas become easier to finish when the interface knows when to step back.</p><div className="new-card-rule" /><span className="new-card-status"><LockKeyhole size={11} /> Saved locally</span></div></div>
-        <div className="new-hero-bottom"><span>Scroll to discover</span><span>Open source · No account required</span></div>
+      <section className="cover-hero" aria-labelledby="new-hero-title">
+        <div className="cover-index"><span>Grapho / 01</span><span>Local-first writing</span></div>
+        <div className="cover-copy"><p className="new-kicker">A beautiful place to begin</p><h1 id="new-hero-title"><span>Thoughts,</span><span><i>made tangible.</i></span></h1><p>Grapho is a calm writing and document app for turning unfinished ideas into work you can keep, print, and share.</p><div className="new-hero-actions"><Link className="new-pill new-pill-dark" href="/app">Start writing <ArrowUpRight size={15} /></Link><a className="cover-source" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer">View the source <GitBranch size={13} /></a></div></div>
+        <figure className="cover-portal"><Image src="/images/grapho-landscape-hero.webp" alt="A writing desk looking out over a mountain landscape" fill priority sizes="(max-width: 800px) 74vw, 38vw" /><figcaption>Space to think. Structure to finish.</figcaption></figure>
+        <div className="cover-paper cover-paper-back" aria-hidden="true"><span>01</span><i /><i /><i /></div>
+        <div className="cover-product" aria-label="Grapho document preview"><div className="cover-product-top"><span>Grapho</span><span><i /> Local</span></div><small>PROJECTS / PRODUCT BRIEF</small><strong>A quieter way<br />to write.</strong><p>The interface recedes.<br />The document takes its place.</p><div><span>428 words</span><span>Ready to share</span></div></div>
+        <div className="cover-note"><LockKeyhole size={12} /><span>Your words stay<br />on your computer.</span></div>
+        <div className="cover-scroll">Scroll to unfold <span>↓</span></div>
       </section>
 
       <section className="new-intro" id="product"><div className="new-intro-index">02 / The product</div><div><p className="new-kicker">Less interface. More intention.</p><h2>The space between<br /><i>idea and outcome.</i></h2><p className="new-body">Most writing tools ask you to manage the work before you make it. Grapho starts somewhere else: with a beautiful, understandable document and enough structure to carry it forward.</p></div><div className="new-intro-aside">Designed for drafts, notes,<br />briefs, essays, and everything<br />that deserves to become real.</div></section>
