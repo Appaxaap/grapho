@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "motion/react";
 
@@ -56,6 +56,7 @@ export default function GraphoShell() {
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
   const [dropTargetBlockId, setDropTargetBlockId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+    const [firstRunGuideOpen, setFirstRunGuideOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [renameTarget, setRenameTarget] = useState<DocumentItem | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
@@ -70,6 +71,16 @@ export default function GraphoShell() {
   useEffect(() => {
     window.localStorage.setItem("grapho-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!isHydrated || window.localStorage.getItem("grapho-workspace-guide-seen")) return;
+    setFirstRunGuideOpen(true);
+  }, [isHydrated]);
+
+  const dismissFirstRunGuide = () => {
+    window.localStorage.setItem("grapho-workspace-guide-seen", "true");
+    setFirstRunGuideOpen(false);
+  };
   const blockSequence = useRef(0);
   const hydrated = useRef(false);
   const history = useRef<{ past: DocumentItem[][]; future: DocumentItem[][] }>({ past: [], future: [] });
@@ -772,6 +783,7 @@ export default function GraphoShell() {
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grapho-brand-mark grid size-8 place-items-center overflow-hidden rounded-xl"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
         <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
+                <ToolbarButton label="Tool guide" icon={<CircleHelp size={16} />} onClick={() => setHelpOpen(true)} />
 
         <span className="mx-1 h-5 w-px bg-[var(--grapho-border)]" />
         <ToolbarButton label="Undo" icon={<Undo2 size={16} />} onClick={undo} disabled={isHydrated && history.current.past.length === 0} />
@@ -857,6 +869,8 @@ export default function GraphoShell() {
           <ToolbarButton label="Reset local data" icon={<X size={16} />} onClick={resetLocalData} danger disabled={busyAction !== null} />
         </motion.div>
 
+        <AnimatePresence>{firstRunGuideOpen && <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="grapho-first-run-guide fixed right-20 top-4 z-[70] w-[min(280px,calc(100vw-6rem))] rounded-2xl border border-[var(--grapho-accent)]/40 bg-[var(--grapho-panel-solid)] p-4 shadow-2xl" role="status"><div className="flex items-start gap-3"><span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[var(--grapho-accent)] text-[var(--grapho-background)]"><CircleHelp size={15} /></span><div><strong className="block text-[10px] text-[var(--grapho-foreground)]">Welcome to Grapho</strong><p className="mt-1.5 text-[9px] leading-4 text-[var(--grapho-muted)]">Use the rail to shape your document. Hover any icon for its name, or open the tool guide for the complete map.</p></div></div><div className="mt-3 flex justify-end gap-2"><button type="button" onClick={() => { dismissFirstRunGuide(); setHelpOpen(true); }} className="rounded-lg bg-[var(--grapho-control)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]">Open guide</button><button type="button" onClick={dismissFirstRunGuide} className="rounded-lg bg-[var(--grapho-foreground)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-background)]">Got it</button></div></motion.div>}</AnimatePresence>
+
         <AnimatePresence>{styleOpen && <motion.aside initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="grapho-style-panel fixed right-4 top-20 z-[60] hidden max-h-[calc(100vh-6rem)] w-[min(280px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel)] shadow-2xl backdrop-blur-xl xl:block"><div className="h-full w-full overflow-y-auto p-4 [scrollbar-width:none]"><div className="flex items-center justify-between text-[9px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Document style</span><button type="button" onClick={() => setStyleOpen(false)} aria-label="Close style panel"><X size={13} /></button></div><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Typography</div><StyleOption label="Body font" value={editorFont} onClick={() => setEditorFont((value) => value === "Sans" ? "Mono" : value === "Mono" ? "Serif" : "Sans")} /><StyleOption label="Body size" value={editorSize} onClick={() => setEditorSize((value) => value === "Standard" ? "Large" : "Standard")} /><StyleOption label="Width" value={editorWidth} onClick={() => setEditorWidth((value) => value === "Readable" ? "Wide" : "Readable")} /><StyleOption label="Spacing" value={editorSpacing} onClick={() => setEditorSpacing((value) => value === "Relaxed" ? "Compact" : "Relaxed")} /><div className="mt-5 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Appearance</div><StyleOption label="Page" value={pageSurface} onClick={() => setPageSurface((value) => value === "Warm white" ? "Soft gray" : "Warm white")} /><StyleOption label="Accent" value={accentStyle} onClick={() => setAccentStyle((value) => value === "Forest Green" ? "Muted Ink" : "Forest Green")} /><StyleOption label="Grid" value={gridStyle} onClick={() => setGridStyle((value) => value === "Subtle" ? "Off" : "Subtle")} /><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Document</div><div className="mt-3 grid grid-cols-2 gap-2"><InfoStat label="Blocks" value={String(selected.blocks.length)} /><InfoStat label="Words" value={String(selected.blocks.reduce((count, block) => count + block.text.trim().split(/\\s+/).filter(Boolean).length, 0))} /><InfoStat label="Storage" value={`${Math.round(getGraphoStorageDiagnostics().bytes / 1024)} KB`} /></div></div><div className="mt-5 border-t border-[var(--grapho-border)] pt-4"><div className="text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Export</div><button type="button" onClick={exportPdf} className="mt-3 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]"><span className="flex items-center gap-2"><FileDown size={13} /> Export PDF</span><ChevronDown size={12} /></button><button type="button" onClick={exportMarkdown} disabled={busyAction !== null} className="mt-2 flex h-10 w-full items-center justify-between rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)] disabled:cursor-not-allowed disabled:opacity-40"><span className="flex items-center gap-2"><FileText size={13} /> Export Markdown</span><ChevronDown size={12} /></button></div></div></motion.aside>}</AnimatePresence>
       </div>
       <AnimatePresence>
@@ -880,7 +894,7 @@ export default function GraphoShell() {
         {helpOpen && <motion.div className="grapho-modal-backdrop fixed inset-0 z-[100] grid place-items-center bg-black/35 p-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) setHelpOpen(false); }}>
           <motion.section role="dialog" aria-modal="true" aria-labelledby="grapho-help-title" initial={{ opacity: 0, y: 18, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: .97 }} transition={{ type: "spring", stiffness: 360, damping: 28 }} className="grapho-dialog grapho-glass w-full max-w-lg overflow-hidden rounded-2xl p-2">
             <header className="flex items-start justify-between border-b border-[var(--grapho-border)] px-3 py-3"><div><div className="text-[9px] uppercase tracking-[.18em] text-[var(--grapho-faint)]">Grapho workspace</div><h2 id="grapho-help-title" className="mt-1 text-base font-semibold tracking-[-.03em]">Help & shortcuts</h2><p className="mt-2 text-[12px] leading-5 text-[var(--grapho-muted)]">Write naturally. Grapho keeps the structure out of your way.</p></div><button type="button" onClick={() => setHelpOpen(false)} aria-label="Close help" className="grid size-9 place-items-center rounded-xl text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><X size={15} /></button></header>
-            <div className="grid gap-5 px-3 py-5 sm:grid-cols-2"><ShortcutGroup title="Writing" items={[["Enter", "New block"], ["Backspace", "Remove empty block"], ["/", "Open block menu"], ["Shift + Enter", "New line"]]} /><ShortcutGroup title="Formatting" items={[["Select text", "Open formatting toolbar"], ["⌘ / Ctrl + B", "Bold selection"], ["⌘ / Ctrl + I", "Italic selection"], ["Delete", "Delete selected block"]]} /><ShortcutGroup title="Markdown" items={[["# + Space", "Heading"], ["> + Space", "Quote"], ["- + Space", "Bulleted list"], ["1. + Space", "Numbered list"]]} /><ShortcutGroup title="Workspace" items={[["Click handle", "Select a block"], ["PDF", "Print canvas to PDF"], ["T", "Open document style"], ["Mod + Shift + W", "New workspace"], ["Esc", "Close menus"]]} /></div>
+            <div className="grapho-tool-guide-list grid gap-2 border-b border-[var(--grapho-border)] px-3 py-4"><ToolGuideItem icon={<Menu size={14} />} name="Library rail" use="Show or hide your document library." /><ToolGuideItem icon={<SlidersHorizontal size={14} />} name="Workspace tools" use="Adjust document style and export." /><ToolGuideItem icon={<Undo2 size={14} />} name="Undo / Redo" use="Move backward or forward through edits." /><ToolGuideItem icon={<FileText size={14} />} name="Document export" use="Save Markdown, HTML, or plain text." /><ToolGuideItem icon={<Sun size={14} />} name="Theme" use="Switch between light and dark mode." /></div><div className="grid gap-5 px-3 py-5 sm:grid-cols-2"><ShortcutGroup title="Writing" items={[["Enter", "New block"], ["Backspace", "Remove empty block"], ["/", "Open block menu"], ["Shift + Enter", "New line"]]} /><ShortcutGroup title="Formatting" items={[["Select text", "Open formatting toolbar"], ["⌘ / Ctrl + B", "Bold selection"], ["⌘ / Ctrl + I", "Italic selection"], ["Delete", "Delete selected block"]]} /><ShortcutGroup title="Markdown" items={[["# + Space", "Heading"], ["> + Space", "Quote"], ["- + Space", "Bulleted list"], ["1. + Space", "Numbered list"]]} /><ShortcutGroup title="Workspace" items={[["Click handle", "Select a block"], ["PDF", "Print canvas to PDF"], ["T", "Open document style"], ["Mod + Shift + W", "New workspace"], ["Esc", "Close menus"]]} /></div>
             <footer className="flex items-center justify-between border-t border-[var(--grapho-border)] bg-[var(--grapho-control)] px-3 py-3 text-[8px] text-[var(--grapho-faint)]"><span className="flex items-center gap-3"><span>Local-first · no account required</span><span className="flex gap-2"><a href="/documentation" className="underline underline-offset-2">Docs</a><a href="/privacy" className="underline underline-offset-2">Privacy</a><a href="/terms" className="underline underline-offset-2">Terms</a></span></span><button type="button" onClick={() => setHelpOpen(false)} className="rounded-lg px-2.5 py-1.5 text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)]">Done</button></footer>
           </motion.section>
         </motion.div>}
@@ -1221,6 +1235,10 @@ function BlockCommandMenu({ onSelect, onDismiss }: { onSelect: (type: Block["typ
 
 function PaletteAction({ icon, label, hint, onClick }: { icon: React.ReactNode; label: string; hint: string; onClick: () => void }) {
   return <button type="button" onClick={onClick} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-[var(--grapho-control-hover)]"><span className="grid size-9 place-items-center rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] text-[var(--grapho-muted)]">{icon}</span><span className="min-w-0 flex-1"><span className="block text-[11px] text-[var(--grapho-foreground)]">{label}</span><span className="mt-0.5 block text-[9px] text-[var(--grapho-faint)]">{hint}</span></span><ChevronRight size={14} className="text-[var(--grapho-faint)]" /></button>;
+}
+
+function ToolGuideItem({ icon, name, use }: { icon: React.ReactNode; name: string; use: string }) {
+  return <div className="flex items-center gap-3 rounded-xl bg-[var(--grapho-control)] px-3 py-2.5"><span className="grid size-7 shrink-0 place-items-center rounded-lg border border-[var(--grapho-border)] text-[var(--grapho-accent)]">{icon}</span><span className="min-w-0"><strong className="block text-[9px] text-[var(--grapho-foreground)]">{name}</strong><small className="mt-0.5 block text-[8px] leading-4 text-[var(--grapho-muted)]">{use}</small></span></div>;
 }
 
 function ShortcutGroup({ title, items }: { title: string; items: string[][] }) {
