@@ -112,3 +112,15 @@ html { scroll-behavior:smooth; }
 @keyframes story-step { from { opacity:0; transform:translateX(18px); } to { opacity:1; transform:none; } }
 @keyframes story-proof { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion:reduce) { .site-ownership,.site-workflow,.site-problem,.site-principles,.site-open,.site-final-cta,.ownership-copy,.ownership-flow,.workflow-step,.principles-manifesto,.principles-proof,.open-repository,.final-journey { animation:none!important; opacity:1!important; transform:none!important; } }
+@supports (animation-timeline: view()) {
+  .site-ownership,.site-workflow,.site-problem,.site-principles,.site-open,.site-final-cta { opacity:0; animation-timeline:view(block); animation-range:entry 0% cover 32%; }
+  .site-ownership { animation:story-arrive .8s cubic-bezier(.16,1,.3,1) both; }
+  .site-workflow { animation:story-organize .8s cubic-bezier(.16,1,.3,1) both; }
+  .site-problem { animation:story-refine .8s cubic-bezier(.16,1,.3,1) both; }
+  .site-principles { animation:story-quiet .9s cubic-bezier(.16,1,.3,1) both; }
+  .site-open { animation:story-source .8s cubic-bezier(.16,1,.3,1) both; }
+  .site-final-cta { animation:story-finish .9s cubic-bezier(.16,1,.3,1) both; }
+  .workflow-step,.principles-proof p,.footer-navigation>div { opacity:0; animation-timeline:view(block); animation-range:entry 0% cover 28%; }
+  .workflow-step { animation:story-step .55s cubic-bezier(.16,1,.3,1) both; }
+  .principles-proof p,.footer-navigation>div { animation:story-proof .55s cubic-bezier(.16,1,.3,1) both; }
+}
