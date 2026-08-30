@@ -6,7 +6,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
 [![Local first](https://img.shields.io/badge/storage-local--first-6BA587?style=flat-square)](#data-and-privacy)
-[![Status](https://img.shields.io/badge/status-early%20development-C9A66B?style=flat-square)](#project-status)
+[![Release](https://img.shields.io/badge/release-v1.0.0-6BA587?style=flat-square)](#project-status)
 
 
 > **Write beautifully. Organize simply. Export professionally.**
@@ -19,7 +19,7 @@ It is designed for people who want a calm writing canvas, simple document organi
 
 ## Project status
 
-Grapho is an early-stage project under active development. The browser workspace, local persistence, rich document blocks, nested documents, search, import and export flows, print layout, and Tauri desktop packaging are available for development use.
+Grapho v1.0.0 is the first public release. The browser workspace, local persistence, rich document blocks, nested documents, search, import and export flows, print layout, and Tauri desktop packaging are available for everyday writing and document work.
 
 Grapho is released under the MIT License. See [`LICENSE`](./LICENSE) for the full legal text and [`LICENSING.md`](./LICENSING.md) for project, branding, contribution, and third-party asset guidance.
 
@@ -79,11 +79,11 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000/app](http://localhost:3000/app).
 
-The public landing page is available at `/`. The writing workspace is available at `/app`.
+The writing workspace is available at `/app`. The public marketing route is intentionally not part of this release build.
 
-The repository intentionally publishes only the product source and required build files. Internal planning documents and the retired local `/site` route are kept outside public version control and are not part of the public application.
+The repository publishes the product source, native desktop boundary, public assets, and required build files. Internal planning documents remain local-only and are not part of the public application.
 
 ### Production browser build
 
@@ -105,6 +105,12 @@ npm run tauri:build:linux
 ```
 
 The generated packages are written below:
+
+Fedora installation after building:
+
+```bash
+sudo dnf install -y ./src-tauri/target/release/bundle/rpm/Grapho-1.0.0-1.x86_64.rpm
+```
 
 ```text
 src-tauri/target/release/bundle/deb/
