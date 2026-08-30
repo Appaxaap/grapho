@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+
 import Link from "next/link";
 import { ArrowUpRight, Check, GitBranch, LockKeyhole, Menu, MousePointer2 } from "lucide-react";
 import "./site.css";
@@ -21,14 +21,18 @@ export default function PublicSite() {
         <Link className="new-mobile-menu" href="/app" aria-label="Open Grapho"><Menu size={18} /></Link>
       </nav>
 
-      <section className="cover-hero" aria-labelledby="new-hero-title">
-        <div className="cover-index"><span>Grapho / 01</span><span>Local-first writing</span></div>
-        <div className="cover-copy"><p className="new-kicker">A beautiful place to begin</p><h1 id="new-hero-title"><span>Thoughts,</span><span><i>made tangible.</i></span></h1><p>Grapho is a calm writing and document app for turning unfinished ideas into work you can keep, print, and share.</p><div className="new-hero-actions"><Link className="new-pill new-pill-dark" href="/app">Start writing <ArrowUpRight size={15} /></Link><a className="cover-source" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer">View the source <GitBranch size={13} /></a></div></div>
-        <figure className="cover-portal"><Image src="/images/grapho-landscape-hero.webp" alt="A writing desk looking out over a mountain landscape" fill priority sizes="(max-width: 800px) 74vw, 38vw" /><figcaption>Space to think. Structure to finish.</figcaption></figure>
-        <div className="cover-paper cover-paper-back" aria-hidden="true"><span>01</span><i /><i /><i /></div>
-        <div className="cover-product" aria-label="Grapho document preview"><div className="cover-product-top"><span>Grapho</span><span><i /> Local</span></div><small>PROJECTS / PRODUCT BRIEF</small><strong>A quieter way<br />to write.</strong><p>The interface recedes.<br />The document takes its place.</p><div><span>428 words</span><span>Ready to share</span></div></div>
-        <div className="cover-note"><LockKeyhole size={12} /><span>Your words stay<br />on your computer.</span></div>
-        <div className="cover-scroll">Scroll to unfold <span>↓</span></div>
+      <section className="manuscript-hero" aria-labelledby="new-hero-title">
+        <div className="manuscript-meta"><span>Grapho / 01</span><span>A local-first writing space</span><span>Open source</span></div>
+        <div className="manuscript-title"><p className="new-kicker">From first thought to finished document</p><h1 id="new-hero-title"><span>Write what</span><span><i>stays with you.</i></span></h1></div>
+        <div className="manuscript-stage" aria-label="A document being written in Grapho">
+          <div className="manuscript-chrome"><span className="manuscript-dots"><i /><i /><i /></span><span>Product brief</span><span className="manuscript-saved"><i /> Saved locally</span></div>
+          <aside><span className="manuscript-library">Library <b>+</b></span><small>PROJECTS</small><span className="active">A quieter way</span><span>Launch notes</span><small>PERSONAL</small><span>Reading list</span></aside>
+          <article><div className="manuscript-path">PROJECTS / A QUIETER WAY</div><small>DOCUMENT · 01</small><h2>A clear place<br /><i>for clear thinking.</i></h2><p>Ideas become easier to finish when the interface knows when to step back.</p><div className="manuscript-line"><span>01</span><b>Writing stays in the foreground</b></div><div className="manuscript-caret" aria-hidden="true" /></article>
+          <div className="manuscript-toolbar"><span>Paragraph</span><i /><b>B</b><em>I</em><span>H2</span><span>↗</span></div>
+        </div>
+        <div className="manuscript-action"><p>Write without distractions. Organize without building a system. Export something worth sending.</p><div><Link className="new-pill new-pill-dark" href="/app">Start writing <ArrowUpRight size={15} /></Link><a href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer">View source <GitBranch size={13} /></a></div></div>
+        <div className="manuscript-note"><LockKeyhole size={12} /><span>No account.<br />No cloud required.</span></div>
+        <div className="manuscript-scroll">Scroll to unfold <span>↓</span></div>
       </section>
 
       <section className="new-intro" id="product"><div className="new-intro-index">02 / The product</div><div><p className="new-kicker">Less interface. More intention.</p><h2>The space between<br /><i>idea and outcome.</i></h2><p className="new-body">Most writing tools ask you to manage the work before you make it. Grapho starts somewhere else: with a beautiful, understandable document and enough structure to carry it forward.</p></div><div className="new-intro-aside">Designed for drafts, notes,<br />briefs, essays, and everything<br />that deserves to become real.</div></section>
