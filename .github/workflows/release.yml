@@ -1,0 +1,79 @@
+name: Release Grapho
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            bundle: deb,rpm
+          - os: windows-2025
+            bundle: nsis
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev libayatana-appindicator3-dev
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build release bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: Grapho ${{ github.ref_name }}
+          releaseBody: |
+            # Grapho v1.0.0
+
+            Grapho is a local-first writing application for turning ideas into finished documents.
+
+            ## Included
+
+            - Focused block-based writing workspace
+            - Projects, folders, nested documents, search, backlinks, and trash recovery
+            - Markdown, HTML, plain text, JSON backup, and PDF print export
+            - Light and dark themes
+            - Keyboard shortcuts and command palette
+            - Desktop onboarding and workspace tool guide
+            - Local persistence without an account or hosted workspace
+
+            ## Downloads
+
+            - Linux: DEB and RPM packages
+            - Windows: NSIS installer
+
+            ## Notes
+
+            Grapho stores workspace data locally. Export or back up important documents before major system changes.
+          releaseDraft: false
+          prerelease: false
+          includeDebug: false
+          includeRelease: true
+          args: --bundles ${{ matrix.bundle }}
