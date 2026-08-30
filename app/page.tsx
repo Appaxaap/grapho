@@ -1,74 +1,47 @@
 "use client";
 
-import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Check, GitBranch, LockKeyhole, Menu, PenLine, Sparkles, WandSparkles } from "lucide-react";
+import { ArrowUpRight, Check, GitBranch, LockKeyhole, Menu, MousePointer2 } from "lucide-react";
 import "./site.css";
 
-const workflow = [
-  ["01", "Write", "A calm, structured canvas that keeps the document in the foreground.", PenLine, "Start with a clear page"],
-  ["02", "Organize", "Projects, folders, and documents—nothing more complicated than necessary.", Sparkles, "Projects / Product brief"],
-  ["03", "Refine", "Shape hierarchy, typography, links, tables, quotes, and callouts in context.", WandSparkles, "Heading · Quote · Table"],
-  ["04", "Deliver", "Export meaningful work to PDF, Markdown, HTML, or plain text.", ArrowRight, "PDF · MD · HTML · TXT"],
-] as const;
-
-const capabilities = ["Structured blocks", "Rich text formatting", "Markdown import and export", "Local full-text search", "Document backlinks", "Print-ready PDF export"];
+const features = [
+  ["01", "Write in the foreground", "A quiet canvas for the thought that is still becoming."],
+  ["02", "Keep things findable", "Folders and search give your work a place without turning it into a system."],
+  ["03", "Leave beautifully", "Turn a living draft into a document you can send, print, or keep."],
+];
 
 export default function PublicSite() {
-  useEffect(() => {
-    const shell = document.querySelector<HTMLElement>(".site-shell");
-    if (!shell || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    shell.classList.add("site-motion-ready");
-    const items = shell.querySelectorAll<HTMLElement>(".site-ownership,.site-workflow,.site-problem,.site-principles,.site-open,.site-final-cta,.workflow-step,.principles-proof p,.footer-navigation > div");
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("site-visible"); observer.unobserve(entry.target); } }), { threshold: 0.01, rootMargin: "0px 0px -18% 0px" });
-    items.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <main className="site-shell" id="top">
-      <nav className="site-nav" aria-label="Main navigation">
-        <Link className="site-brand" href="/" aria-label="Grapho home">
-          <span className="site-mark"><img src="/Branding/Primary-logo.png" alt="" /></span>
-          <span>Grapho</span>
-        </Link>
-        <div className="site-nav-links">
-          <a href="#features">Features</a>
-          <a href="#philosophy">Philosophy</a>
-          <a href="#open-source">Open source</a>
-          <Link className="site-github" href="/app">Download Grapho <ArrowRight size={14} /></Link>
-        </div>
-        <Link className="site-menu" href="/app" aria-label="Open Grapho" title="Open Grapho"><Menu size={18} /></Link>
+    <main className="new-site" id="top">
+      <nav className="new-nav" aria-label="Main navigation">
+        <Link href="/" className="new-brand"><span className="new-brand-mark"><img src="/Branding/Primary-logo.png" alt="" /></span><span>Grapho</span></Link>
+        <div className="new-nav-links"><a href="#product">The product</a><a href="#principle">Why Grapho</a><a href="#open-source">Open source</a></div>
+        <Link className="new-nav-cta" href="/app">Open Grapho <ArrowUpRight size={14} /></Link>
+        <Link className="new-mobile-menu" href="/app" aria-label="Open Grapho"><Menu size={18} /></Link>
       </nav>
 
-      <section className="landscape-hero" aria-labelledby="hero-title">
-        <Image className="landscape-hero-image" src="/images/grapho-landscape-hero.webp" alt="A quiet writing desk overlooking a mountain landscape" fill priority sizes="100vw" />
-        <div className="landscape-veil" aria-hidden="true" />
-        <div className="landscape-copy">
-          <div className="site-eyebrow"><span className="site-dot" /> A focused writing studio</div>
-          <h1 id="hero-title"><span>Write something</span><span><em>worth sharing.</em></span></h1>
-          <p>A beautiful, local-first writing app for turning ideas into finished documents. Write without distractions, organize naturally, and export work that looks as good as it reads.</p>
-          <div className="site-actions"><Link className="site-button site-button-primary" href="/app">Start writing <ArrowRight size={16} /></Link><a className="site-button landscape-source" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div>
-        </div>
-        <div className="landscape-document" aria-label="Grapho document preview"><div className="landscape-document-bar"><span>Product brief</span><span><i /> Saved locally</span></div><div className="landscape-document-page"><small>DOCUMENT · READY TO SHARE</small><strong>A quieter way<br />to write.</strong><p>Clear thinking, shaped into a document that is ready to leave the editor.</p></div></div>
-        <div className="landscape-footnote"><span><LockKeyhole size={12} /> Local-first · no account required</span><span>Write beautifully · Organize simply · Export professionally</span></div>
-        <a className="landscape-credit" href="https://unsplash.com/photos/brown-coat-on-hanger-stand-near-window-iOeVBH4zDas" target="_blank" rel="noreferrer">Photo by Hristo Sahatchiev on Unsplash</a>
+      <section className="new-hero" aria-labelledby="new-hero-title">
+        <Image className="new-hero-image" src="/images/grapho-landscape-hero.webp" alt="A writing desk looking out over a mountain landscape" fill priority sizes="100vw" />
+        <div className="new-hero-cover" aria-hidden="true" />
+        <div className="new-hero-topline"><span>01 / A local-first writing space</span><span>For the work that matters</span></div>
+        <div className="new-hero-copy"><p className="new-kicker">A beautiful place to begin</p><h1 id="new-hero-title">Write freely.<br /><i>Make it yours.</i></h1><p className="new-hero-description">Grapho is a calm, local-first writing and document app for turning unfinished thoughts into work worth sharing.</p><div className="new-hero-actions"><Link className="new-pill new-pill-light" href="/app">Start writing <ArrowUpRight size={15} /></Link><a className="new-text-link" href="#product">Explore the product <span>↓</span></a></div></div>
+        <div className="new-hero-card" aria-label="Grapho document preview"><div className="new-card-top"><span><i /> Grapho</span><span>Product brief</span></div><div className="new-card-body"><small>01 — THE BEGINNING</small><strong>A clear place<br />for clear thinking.</strong><p>Ideas become easier to finish when the interface knows when to step back.</p><div className="new-card-rule" /><span className="new-card-status"><LockKeyhole size={11} /> Saved locally</span></div></div>
+        <div className="new-hero-bottom"><span>Scroll to discover</span><span>Open source · No account required</span></div>
       </section>
 
-      <section className="site-ownership" aria-labelledby="ownership-title"><div className="ownership-copy"><span className="site-eyebrow"><span className="site-dot" /> Local by design</span><h2 id="ownership-title">Your writing has<br />a home. <em>Yours.</em></h2><p>Grapho keeps the document close to you—from the first line to the finished export. No connection is required to open, edit, organize, or deliver your work.</p><div className="ownership-principles"><span>Local storage</span><span>Offline editing</span><span>Portable exports</span></div></div><div className="ownership-flow" aria-label="A document moving through a local Grapho workflow"><div className="ownership-machine"><span className="ownership-machine-top"><i /><i /><i /><b>grapho.local</b></span><div className="ownership-file"><small>PRODUCT BRIEF</small><strong>A clearer way<br />to write.</strong><span>Saved on this computer</span></div></div><div className="ownership-path"><span>WRITE</span><i /><span>KEEP</span><i /><span>EXPORT</span></div></div></section>
+      <section className="new-intro" id="product"><div className="new-intro-index">02 / The product</div><div><p className="new-kicker">Less interface. More intention.</p><h2>The space between<br /><i>idea and outcome.</i></h2><p className="new-body">Most writing tools ask you to manage the work before you make it. Grapho starts somewhere else: with a beautiful, understandable document and enough structure to carry it forward.</p></div><div className="new-intro-aside">Designed for drafts, notes,<br />briefs, essays, and everything<br />that deserves to become real.</div></section>
 
-      <section className="site-workflow" id="features" aria-labelledby="features-title"><div className="workflow-heading"><span className="site-eyebrow"><span className="site-dot" /> The whole workflow</span><h2 id="features-title">A document should<br />move <em>forward.</em></h2><p>Grapho supports the complete path from an unfinished thought to work that is ready to leave the editor.</p></div><div className="workflow-track">{workflow.map(([number, title, copy, Icon, preview]) => <article className="workflow-step" key={title}><div className="workflow-number">{number}</div><div className="workflow-content"><span className="workflow-icon"><Icon size={15} /></span><h3>{title}</h3><p>{copy}</p></div><div className={`workflow-preview workflow-preview-${number}`}><small>{preview}</small>{number === "01" && <><strong>Product brief</strong><i /><i className="short" /></>}{number === "02" && <><span>▾ Projects</span><span className="selected">&nbsp;&nbsp;Product brief</span><span>▸ Personal</span></>}{number === "03" && <><b>B</b><em>I</em><span>H2</span><span>↗</span></>}{number === "04" && <><strong>Ready to share</strong><span>Export document →</span></>}</div></article>)}</div></section>
+      <section className="new-product-stage" aria-label="Grapho writing interface"><div className="new-product-window"><div className="new-product-rail"><span className="new-product-logo">G</span><span className="rail-active">✦</span><span>⌕</span><span>□</span><span>↗</span><span className="rail-bottom">◌</span></div><aside><span className="new-side-title">Library <b>+</b></span><span className="new-side-label">PROJECTS</span><span className="new-side-item active">Product brief</span><span className="new-side-item">Launch notes</span><span className="new-side-label">PERSONAL</span><span className="new-side-item">Reading list</span></aside><article><div className="new-doc-meta"><span>PROJECTS / PRODUCT BRIEF</span><span>Saved locally</span></div><small>DOCUMENT · 01</small><h3>A clear place<br /><i>for clear thinking.</i></h3><p>Grapho gives a thought enough room to become a document. No dashboards. No noise. Just the next useful line.</p><div className="new-doc-section"><span>01</span><strong>What matters</strong><ul><li>Writing stays in the foreground</li><li>Structure remains understandable</li><li>The finished document travels well</li></ul></div></article><div className="new-cursor"><MousePointer2 size={14} /><span>you</span></div></div></section>
 
-      <section className="site-problem" aria-labelledby="problem-title"><div className="problem-visual" aria-label="Moving from managing systems to making a document"><div className="problem-noise"><span>Workspace</span><span>Database</span><span>Knowledge system</span><span>Configuration</span></div><div className="problem-arrow">→</div><div className="problem-document"><small>THE DOCUMENT</small><strong>One clear idea.<br />Finished well.</strong><i /><i className="short" /><em>Ready to share</em></div></div><div className="problem-copy"><span className="site-eyebrow"><span className="site-dot" /> A focused alternative</span><h2 id="problem-title">Not another system<br />to <em>maintain.</em></h2><p>Modern tools can become places to configure, categorize, and manage. Grapho has a narrower purpose: give you a beautiful place to write and finish the document in front of you.</p><blockquote>Built for making documents—not managing software.</blockquote></div></section>
+      <section className="new-features"><div className="new-section-heading"><p className="new-kicker">03 / A smaller toolkit</p><h2>Everything you need.<br /><i>Nothing to maintain.</i></h2></div><div className="new-feature-grid">{features.map(([number, title, copy]) => <article className={`new-feature new-feature-${number}`} key={number}><span>{number}</span><div><h3>{title}</h3><p>{copy}</p></div>{number === "01" && <div className="feature-lines"><i /><i /><i /></div>}{number === "02" && <div className="feature-folders"><b>Projects</b><span>Product brief</span><span>Launch notes</span></div>}{number === "03" && <div className="feature-paper"><small>READY TO SHARE</small><strong>PDF</strong></div>}</article>)}</div></section>
 
-      <section className="site-principles" id="philosophy" aria-labelledby="principles-title"><div className="principles-mark" aria-hidden="true">“</div><div className="principles-manifesto"><span className="site-eyebrow"><span className="site-dot" /> A quieter kind of software</span><h2 id="principles-title">Don&apos;t manage<br />your knowledge.<br /><em>Make something with it.</em></h2><p>Grapho exists for the moment when collecting stops and making begins. The interface recedes. The document takes its place.</p></div><div className="principles-proof"><span>THE PRODUCT STAYS QUIET</span><div>{capabilities.map((item, index) => <p key={item}><small>{String(index + 1).padStart(2, "0")}</small>{item}<Check size={13} /></p>)}</div></div></section>
+      <section className="new-principle" id="principle"><div className="new-principle-number">04 / The principle</div><div className="new-principle-quote"><span>“</span><h2>The interface<br />should know when<br />to <i>disappear.</i></h2></div><p className="new-body">Your writing belongs close to you. Grapho works offline, stores documents locally, and stays open about how it is made.</p></section>
 
-      <section className="site-open" id="open-source" aria-labelledby="open-title"><div className="open-copy"><span className="site-eyebrow"><span className="site-dot" /> Built in the open</span><h2 id="open-title">The tool should be<br />as readable as<br /><em>the document.</em></h2><p>Grapho is developed publicly. Inspect how documents are stored, understand what the application can access, report an issue, or help improve the writing experience.</p><div className="site-open-actions"><a className="site-button site-button-primary" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={16} /> Explore the repository</a><Link className="site-button site-button-quiet" href="/app">Open Grapho <ArrowRight size={16} /></Link></div></div><div className="open-repository" aria-label="Grapho public repository preview"><div className="open-repo-head"><span><GitBranch size={13} /> Appaxaap / grapho</span><b>public</b></div><div className="open-repo-tree"><span>app/</span><span>grapho-ui/</span><span>src-tauri/</span><span>README.md</span></div><pre><code><i>const</i> promise = {`{`}<br />&nbsp;&nbsp;write: <q>&quot;beautifully&quot;</q>,<br />&nbsp;&nbsp;organize: <q>&quot;simply&quot;</q>,<br />&nbsp;&nbsp;export: <q>&quot;professionally&quot;</q><br />{`}`};</code></pre><div className="open-repo-foot"><span>Local-first architecture</span><span>TypeScript + Rust</span></div></div></section>
+      <section className="new-open" id="open-source"><div><p className="new-kicker">05 / Built in the open</p><h2>Readable software<br /><i>for readable work.</i></h2><p className="new-body">Grapho is open source and local-first. Inspect it, run it, shape it, or simply use it as a quiet place to write.</p><Link className="new-pill new-pill-dark" href="https://github.com/Appaxaap/grapho" target="_blank">Explore the repository <ArrowUpRight size={15} /></Link></div><div className="new-code-card"><div><GitBranch size={13} /> Appaxaap / grapho <span>public</span></div><pre><code><i>const</i> document = {`{`}<br />  home: <b>&quot;your computer&quot;</b>,<br />  format: <b>&quot;your choice&quot;</b>,<br />  source: <b>&quot;open&quot;</b><br />{`}`};</code></pre><small><Check size={12} /> local-first by design</small></div></section>
 
-      <section className="site-final-cta" aria-labelledby="final-title"><div className="final-journey" aria-hidden="true"><div className="final-page blank"><span>01</span><i /></div><div className="final-connector"><small>WRITE</small><i /><small>FINISH</small></div><div className="final-page finished"><small>PRODUCT BRIEF</small><strong>A quieter<br />way to write.</strong><p>Clear thinking, shaped into a document that is ready to leave the editor.</p><span>READY TO SHARE · 01</span></div></div><div className="final-copy"><span className="site-eyebrow"><span className="site-dot" /> From blank page to finished document</span><h2 id="final-title">The next page<br />is <em>yours.</em></h2><p>Write beautifully. Organize simply. Export professionally.</p><div className="site-actions"><Link className="site-button site-button-primary" href="/app">Download Grapho <ArrowRight size={16} /></Link><a className="site-button site-button-quiet" href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer"><GitBranch size={15} /> View source</a></div><small>Linux builds available · local-first · open source</small></div></section>
-
-            <footer className="site-footer"><div className="footer-brand"><Link className="site-brand" href="/" aria-label="Grapho home"><span className="site-mark"><img src="/Branding/Primary-logo.png" alt="" /></span><span>Grapho</span></Link><p>Write beautifully.<br />Organize simply.<br /><em>Export professionally.</em></p></div><div className="footer-navigation"><div><span>PRODUCT</span><Link href="/app">Open Grapho</Link><a href="#features">Features</a><a href="#philosophy">Philosophy</a></div><div><span>OPEN</span><a href="https://github.com/Appaxaap/grapho" target="_blank" rel="noreferrer">Repository</a><a href="https://github.com/Appaxaap/grapho/issues" target="_blank" rel="noreferrer">Issues</a><a href="#open-source">Source story</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Grapho</span><strong>Open source · Local-first · Yours.</strong><a href="#top">Back to top ↑</a></div></footer>
+      <section className="new-final"><p className="new-kicker">06 / Begin anywhere</p><h2>There is a first line<br />waiting for <i>you.</i></h2><Link className="new-pill new-pill-light" href="/app">Open Grapho <ArrowUpRight size={15} /></Link><p className="new-final-note">Linux builds available · free and open source</p></section>
+      <footer className="new-footer"><Link href="/" className="new-brand"><span className="new-brand-mark"><img src="/Branding/Primary-logo.png" alt="" /></span><span>Grapho</span></Link><span>Write beautifully. Organize simply. Export professionally.</span><a href="#top">Back to top ↑</a></footer>
     </main>
   );
 }
