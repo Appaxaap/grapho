@@ -46,13 +46,6 @@ struct PdfDocument {
     blocks: Vec<PdfBlock>,
 }
 
-fn pdf_escape(value: &str) -> String {
-    value
-        .replace('\\', "\\\\")
-        .replace('(', "\\(")
-        .replace(')', "\\)")
-}
-
 #[tauri::command]
 fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
     let (pdf, page, layer) =
