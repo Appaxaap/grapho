@@ -39,7 +39,7 @@ export default function GraphoShell() {
   const [workspaceRenameDraft, setWorkspaceRenameDraft] = useState("");
   const [focusedDocumentId, setFocusedDocumentId] = useState<string | null>(null);
   const [trashOpen, setTrashOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => typeof window === "undefined" || window.innerWidth > 700);
   const [styleOpen, setStyleOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [editorWidth, setEditorWidth] = useState<"Readable" | "Wide">("Readable");
