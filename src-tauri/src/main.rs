@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use printpdf::{BuiltinFont, Mm, PdfDocument as NativePdfDocument};
 use serde::Deserialize;
 use std::fs;
 use std::path::PathBuf;
@@ -35,6 +36,8 @@ fn save_native_workspace(app: AppHandle, payload: String) -> Result<(), String> 
 #[derive(Deserialize)]
 struct PdfBlock {
     text: String,
+    #[serde(default)]
+    r#type: String,
 }
 
 #[derive(Deserialize)]
@@ -52,57 +55,87 @@ fn pdf_escape(value: &str) -> String {
 
 #[tauri::command]
 fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
-    let mut lines = vec![document.title.clone(), String::new()];
+    let (pdf, page, layer) =
+        NativePdfDocument::new(&document.title, Mm(210.0), Mm(297.0), "Grapho");
+    let font = pdf
+        .add_builtin_font(BuiltinFont::Helvetica)
+        .map_err(|error| error.to_string())?;
+    let bold = pdf
+        .add_builtin_font(BuiltinFont::HelveticaBold)
+        .map_err(|error| error.to_string())?;
+    let mut current_page = page;
+    let mut current_layer = layer;
+    let mut y = 270.0_f64;
+    let write_line = |text: &str,
+                      size: f64,
+                      bold_text: bool,
+                      y: &mut f64,
+                      layer_id: printpdf::PdfLayerReference| {
+        layer_id.use_text(
+            text,
+            size as f32,
+            Mm(24.0),
+            Mm(*y as f32),
+            if bold_text { &bold } else { &font },
+        );
+        *y -= if size > 14.0 { 10.0 } else { 7.0 };
+    };
+    write_line(
+        &document.title,
+        22.0,
+        true,
+        &mut y,
+        pdf.get_page(current_page).get_layer(current_layer),
+    );
+    y -= 10.0;
     for block in document.blocks {
-        for paragraph in block.text.split('\n') {
-            let mut remaining = paragraph.trim().to_string();
-            while remaining.chars().count() > 92 {
-                let cut = remaining.chars().take(92).collect::<String>();
-                let split = cut.rfind(' ').unwrap_or(92);
-                lines.push(remaining[..split].to_string());
-                remaining = remaining[split..].trim_start().to_string();
+        if block.r#type == "page-break" || y < 25.0 {
+            let added = pdf.add_page(Mm(210.0), Mm(297.0), "Grapho");
+            current_page = added.0;
+            current_layer = added.1;
+            y = 270.0;
+        }
+        let size = if block.r#type == "heading" {
+            16.0
+        } else if block.r#type == "code" {
+            9.0
+        } else {
+            11.0
+        };
+        let bold_text = block.r#type == "heading";
+        for paragraph in block.text.lines() {
+            let prefix = if block.r#type == "list" {
+                "• "
+            } else if block.r#type == "ordered-list" {
+                "1. "
+            } else if block.r#type == "quote" {
+                "“ "
+            } else {
+                ""
+            };
+            for line in paragraph.as_bytes().chunks(92) {
+                let text = String::from_utf8_lossy(line);
+                if y < 20.0 {
+                    let added = pdf.add_page(Mm(210.0), Mm(297.0), "Grapho");
+                    current_page = added.0;
+                    current_layer = added.1;
+                    y = 270.0;
+                }
+                write_line(
+                    &format!("{}{}", prefix, text),
+                    size,
+                    bold_text,
+                    &mut y,
+                    pdf.get_page(current_page).get_layer(current_layer),
+                );
             }
-            lines.push(remaining);
         }
-        lines.push(String::new());
+        y -= 6.0;
     }
-    let mut stream = String::from("BT\n/F1 18 Tf\n54 760 Td\n");
-    for (index, line) in lines.iter().enumerate() {
-        if index == 1 {
-            stream.push_str("/F1 10 Tf\n0 -28 Td\n");
-        } else if index > 1 {
-            stream.push_str("0 -16 Td\n");
-        }
-        stream.push_str(&format!("({}) Tj\n", pdf_escape(line)));
-    }
-    stream.push_str("ET");
-    let objects = [
-        "<< /Type /Catalog /Pages 2 0 R >>".to_string(),
-        "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_string(),
-        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>".to_string(),
-        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".to_string(),
-        format!("<< /Length {} >>\nstream\n{}\nendstream", stream.len(), stream),
-    ];
-    let mut pdf = String::from("%PDF-1.4\n");
-    let mut offsets = vec![0usize];
-    for (index, object) in objects.iter().enumerate() {
-        offsets.push(pdf.len());
-        pdf.push_str(&format!("{} 0 obj\n{}\nendobj\n", index + 1, object));
-    }
-    let xref = pdf.len();
-    pdf.push_str(&format!(
-        "xref\n0 {}\n0000000000 65535 f \n",
-        objects.len() + 1
-    ));
-    for offset in offsets.iter().skip(1) {
-        pdf.push_str(&format!("{:010} 00000 n \n", offset));
-    }
-    pdf.push_str(&format!(
-        "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{}\n%%EOF\n",
-        objects.len() + 1,
-        xref
-    ));
-    fs::write(path, pdf.as_bytes()).map_err(|error| error.to_string())
+    pdf.save(&mut std::io::BufWriter::new(
+        fs::File::create(path).map_err(|error| error.to_string())?,
+    ))
+    .map_err(|error| error.to_string())
 }
 
 fn main() {
