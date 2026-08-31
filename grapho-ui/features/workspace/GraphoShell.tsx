@@ -108,7 +108,10 @@ export default function GraphoShell() {
       const source = nativeStored ?? stored;
       if (source) {
         const stored = source;
-        setDocuments(stored.documents.map((document) => document.blocks.length && ["todo", "toggle"].includes(document.blocks[document.blocks.length - 1].type) ? { ...document, blocks: [...document.blocks, { id: `block-${document.id}-writing`, type: "paragraph" as const, text: "" }] } : document));
+        setDocuments(stored.documents.map((document) => {
+                  const blocks = document.blocks.map((block) => block.type === "paragraph" && block.text === "Start writing…" ? { ...block, text: "" } : block);
+                  return blocks.length && ["todo", "toggle"].includes(blocks[blocks.length - 1].type) ? { ...document, blocks: [...blocks, { id: `block-${document.id}-writing`, type: "paragraph" as const, text: "" }] } : { ...document, blocks };
+                }));
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
         setActiveFolder(stored.activeFolder);
         setFolders(stored.folders?.length ? Array.from(new Set([...defaultFolders, ...stored.folders])) : defaultFolders);
@@ -334,7 +337,7 @@ export default function GraphoShell() {
 
   const createDocument = (parentDocumentId: string | null = null) => {
     const id = `document-${Date.now()}`;
-    const document = { id, title: parentDocumentId ? "Untitled subdocument" : "Untitled document", folder: activeFolder, parentDocumentId, updated: "Just now", blocks: [{ id: `${id}-heading`, type: "heading" as const, text: parentDocumentId ? "Untitled subdocument" : "Untitled document" }, { id: `${id}-paragraph`, type: "paragraph" as const, text: "Start writing…" }] };
+    const document = { id, title: parentDocumentId ? "Untitled subdocument" : "Untitled document", folder: activeFolder, parentDocumentId, updated: "Just now", blocks: [{ id: `${id}-heading`, type: "heading" as const, text: parentDocumentId ? "Untitled subdocument" : "Untitled document" }, { id: `${id}-paragraph`, type: "paragraph" as const, text: "" }] };
     setDocuments((current) => [document, ...current]);
     setSelectedId(id);
   };
@@ -1136,7 +1139,7 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
     lastValue.current = value;
   }, [content, value]);
 
-  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
+  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} data-placeholder="Start writing…" contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {

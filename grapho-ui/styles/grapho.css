@@ -79,6 +79,8 @@
 .grapho-ui textarea:focus,
 .grapho-ui [contenteditable]:focus { box-shadow: none; border-radius: 0; }
 .grapho-ui [contenteditable] { caret-color: var(--grapho-accent); }
+.grapho-ui [contenteditable][data-placeholder]:empty::before { content: attr(data-placeholder); color: var(--grapho-faint); pointer-events: none; }
+.grapho-ui [contenteditable][data-placeholder]:focus::before { content: ""; }
 .grapho-field-label { color: var(--grapho-foreground); font-weight: 650; }
 .grapho-smart-link { color: var(--grapho-accent); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--grapho-accent) 45%, transparent); text-underline-offset: 3px; }
 .grapho-priority-value { color: var(--grapho-foreground); font-weight: 650; }
