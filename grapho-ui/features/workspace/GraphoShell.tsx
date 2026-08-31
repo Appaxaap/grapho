@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import "../../styles/grapho.css";
 import { clearGraphoStorage, defaultGraphoPreferences, getGraphoStorageDiagnostics, loadGraphoStorage, saveGraphoStorage, type GraphoPreferences } from "../../persistence/storage";
-import { isNativePersistenceAvailable, loadNativeWorkspace, saveNativeWorkspace } from "../../persistence/native";
+import { exportNativePdf, isNativePersistenceAvailable, loadNativeWorkspace, saveNativeWorkspace } from "../../persistence/native";
 import { initialDocuments, WORKSPACE_FOLDERS, type Block, type DocumentItem, type InlineText, type TextMark } from "../../domain/model";
 import { analyzeDocument } from "../../domain/documentIntelligence";
 import { SHORTCUTS } from "../../domain/shortcuts";
@@ -402,14 +402,26 @@ export default function GraphoShell() {
     }, 0);
   };
 
-  const exportPdf = () => {
+  const exportPdf = async () => {
+    if (busyAction) return;
     setBusyAction("exporting");
-    // Print the actual canvas so the browser preserves the same visual layout.
-    window.print();
-    window.setTimeout(() => {
+    try {
+      if (isNativeWindow) {
+        const saved = await exportNativePdf(selected);
+        setBusyAction(null);
+        setToast(saved ? "PDF exported" : "PDF export cancelled");
+        return;
+      }
+      // Browser export remains the native print flow, since browsers own the destination dialog.
+      window.print();
+      window.setTimeout(() => {
+        setBusyAction(null);
+        setToast("PDF export ready");
+      }, 450);
+    } catch (error) {
       setBusyAction(null);
-      setToast("PDF export ready");
-    }, 450);
+      setToast(`PDF export failed: ${error instanceof Error ? error.message : "Could not write the file"}`);
+    }
   };
 
   const downloadFile = (filename: string, content: string, type: string) => {
