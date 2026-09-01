@@ -238,9 +238,17 @@
 .grapho-selection-toolbar { scrollbar-width: none; }
 .grapho-selection-toolbar::-webkit-scrollbar { display: none; }
 
+.grapho-table-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .7rem 1rem; border-bottom: 1px solid var(--grapho-border); background: color-mix(in srgb, var(--grapho-panel) 55%, transparent); }
+.grapho-table-heading strong { display: block; margin-top: .18rem; color: var(--grapho-foreground); font-size: .68rem; font-weight: 600; }
+.grapho-table-kicker, .grapho-table-hint { color: var(--grapho-faint); font-size: .5rem; letter-spacing: .12em; text-transform: uppercase; }
+.grapho-table-hint { letter-spacing: .02em; text-transform: none; }
 .grapho-table-resize-handle { background: transparent; }
 .grapho-table-resize-handle:hover, .grapho-table-resize-handle:focus-visible { background: var(--grapho-accent); outline: none; }
 .grapho-markdown-table th, .grapho-markdown-table td { border-right-color: color-mix(in srgb, var(--grapho-border) 88%, var(--grapho-accent)); }
+.grapho-document-list > .group { border-radius: .8rem !important; }
+.grapho-document-list > .group > button:first-child { border-radius: .8rem !important; }
+.grapho-document-list > .group:hover { background: var(--grapho-control) !important; }
+.grapho-document-list > .group:hover > button:first-child { background: transparent !important; }
 
 @media print {
   @page {
