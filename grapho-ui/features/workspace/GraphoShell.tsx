@@ -110,7 +110,7 @@ export default function GraphoShell() {
       if (source) {
         const stored = source;
         setDocuments(stored.documents.map((document) => {
-                  const blocks = document.blocks.map((block) => block.type === "paragraph" && block.text === "Start writing…" ? { ...block, text: "" } : block);
+                  const blocks = normalizeTableBlocks(document.blocks.map((block) => block.type === "paragraph" && block.text === "Start writing…" ? { ...block, text: "" } : block));
                   return blocks.length && ["todo", "toggle"].includes(blocks[blocks.length - 1].type) ? { ...document, blocks: [...blocks, { id: `block-${document.id}-writing`, type: "paragraph" as const, text: "" }] } : { ...document, blocks };
                 }));
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
@@ -938,6 +938,26 @@ export default function GraphoShell() {
       <div className="grapho-print-branding" aria-hidden="true">Grapho</div>
     </div>
   );
+}
+
+function normalizeTableBlocks(blocks: Block[]): Block[] {
+  const normalized: Block[] = [];
+  let index = 0;
+  while (index < blocks.length) {
+    const first = blocks[index];
+    const second = blocks[index + 1];
+    const isRow = (block?: Block) => Boolean(block && block.type === "paragraph" && /^\s*\|/.test(block.text));
+    const isSeparator = (block?: Block) => Boolean(block && isRow(block) && block!.text.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").every((cell) => /^\s*:?-{3,}:?\s*$/.test(cell)));
+    if (isRow(first) && isSeparator(second)) {
+      const rows: Block[] = [];
+      while (isRow(blocks[index])) rows.push(blocks[index++]);
+      normalized.push({ id: first.id, type: "table", text: rows.filter((row) => !isSeparator(row)).map((row) => row.text.trim()).join("\n") });
+      continue;
+    }
+    normalized.push(first);
+    index += 1;
+  }
+  return normalized;
 }
 
 function parseMarkdownBlocks(rawText: string, makeId: () => string): Block[] {
