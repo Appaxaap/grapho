@@ -1099,7 +1099,7 @@ function MarkdownTableBlock({ text }: { text: string }) {
   const normalizedRows = rows.length ? rows : [["Column 1", "Column 2"], ["", ""]];
   const columns = Math.max(...normalizedRows.map((row) => row.length), 2);
   const paddedRows = normalizedRows.map((row) => [...row, ...Array.from({ length: columns - row.length }, () => "")]);
-  const [widths, setWidths] = useState<number[]>(() => Array.from({ length: columns }, () => 100 / columns));
+  const [widths, setWidths] = useState<number[]>(() => columns === 3 ? [36, 18, 46] : Array.from({ length: columns }, () => 100 / columns));
   const resizeColumn = (index: number, event: React.PointerEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
