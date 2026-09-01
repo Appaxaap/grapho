@@ -780,7 +780,7 @@ export default function GraphoShell() {
   const modalOpen = Boolean(deleteTarget || renameTarget || paletteOpen || helpOpen || workspaceDialogOpen || workspaceRenameTarget);
 
   return (
-    <div style={{ "--grapho-accent": accentStyle === "Muted Ink" ? "#7B8792" : undefined, "--grapho-accent-soft": accentStyle === "Muted Ink" ? "rgba(123,135,146,.16)" : undefined } as CSSProperties} className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${pageSurface === "Soft gray" ? "grapho-soft-surface" : ""} ${gridStyle === "Off" ? "grapho-no-grid" : ""} ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
+    <div style={{ "--grapho-accent": accentStyle === "Muted Ink" ? "#7B8792" : undefined, "--grapho-accent-soft": accentStyle === "Muted Ink" ? "rgba(123,135,146,.16)" : undefined } as CSSProperties} className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${pageSurface === "Soft gray" ? "grapho-soft-surface" : ""} grapho-no-grid ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
       {isNativeWindow && <div className="grapho-native-titlebar" data-tauri-drag-region>
         <div className="grapho-native-brand" data-tauri-drag-region><span className="grapho-brand-mark"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><b>Grapho</b></div>
         <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>
