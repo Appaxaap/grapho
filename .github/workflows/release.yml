@@ -151,5 +151,4 @@ jobs:
         run: >-
           gh release upload "$RELEASE_TAG"
           src-tauri/gen/android/app/build/outputs/apk/*/release/*.apk
-          src-tauri/gen/android/app/build/outputs/bundle/*Release/*.aab
           --clobber
