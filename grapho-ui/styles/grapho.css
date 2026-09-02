@@ -292,6 +292,11 @@
   .grapho-ui > header,
   .grapho-ui aside,
   .grapho-ui .fixed,
+  .grapho-ui .grapho-mobile-action-bar,
+  .grapho-ui .grapho-editor-insert-toolbar,
+  .grapho-ui .grapho-mobile-surface-dismiss,
+  .grapho-ui .grapho-modal-backdrop,
+  .grapho-ui [role="toolbar"],
   .grapho-ui .grapho-document-meta,
   .grapho-ui .grapho-print-hide,
   .grapho-ui .grapho-canvas-grid,
@@ -300,6 +305,10 @@
   .grapho-ui main { width: 100% !important; }
   .grapho-ui main > div { max-width: none !important; padding: 0 !important; }
   .grapho-ui article { min-height: 0 !important; overflow: visible !important; padding-bottom: 0 !important; }
+  .grapho-ui article::before,
+  .grapho-ui article::after,
+  .grapho-ui main::before,
+  .grapho-ui main::after { display: none !important; content: none !important; }
   .grapho-ui [contenteditable] { color: #161617 !important; }
   .grapho-ui table { width: 100% !important; min-width: 0 !important; table-layout: fixed !important; color: #161617 !important; background: #fff !important; }
   .grapho-ui table th, .grapho-ui table td { min-width: 0 !important; width: auto !important; overflow-wrap: anywhere; }
