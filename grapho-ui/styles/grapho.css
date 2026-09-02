@@ -210,6 +210,8 @@
   .grapho-sidebar > div { width: auto !important; max-width: none !important; }
   .grapho-sidebar .grapho-document-list { overflow-x: hidden; }
   .grapho-sidebar .grapho-document-list > .group { max-width: calc(100% - 14px); }
+  .grapho-sidebar .grapho-document-list > .group > div { opacity: 1 !important; }
+  .grapho-sidebar .grapho-document-list > .group > div > button:first-child { display: none !important; }
   .grapho-editor-scroll { height: 100dvh; padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
   .grapho-editor-scroll::after { display: none; }
   .grapho-document-meta { display: none; }
