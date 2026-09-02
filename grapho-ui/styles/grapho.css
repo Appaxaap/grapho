@@ -439,6 +439,6 @@
   .grapho-mobile-tab-capsule { border: 1px solid var(--grapho-mobile-nav-border) !important; background: var(--grapho-mobile-nav-surface) !important; }
   .grapho-mobile-action-active { display: none !important; }
   .grapho-mobile-action-bar button { color: var(--grapho-mobile-nav-foreground); }
-  .grapho-mobile-action-bar button[aria-pressed="true"] { background: transparent; color: var(--grapho-mobile-nav-foreground); }
+  .grapho-mobile-action-bar button[aria-pressed="true"] { border: 1px solid var(--grapho-accent); background: var(--grapho-accent-soft); color: var(--grapho-mobile-nav-foreground); }
   .grapho-mobile-primary-action { border: 1px solid color-mix(in srgb, var(--grapho-mobile-nav-accent) 70%, var(--grapho-mobile-nav-border)) !important; background: var(--grapho-mobile-nav-accent) !important; color: var(--grapho-mobile-nav-foreground) !important; }
 }
