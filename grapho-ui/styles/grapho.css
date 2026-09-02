@@ -423,3 +423,15 @@
   .grapho-mobile-action-active,
   .grapho-mobile-primary-action { animation: none !important; }
 }
+
+/* Canonical mobile bottom navigation: solid pill + detached create action. */
+@media (max-width: 700px) {
+  .grapho-mobile-action-bar,
+  .grapho-mobile-tab-capsule,
+  .grapho-mobile-primary-action,
+  .grapho-mobile-secondary-actions { filter: none !important; box-shadow: none !important; }
+  .grapho-mobile-tab-capsule { border: 1px solid var(--grapho-border) !important; background: var(--grapho-panel-solid) !important; }
+  .grapho-mobile-action-active { display: none !important; }
+  .grapho-mobile-action-bar button[aria-pressed="true"] { background: transparent; color: var(--grapho-foreground); }
+  .grapho-mobile-primary-action { border: 1px solid color-mix(in srgb, var(--grapho-accent) 30%, var(--grapho-border)) !important; background: var(--grapho-accent-soft) !important; }
+}
