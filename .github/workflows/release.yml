@@ -134,9 +134,11 @@ jobs:
         run: npx tauri android build --ci --apk --aab --split-per-abi
 
       - name: Upload Android release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
-          files: |
-            src-tauri/gen/android/app/build/outputs/apk/release/*.apk
-            src-tauri/gen/android/app/build/outputs/bundle/release/*.aab
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: >-
+          gh release upload "$RELEASE_TAG"
+          src-tauri/gen/android/app/build/outputs/apk/*/release/*.apk
+          src-tauri/gen/android/app/build/outputs/bundle/*Release/*.aab
+          --clobber
