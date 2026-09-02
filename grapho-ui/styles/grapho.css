@@ -161,6 +161,10 @@
 .grapho-title { letter-spacing: -0.08em; }
 .grapho-label { letter-spacing: 0.18em; }
 
+/* Keep native drag selection readable and consistent in the browser and Tauri. */
+.grapho-ui [contenteditable] { -webkit-user-select: text; user-select: text; }
+.grapho-ui ::selection { background: var(--grapho-accent-soft); color: var(--grapho-foreground); }
+
 
 .grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--grapho-background); }
 .grapho-ui.grapho-soft-surface:not(.grapho-dark) { --grapho-background: #EEF1F3; }
