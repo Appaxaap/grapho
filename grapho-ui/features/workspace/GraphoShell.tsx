@@ -77,6 +77,12 @@ export default function GraphoShell() {
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    if (!toast || busyAction) return;
+    const timer = window.setTimeout(() => setToast(null), 3500);
+    return () => window.clearTimeout(timer);
+  }, [toast, busyAction]);
+
+  useEffect(() => {
     window.localStorage.setItem("grapho-theme", theme);
   }, [theme]);
 
