@@ -187,6 +187,8 @@
 .grapho-mobile-surface-dismiss { display: none; }
 .grapho-app-toolbar { right: 28px !important; flex-direction: column; width: 52px; gap: 5px !important; padding: 7px !important; }
 @media (max-width: 700px) {
+  .grapho-sidebar kbd,
+  .grapho-sidebar > div > .mt-auto > button:last-child { display: none !important; }
   .grapho-ui {
     --grapho-mobile-glass: rgba(255, 255, 255, .56);
     --grapho-mobile-glass-thick: rgba(246, 249, 248, .78);
