@@ -279,6 +279,9 @@
 .grapho-document-list > .group > button:first-child { border-radius: .8rem !important; }
 .grapho-document-list > .group:hover { background: var(--grapho-control) !important; }
 .grapho-document-list > .group:hover > button:first-child { background: transparent !important; }
+.grapho-document-list > .group:has([data-selection-checked="true"]) { border-color: color-mix(in srgb, var(--grapho-accent) 55%, var(--grapho-border)) !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; }
+.grapho-document-list > .group:has([data-selection-checked="true"]) > button[data-grapho-document-id] { color: var(--grapho-foreground) !important; }
+.grapho-document-list > .group:has([data-selection-checked="true"]) > button[data-grapho-document-id] > span:first-child { background: var(--grapho-accent) !important; color: var(--grapho-background) !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--grapho-accent) 25%, transparent); }
 
 @media print {
   @page {

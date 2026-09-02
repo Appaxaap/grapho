@@ -90,11 +90,14 @@ export default function GraphoShell() {
       if (!target) return;
       event.preventDefault();
       event.stopPropagation();
+      const isSelected = selectedDocumentIds.has(target.dataset.graphoDocumentId!);
+      target.dataset.selectionChecked = String(!isSelected);
+      target.setAttribute("aria-pressed", String(!isSelected));
       toggleDocumentSelection(target.dataset.graphoDocumentId!);
     };
     document.addEventListener("click", handleSelectionClick, true);
     return () => document.removeEventListener("click", handleSelectionClick, true);
-  }, [selectionMode]);
+  }, [selectionMode, selectedDocumentIds]);
 
   useEffect(() => {
     if (selectedDocumentIds.size > 0) setSelectionMode(true);
