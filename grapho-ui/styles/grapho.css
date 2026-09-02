@@ -392,7 +392,6 @@
   .grapho-mobile-action-bar button:hover,
   .grapho-mobile-action-bar button:focus-visible,
   .grapho-mobile-action-bar button[aria-pressed="true"] { color: var(--grapho-foreground); }
-  .grapho-mobile-action-label { position: relative; z-index: 1; display: block !important; }
   .grapho-mobile-action-active { inset: 2px; border-radius: .9rem; background: var(--grapho-control-hover); }
   .grapho-mobile-primary-action { min-width: 54px !important; min-height: 54px !important; flex-basis: 54px !important; border-radius: 1.25rem !important; }
   .grapho-mobile-secondary-actions { bottom: calc(100% + 8px); right: 62px; border-radius: 1.25rem; }
