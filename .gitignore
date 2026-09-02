@@ -45,6 +45,8 @@ yarn-error.log*
 next-env.d.ts
 
 # local-only internal project notes and experimental features
+/AGENTS.md
+/CLAUDE.md
 /GRAPHO_ARCHITECTURE.md
 /GRAPHO_CHANGELOG.md
 /GRAPHO_COLOR_DESIGN_SYSTEM.md
