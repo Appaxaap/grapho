@@ -386,4 +386,14 @@
   .grapho-mobile-primary-action { border-radius: 1rem !important; background: var(--grapho-foreground) !important; color: var(--grapho-background) !important; }
   .grapho-mobile-secondary-actions { border-radius: 1rem; background: var(--grapho-panel-solid); }
   .grapho-style-panel { border-radius: 1rem !important; }
+  .grapho-mobile-action-bar { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; gap: 8px; align-items: center; }
+  .grapho-mobile-tab-capsule { min-height: 64px; gap: 2px; padding: 4px; border-radius: 1.25rem !important; }
+  .grapho-mobile-action-bar button { min-height: 54px; gap: 3px; border-radius: 1rem; color: var(--grapho-muted); font-size: 8px; font-weight: 560; }
+  .grapho-mobile-action-bar button:hover,
+  .grapho-mobile-action-bar button:focus-visible,
+  .grapho-mobile-action-bar button[aria-pressed="true"] { color: var(--grapho-foreground); }
+  .grapho-mobile-action-label { position: relative; z-index: 1; display: block !important; }
+  .grapho-mobile-action-active { inset: 2px; border-radius: .9rem; background: var(--grapho-control-hover); }
+  .grapho-mobile-primary-action { min-width: 54px !important; min-height: 54px !important; flex-basis: 54px !important; border-radius: 1.25rem !important; }
+  .grapho-mobile-secondary-actions { bottom: calc(100% + 8px); right: 62px; border-radius: 1.25rem; }
 }
