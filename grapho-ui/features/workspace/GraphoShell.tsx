@@ -1239,7 +1239,16 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
     lastValue.current = value;
   }, [content, value]);
 
-  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} data-placeholder="Start writing…" contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={onKeyDown} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
+  return <div ref={ref} data-grapho-block data-grapho-block-id={blockId} data-placeholder="Start writing…" contentEditable suppressContentEditableWarning role="textbox" aria-label={label} spellCheck onInput={(event) => { const nextContent = readInlineContent(event.currentTarget); const nextValue = plainInlineText(nextContent); lastValue.current = nextValue; onChange(nextValue, nextContent); }} onKeyDown={(event) => {
+    const selection = window.getSelection();
+    const hasSelection = Boolean(selection && !selection.isCollapsed && ref.current?.contains(selection.anchorNode) && ref.current.contains(selection.focusNode));
+    if (hasSelection && (event.key === "Backspace" || event.key === "Delete")) {
+      event.preventDefault();
+      document.execCommand("delete");
+      return;
+    }
+    onKeyDown(event);
+  }} onPaste={onPaste} className={`min-h-[1.5em] w-full cursor-text border-0 bg-transparent outline-none ${className}`} />;
 }
 
 function inlineSpanNode(span: InlineText, key: number): Node {
