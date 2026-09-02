@@ -130,8 +130,19 @@ jobs:
       - name: Initialize Android target
         run: npx tauri android init --ci
 
-      - name: Build Android APK and AAB
-        run: npx tauri android build --ci --apk --aab --split-per-abi
+      - name: Restore Android signing keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/grapho-release.keystore"
+
+      - name: Build signed Android APKs
+        env:
+          TAURI_ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/grapho-release.keystore
+          TAURI_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAURI_ANDROID_KEYSTORE_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TAURI_ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: npx tauri android build --ci --apk --split-per-abi
 
       - name: Upload Android release assets
         env:
