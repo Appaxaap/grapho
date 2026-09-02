@@ -166,6 +166,12 @@
 /* Keep native drag selection readable and consistent in the browser and Tauri. */
 .grapho-ui [contenteditable] { -webkit-user-select: text; user-select: text; }
 .grapho-ui ::selection { background: var(--grapho-selection); color: var(--grapho-background); }
+.grapho-ui a::selection,
+.grapho-ui strong::selection,
+.grapho-ui em::selection,
+.grapho-ui u::selection,
+.grapho-ui s::selection,
+.grapho-ui mark::selection { background: var(--grapho-selection); color: var(--grapho-background); }
 
 
 .grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--grapho-background); }
