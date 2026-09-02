@@ -68,6 +68,7 @@ export default function GraphoShell() {
   const [renameDraft, setRenameDraft] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<DocumentItem | null>(null);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState<Set<string>>(() => new Set());
+  const [selectionMode, setSelectionMode] = useState(false);
   const [bulkDeleteTargets, setBulkDeleteTargets] = useState<DocumentItem[] | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -81,6 +82,23 @@ export default function GraphoShell() {
     const timer = window.setTimeout(() => setToast(null), 3500);
     return () => window.clearTimeout(timer);
   }, [toast, busyAction]);
+
+  useEffect(() => {
+    if (!selectionMode) return;
+    const handleSelectionClick = (event: MouseEvent) => {
+      const target = (event.target as HTMLElement).closest<HTMLElement>("[data-grapho-document-id]");
+      if (!target) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toggleDocumentSelection(target.dataset.graphoDocumentId!);
+    };
+    document.addEventListener("click", handleSelectionClick, true);
+    return () => document.removeEventListener("click", handleSelectionClick, true);
+  }, [selectionMode]);
+
+  useEffect(() => {
+    if (selectedDocumentIds.size > 0) setSelectionMode(true);
+  }, [selectedDocumentIds]);
 
   useEffect(() => {
     window.localStorage.setItem("grapho-theme", theme);
@@ -251,6 +269,8 @@ export default function GraphoShell() {
     setBulkDeleteTargets(targets);
     setDeleteTarget(targets[0]);
   };
+
+  const toggleDocumentSelection = (documentId: string) => setSelectedDocumentIds((current) => { const next = new Set(current); if (next.has(documentId)) next.delete(documentId); else next.add(documentId); return next; });
 
   const commitDelete = () => {
     const targets = bulkDeleteTargets ?? (deleteTarget ? [deleteTarget] : []);
