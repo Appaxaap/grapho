@@ -72,7 +72,7 @@ export default function GraphoShell() {
   const [bulkDeleteTargets, setBulkDeleteTargets] = useState<DocumentItem[] | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [busyAction, setBusyAction] = useState<"importing" | "resetting" | "exporting" | null>(null);
+  const [busyAction, setBusyAction] = useState<"importing" | "resetting" | "exporting" | "renaming" | null>(null);
   const [isNativeWindow, setIsNativeWindow] = useState(false);
   const [saveState, setSaveState] = useState<"saved" | "saving" | "error">("saved");
   const [isHydrated, setIsHydrated] = useState(false);
@@ -253,10 +253,20 @@ export default function GraphoShell() {
   };
 
   const commitRename = () => {
-    if (!renameTarget) return;
+    if (!renameTarget || busyAction) return;
     const title = renameDraft.trim();
-    if (title && title !== renameTarget.title) setDocuments((items) => items.map((document) => document.id === renameTarget.id ? { ...document, title, updated: "Just now", blocks: document.blocks.map((block, index) => index === 0 && block.type === "heading" && block.text === renameTarget.title ? { ...block, text: title } : block) } : document));
-    setRenameTarget(null);
+    if (!title) return;
+    if (title === renameTarget.title) { setRenameTarget(null); return; }
+    const targetId = renameTarget.id;
+    const previousTitle = renameTarget.title;
+    setBusyAction("renaming");
+    setToast("Saving name…");
+    window.setTimeout(() => {
+      setDocuments((items) => items.map((document) => document.id === targetId ? { ...document, title, updated: "Just now", blocks: document.blocks.map((block, index) => index === 0 && block.type === "heading" && block.text === previousTitle ? { ...block, text: title } : block) } : document));
+      setRenameTarget(null);
+      setBusyAction(null);
+      setToast("Name saved");
+    }, 320);
   };
 
   const deleteDocument = (documentId: string) => {
