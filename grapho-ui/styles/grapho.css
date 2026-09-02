@@ -361,3 +361,29 @@
   .grapho-mobile-tab-capsule, .grapho-mobile-primary-action, .grapho-mobile-secondary-actions, .grapho-sidebar, .grapho-style-panel, .grapho-modal-backdrop > [role="dialog"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
   .grapho-mobile-surface-dismiss { backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
+
+/* Mobile uses the quiet solid workspace language; glass effects are desktop/native-only. */
+@media (max-width: 700px) {
+  .grapho-mobile-tab-capsule,
+  .grapho-mobile-primary-action,
+  .grapho-mobile-secondary-actions,
+  .grapho-sidebar,
+  .grapho-style-panel,
+  .grapho-modal-backdrop > [role="dialog"] {
+    border-color: var(--grapho-border) !important;
+    border-radius: 1rem !important;
+    background: var(--grapho-panel-solid) !important;
+    box-shadow: var(--grapho-shadow) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .grapho-mobile-tab-capsule::before,
+  .grapho-mobile-tab-capsule::after,
+  .grapho-mobile-primary-action::before,
+  .grapho-mobile-secondary-actions::before { display: none !important; }
+  .grapho-mobile-surface-dismiss { background: color-mix(in srgb, var(--grapho-background) 72%, transparent); backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .grapho-mobile-action-active { border-color: var(--grapho-border); border-radius: .75rem; background: var(--grapho-control-hover); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .grapho-mobile-primary-action { border-radius: 1rem !important; background: var(--grapho-foreground) !important; color: var(--grapho-background) !important; }
+  .grapho-mobile-secondary-actions { border-radius: 1rem; background: var(--grapho-panel-solid); }
+  .grapho-style-panel { border-radius: 1rem !important; }
+}
