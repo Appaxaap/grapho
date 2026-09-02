@@ -22,6 +22,7 @@
   --grapho-faint: #9CA3AF;
   --grapho-accent: #6BA587;
   --grapho-accent-soft: rgba(207, 232, 216, .72);
+  --grapho-selection: #A7C5E0;
   --grapho-shadow: 0 20px 55px rgba(0, 0, 0, .065), 0 1px 2px rgba(0, 0, 0, .025);
   --grapho-font-sans: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --grapho-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -44,6 +45,7 @@
   --grapho-faint: #6B7280;
   --grapho-accent: #6BA587;
   --grapho-accent-soft: rgba(107, 165, 135, .18);
+  --grapho-selection: #A7C5E0;
   --grapho-shadow: 0 24px 60px rgba(0, 0, 0, .34), 0 1px 2px rgba(0, 0, 0, .2);
 }
 
@@ -163,7 +165,7 @@
 
 /* Keep native drag selection readable and consistent in the browser and Tauri. */
 .grapho-ui [contenteditable] { -webkit-user-select: text; user-select: text; }
-.grapho-ui ::selection { background: var(--grapho-accent); color: var(--grapho-background); }
+.grapho-ui ::selection { background: var(--grapho-selection); color: var(--grapho-background); }
 
 
 .grapho-editor-scroll { position: relative; height: 100vh; margin-top: 0; overflow-y: auto; overscroll-behavior: contain; background: var(--grapho-background); }
