@@ -427,10 +427,10 @@
 /* Canonical mobile bottom navigation: solid pill + detached create action. */
 @media (max-width: 700px) {
   .grapho-ui {
-    --grapho-mobile-nav-surface: #f7f1fa;
-    --grapho-mobile-nav-border: #ded7e3;
-    --grapho-mobile-nav-foreground: #4b4652;
-    --grapho-mobile-nav-accent: #c4a9ff;
+    --grapho-mobile-nav-surface: var(--grapho-panel-solid);
+    --grapho-mobile-nav-border: var(--grapho-border);
+    --grapho-mobile-nav-foreground: var(--grapho-foreground);
+    --grapho-mobile-nav-accent: var(--grapho-accent-soft);
   }
   .grapho-mobile-action-bar,
   .grapho-mobile-tab-capsule,
