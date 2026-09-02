@@ -184,22 +184,47 @@
 .grapho-document-list button.grapho-empty-action:hover { background: var(--grapho-control); color: var(--grapho-accent); }
 .grapho-document-list button.grapho-empty-action:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
 .grapho-mobile-action-bar { display: none; }
+.grapho-mobile-surface-dismiss { display: none; }
 .grapho-app-toolbar { right: 28px !important; flex-direction: column; width: 52px; gap: 5px !important; padding: 7px !important; }
 @media (max-width: 700px) {
+  .grapho-ui {
+    --grapho-mobile-glass: rgba(255, 255, 255, .56);
+    --grapho-mobile-glass-thick: rgba(246, 249, 248, .78);
+    --grapho-mobile-glass-edge: rgba(255, 255, 255, .78);
+    --grapho-mobile-glass-shadow: rgba(32, 48, 40, .24);
+  }
+  .grapho-ui.grapho-dark {
+    --grapho-mobile-glass: rgba(255, 255, 255, .16);
+    --grapho-mobile-glass-thick: rgba(29, 35, 42, .78);
+    --grapho-mobile-glass-edge: rgba(255, 255, 255, .38);
+    --grapho-mobile-glass-shadow: rgba(0, 0, 0, .52);
+  }
   .grapho-app-toolbar { display: none; }
-  .grapho-sidebar { position: fixed !important; z-index: 75; top: 12px !important; bottom: 78px; left: 12px; display: block !important; width: min(280px, calc(100vw - 32px)) !important; height: auto !important; margin: 0 !important; border-radius: 20px; box-shadow: 0 18px 48px color-mix(in srgb, #000 30%, transparent); }
+  .grapho-editor-insert-toolbar { display: none !important; }
+  .grapho-mobile-surface-dismiss { position: fixed; z-index: 70; inset: 0; display: block; width: 100%; height: 100%; border: 0; border-radius: 0; background: rgba(0, 0, 0, .14); backdrop-filter: blur(2px) saturate(.8); -webkit-backdrop-filter: blur(2px) saturate(.8); }
+  .grapho-sidebar { position: fixed !important; z-index: 75; top: max(10px, env(safe-area-inset-top)) !important; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 76px); left: 10px; display: block !important; width: min(300px, calc(100vw - 20px)) !important; height: auto !important; margin: 0 !important; border: 1px solid var(--grapho-mobile-glass-edge) !important; border-radius: 30px !important; background: var(--grapho-mobile-glass-thick) !important; box-shadow: 0 24px 70px var(--grapho-mobile-glass-shadow), inset 0 1px 0 color-mix(in srgb, white 48%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--grapho-foreground) 7%, transparent) !important; backdrop-filter: blur(34px) saturate(1.55) brightness(1.04) !important; -webkit-backdrop-filter: blur(34px) saturate(1.55) brightness(1.04) !important; }
   .grapho-sidebar > div { width: 280px; max-width: calc(100vw - 32px); }
-  .grapho-editor-scroll { height: 100dvh; padding-bottom: 72px; }
+  .grapho-editor-scroll { height: 100dvh; padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .grapho-editor-scroll::after { display: none; }
   .grapho-document-meta { display: none; }
-  .grapho-mobile-action-bar { position: fixed; z-index: 80; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; display: flex; align-items: stretch; gap: 10px; }
-  .grapho-mobile-tab-capsule { display: flex; min-width: 0; flex: 1; gap: 2px; padding: 6px; border: 1px solid color-mix(in srgb, #fff 18%, var(--grapho-border)); border-radius: 28px; background: color-mix(in srgb, var(--grapho-panel) 68%, transparent); box-shadow: 0 14px 38px color-mix(in srgb, #000 25%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 20%, transparent); backdrop-filter: blur(28px) saturate(1.45); }
-  .grapho-mobile-action-bar button { position: relative; display: grid; min-width: 0; min-height: 54px; flex: 1; place-items: center; gap: 1px; overflow: hidden; border-radius: 22px; color: var(--grapho-muted); font-size: 8px; transition: color 180ms ease, transform 180ms ease; }
-  .grapho-mobile-action-active { position: absolute; inset: 1px; z-index: 0; border: 1px solid color-mix(in srgb, #fff 20%, var(--grapho-border)); border-radius: 21px; background: color-mix(in srgb, var(--grapho-foreground) 13%, transparent); box-shadow: 0 5px 16px color-mix(in srgb, #000 18%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 18%, transparent); backdrop-filter: blur(18px) saturate(1.35); }
-  .grapho-mobile-action-bar button > svg, .grapho-mobile-action-bar button > span:not(.grapho-mobile-action-active) { position: relative; z-index: 1; }
+  .grapho-mobile-action-bar { position: fixed; z-index: 80; right: 16px; bottom: max(8px, env(safe-area-inset-bottom)); left: 16px; display: flex; align-items: stretch; gap: 6px; isolation: isolate; font-family: var(--grapho-font-sans); }
+  .grapho-mobile-tab-capsule, .grapho-mobile-primary-action, .grapho-mobile-secondary-actions { border: 1px solid var(--grapho-mobile-glass-edge); background: var(--grapho-mobile-glass); box-shadow: 0 14px 38px var(--grapho-mobile-glass-shadow), 0 2px 5px color-mix(in srgb, #000 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 78%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--grapho-foreground) 18%, transparent), 0 0 0 1px color-mix(in srgb, white 8%, transparent); backdrop-filter: blur(24px) saturate(2) contrast(1.16); -webkit-backdrop-filter: blur(24px) saturate(2) contrast(1.16); }
+  .grapho-mobile-tab-capsule { position: relative; display: flex; min-width: 0; flex: 1; gap: 1px; overflow: hidden; padding: 4px; border-radius: 27px; }
+  .grapho-mobile-tab-capsule::before, .grapho-mobile-primary-action::before, .grapho-mobile-secondary-actions::before { position: absolute; z-index: 2; inset: 1px; border: 1px solid rgba(255,255,255,.16); border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 0 18px rgba(255,255,255,.06); content: ""; pointer-events: none; }
+  .grapho-mobile-tab-capsule::after { position: absolute; top: -11px; left: 12%; width: 42px; height: 15px; border-radius: 50%; background: rgba(255,255,255,.2); filter: blur(9px); content: ""; pointer-events: none; }
+  .grapho-mobile-action-bar button { position: relative; display: grid; min-width: 0; min-height: 48px; flex: 1; place-items: center; overflow: hidden; border: 0; border-radius: 21px; background: transparent; color: color-mix(in srgb, var(--grapho-foreground) 58%, var(--grapho-muted)); cursor: pointer; transition: color 180ms ease, filter 180ms ease; }
+  .grapho-mobile-action-bar button:active { filter: brightness(1.14); }
+  .grapho-mobile-action-bar button svg { stroke-width: 1.9; }
+  .grapho-mobile-action-active { position: absolute; inset: 0; z-index: 0; border: 1px solid color-mix(in srgb, white 50%, var(--grapho-border)); border-radius: 21px; background: color-mix(in srgb, var(--grapho-foreground) 10%, transparent); box-shadow: 0 6px 18px color-mix(in srgb, #000 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 64%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--grapho-foreground) 12%, transparent), 0 0 14px color-mix(in srgb, white 8%, transparent); backdrop-filter: blur(18px) saturate(1.6); -webkit-backdrop-filter: blur(18px) saturate(1.6); }
+  .grapho-mobile-action-bar button > svg { position: relative; z-index: 1; }
   .grapho-mobile-action-bar button:hover, .grapho-mobile-action-bar button:focus-visible, .grapho-mobile-action-bar button[aria-pressed="true"] { color: var(--grapho-foreground); outline: none; }
-  .grapho-mobile-primary-action { min-width: 66px !important; flex: 0 0 66px !important; border: 1px solid color-mix(in srgb, var(--grapho-accent) 48%, #fff 18%); border-radius: 50% !important; background: color-mix(in srgb, var(--grapho-accent) 30%, var(--grapho-panel) 60%); color: var(--grapho-foreground) !important; box-shadow: 0 12px 34px color-mix(in srgb, var(--grapho-accent) 22%, #000 22%), inset 0 1px 0 color-mix(in srgb, #fff 28%, transparent); backdrop-filter: blur(28px) saturate(1.55); }
-  .grapho-mobile-secondary-actions { position: absolute; right: 76px; bottom: calc(100% + 10px); display: flex; gap: 4px; padding: 6px; border: 1px solid color-mix(in srgb, #fff 18%, var(--grapho-border)); border-radius: 22px; background: color-mix(in srgb, var(--grapho-panel) 72%, transparent); box-shadow: 0 12px 32px color-mix(in srgb, #000 24%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 18%, transparent); backdrop-filter: blur(24px) saturate(1.4); }
-  .grapho-mobile-secondary-actions button { min-width: 58px; flex: 0 0 58px; }
+  .grapho-mobile-primary-action { min-width: 52px !important; min-height: 52px !important; flex: 0 0 52px !important; border-color: var(--grapho-mobile-glass-edge) !important; border-radius: 26px !important; background: var(--grapho-mobile-glass) !important; color: var(--grapho-foreground) !important; box-shadow: 0 12px 30px var(--grapho-mobile-glass-shadow), inset 0 1px 0 color-mix(in srgb, white 48%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--grapho-foreground) 8%, transparent) !important; }
+  .grapho-mobile-secondary-actions { position: absolute; right: 60px; bottom: calc(100% + 10px); display: flex; gap: 3px; padding: 5px; border-radius: 27px; background-color: var(--grapho-mobile-glass-thick); transform-origin: bottom right; }
+  .grapho-mobile-secondary-actions button { min-width: 54px; min-height: 46px; flex: 0 0 54px; }
+  .grapho-style-panel { right: 10px !important; top: auto !important; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 76px) !important; z-index: 75 !important; display: block !important; max-height: min(68dvh, 620px) !important; width: calc(100vw - 20px) !important; border: 1px solid var(--grapho-mobile-glass-edge) !important; border-radius: 30px !important; background: var(--grapho-mobile-glass-thick) !important; box-shadow: 0 24px 70px var(--grapho-mobile-glass-shadow), inset 0 1px 0 color-mix(in srgb, white 45%, transparent) !important; backdrop-filter: blur(34px) saturate(1.55) !important; -webkit-backdrop-filter: blur(34px) saturate(1.55) !important; }
+  .grapho-style-panel > div { padding: 20px !important; }
+  .grapho-modal-backdrop { align-items: end; padding: 10px 10px max(10px, env(safe-area-inset-bottom)); }
+  .grapho-modal-backdrop > [role="dialog"] { max-height: calc(100dvh - max(20px, env(safe-area-inset-top))); overflow-y: auto; border-color: var(--grapho-mobile-glass-edge); border-radius: 30px; background: var(--grapho-mobile-glass-thick); box-shadow: 0 24px 70px var(--grapho-mobile-glass-shadow), inset 0 1px 0 color-mix(in srgb, white 42%, transparent); backdrop-filter: blur(34px) saturate(1.55); -webkit-backdrop-filter: blur(34px) saturate(1.55); }
   .grapho-ui main > div { padding: 28px 20px 112px; }
   .grapho-ui article { min-height: calc(100dvh - 130px); }
   .grapho-ui article > div:first-child { margin-bottom: 32px; }
@@ -228,7 +253,7 @@
 .grapho-style-option-value { font-size: 9px; }
 .grapho-style-option-arrow { display: grid; width: 17px; height: 17px; place-items: center; border: 1px solid var(--grapho-border); border-radius: 5px; color: var(--grapho-accent); font-size: 10px; line-height: 1; }
 @media (prefers-reduced-motion: reduce) { .grapho-style-option { transition: none; } }
-@media (max-width: 700px) { .grapho-style-panel { top: auto !important; right: 14px !important; bottom: 78px !important; left: 14px; width: auto !important; max-height: calc(100vh - 150px); } }
+@media (max-width: 700px) { .grapho-style-panel { top: auto !important; right: 10px !important; bottom: calc(max(10px, env(safe-area-inset-bottom)) + 76px) !important; left: 10px; width: auto !important; max-height: min(68dvh, 620px); } }
 .grapho-document-stats { color: var(--grapho-faint); font-size: 9px; white-space: nowrap; }
 .grapho-document-stats i { width: 2px; height: 2px; border-radius: 50%; background: currentColor; opacity: .7; }
 .grapho-print-branding { display: none; }
@@ -316,3 +341,8 @@
 .grapho-dialog header { border-color: var(--grapho-border); }
 
 @media (prefers-reduced-motion: reduce) { .grapho-ui *, .grapho-ui *::before, .grapho-ui *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@media (max-width: 700px) and (prefers-reduced-transparency: reduce) {
+  .grapho-ui { --grapho-mobile-glass: var(--grapho-panel-solid); --grapho-mobile-glass-thick: var(--grapho-panel-solid); }
+  .grapho-mobile-tab-capsule, .grapho-mobile-primary-action, .grapho-mobile-secondary-actions, .grapho-sidebar, .grapho-style-panel, .grapho-modal-backdrop > [role="dialog"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .grapho-mobile-surface-dismiss { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
