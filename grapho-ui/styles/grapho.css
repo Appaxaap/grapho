@@ -187,6 +187,8 @@
 .grapho-mobile-surface-dismiss { display: none; }
 .grapho-app-toolbar { right: 28px !important; flex-direction: column; width: 52px; gap: 5px !important; padding: 7px !important; }
 @media (max-width: 700px) {
+  .grapho-modal-backdrop { background: color-mix(in srgb, var(--grapho-background) 24%, transparent) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .grapho-modal-open .grapho-workspace-layer { filter: none !important; }
   .grapho-sidebar kbd,
   .grapho-sidebar > div > .mt-auto > button:last-child { display: none !important; }
   .grapho-sidebar > div > label { display: flex !important; min-height: 40px !important; height: 40px !important; margin-top: 12px !important; padding: 0 12px !important; border-radius: 12px !important; background: var(--grapho-control) !important; }
