@@ -395,4 +395,19 @@
   .grapho-mobile-action-active { inset: 2px; border-radius: .9rem; background: var(--grapho-control-hover); }
   .grapho-mobile-primary-action { min-width: 54px !important; min-height: 54px !important; flex-basis: 54px !important; border-radius: 1.25rem !important; }
   .grapho-mobile-secondary-actions { bottom: calc(100% + 8px); right: 62px; border-radius: 1.25rem; }
+  .grapho-mobile-action-active { animation: grapho-mobile-shape-morph 2.8s ease-in-out infinite alternate; }
+  .grapho-mobile-primary-action { animation: grapho-mobile-fab-morph 3.6s cubic-bezier(.4,0,.2,1) infinite alternate; }
+}
+
+@keyframes grapho-mobile-shape-morph {
+  from { border-radius: 1rem 1.35rem .95rem 1.2rem; transform: scale(.96); }
+  to { border-radius: 1.35rem 1rem 1.2rem .95rem; transform: scale(1); }
+}
+@keyframes grapho-mobile-fab-morph {
+  from { border-radius: 1.25rem !important; }
+  to { border-radius: 50% !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grapho-mobile-action-active,
+  .grapho-mobile-primary-action { animation: none !important; }
 }
