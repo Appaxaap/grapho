@@ -67,6 +67,8 @@ export default function GraphoShell() {
   const [renameTarget, setRenameTarget] = useState<DocumentItem | null>(null);
   const [renameDraft, setRenameDraft] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<DocumentItem | null>(null);
+  const [selectedDocumentIds, setSelectedDocumentIds] = useState<Set<string>>(() => new Set());
+  const [bulkDeleteTargets, setBulkDeleteTargets] = useState<DocumentItem[] | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [busyAction, setBusyAction] = useState<"importing" | "resetting" | "exporting" | null>(null);
@@ -236,21 +238,33 @@ export default function GraphoShell() {
     if (target) setDeleteTarget(target);
   };
 
+  const requestBulkDelete = () => {
+    const targets = visibleDocuments.filter((document) => selectedDocumentIds.has(document.id));
+    if (!targets.length) return;
+    if (documents.length - targets.length < 1) { setToast("Keep at least one document in your workspace."); return; }
+    setBulkDeleteTargets(targets);
+    setDeleteTarget(targets[0]);
+  };
+
   const commitDelete = () => {
-    if (!deleteTarget || deleting) return;
+    const targets = bulkDeleteTargets ?? (deleteTarget ? [deleteTarget] : []);
+    if (!targets.length || deleting) return;
     setDeleting(true);
-    const targetId = deleteTarget.id;
+    const targetIds = new Set(targets.map((target) => target.id));
     window.setTimeout(() => {
-      setDocuments((current) => current.map((document) => document.id === targetId ? { ...document, trashed: true, deletedAt: new Date().toISOString() } : document));
-      if (selectedId === targetId) {
-        const remaining = documents.filter((document) => document.id !== targetId && !document.trashed);
+      setDocuments((current) => current.map((document) => targetIds.has(document.id) ? { ...document, trashed: true, deletedAt: new Date().toISOString() } : document));
+      if (targetIds.has(selectedId)) {
+        const remaining = documents.filter((document) => !targetIds.has(document.id) && !document.trashed);
         setSelectedId(remaining[0]?.id ?? "product-notes");
       }
       setDeleteTarget(null);
+      setBulkDeleteTargets(null);
+      setSelectedDocumentIds(new Set());
       setDeleting(false);
-      setToast("Document moved to Trash");
+      setToast(targets.length === 1 ? "Document moved to Trash" : `${targets.length} documents moved to Trash`);
     }, 420);
   };
+
 
   const restoreDocument = (documentId: string) => {
     setDocuments((current) => current.map((document) => document.id === documentId ? { ...document, trashed: false, deletedAt: undefined, updated: "Just now" } : document));
@@ -777,7 +791,7 @@ export default function GraphoShell() {
     return () => window.removeEventListener("keydown", handleEditorHistory);
   }, [redo, undo]);
 
-  const modalOpen = Boolean(deleteTarget || renameTarget || paletteOpen || helpOpen || workspaceDialogOpen || workspaceRenameTarget);
+  const modalOpen = Boolean(deleteTarget || bulkDeleteTargets || renameTarget || paletteOpen || helpOpen || workspaceDialogOpen || workspaceRenameTarget);
 
   return (
     <div style={{ "--grapho-accent": accentStyle === "Muted Ink" ? "#7B8792" : undefined, "--grapho-accent-soft": accentStyle === "Muted Ink" ? "rgba(123,135,146,.16)" : undefined } as CSSProperties} className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${pageSurface === "Soft gray" ? "grapho-soft-surface" : ""} grapho-no-grid ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
@@ -837,7 +851,8 @@ export default function GraphoShell() {
               <label className="mt-3 flex h-10 items-center gap-2 rounded-xl bg-[var(--grapho-control)] px-3 text-[10px] text-[var(--grapho-muted)] focus-within:bg-[var(--grapho-control-hover)]"><Search size={13} className="shrink-0 text-[var(--grapho-faint)]" /><input value={query} onChange={(event) => setQuery(event.target.value)} aria-label="Search documents" placeholder="Search documents" className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-[var(--grapho-faint)]" /><kbd className="text-[8px] text-[var(--grapho-faint)]">⌘ K</kbd></label>
               <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>Workspace</span><button type="button" onClick={() => { setWorkspaceDraft(""); setWorkspaceDialogOpen(true); }} aria-label="Create workspace" title="Create workspace" className="hover:text-[var(--grapho-foreground)]"><Plus size={12} /></button></div>
               <div className="grapho-project-list mt-2 space-y-1">{folders.map((folder) => <div key={folder} className={`group flex h-9 items-center rounded-lg transition-colors ${activeFolder === folder ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : "text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"}`}><button type="button" onClick={() => { saveNow(); setActiveFolder(folder); setFocusedDocumentId(null); }} className="flex min-w-0 flex-1 items-center gap-2 px-2.5 text-left text-[10px]">{activeFolder === folder ? <FolderOpen size={14} /> : <Folder size={14} />}<span className="flex-1 truncate">{folder}</span><span className="text-[8px] text-[var(--grapho-faint)]">{documents.filter((item) => item.folder === folder).length}</span></button><button type="button" onClick={() => renameWorkspace(folder)} aria-label={`Rename workspace ${folder}`} title="Rename workspace" className="mr-1 grid size-7 place-items-center rounded-md text-[var(--grapho-faint)] opacity-0 hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)] group-hover:opacity-100 group-focus-within:opacity-100"><MoreHorizontal size={13} /></button></div>)}</div>
-              <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>{activeFolder}</span><span>{visibleDocuments.length}</span></div>
+              <div className="mt-7 flex items-center justify-between px-2 text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]"><span>{activeFolder}</span><div className="flex items-center gap-2"><span>{visibleDocuments.length}</span>{visibleDocuments.length > 0 && <button type="button" onClick={() => setSelectedDocumentIds((current) => current.size === visibleDocuments.length ? new Set() : new Set(visibleDocuments.map((document) => document.id)))} className="normal-case tracking-normal text-[var(--grapho-accent)] hover:underline" aria-label={selectedDocumentIds.size === visibleDocuments.length ? "Clear project selection" : "Select all projects"}>{selectedDocumentIds.size === visibleDocuments.length ? "Clear" : "Select"}</button>}</div></div>
+              {selectedDocumentIds.size > 0 && <div className="mt-2 flex items-center justify-between rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-accent-soft)] px-2.5 py-2" role="toolbar" aria-label="Bulk project actions"><span className="text-[9px] text-[var(--grapho-foreground)]">{selectedDocumentIds.size} selected</span><button type="button" onClick={requestBulkDelete} className="flex items-center gap-1 rounded-lg px-2 py-1 text-[9px] text-red-400 hover:bg-red-500/10" aria-label="Delete selected projects"><Trash2 size={12} /> Delete</button></div>}
               <div className="grapho-document-list mt-2 space-y-1">{visibleDocuments.length === 0 && <div className="rounded-xl border border-dashed border-[var(--grapho-border)] px-3 py-5 text-center" role="status"><Search size={16} className="mx-auto text-[var(--grapho-faint)]" /><p className="mt-2 text-[10px] text-[var(--grapho-muted)]">{query.trim() ? "No documents found" : "No documents in this folder"}</p>{query.trim() ? <button type="button" onClick={() => setQuery("")} className="mt-2 text-[9px] text-[var(--grapho-accent)] hover:underline">Clear search</button> : <button type="button" onClick={() => createDocument()} className="grapho-empty-action mt-2 inline-flex min-h-0 items-center rounded-md px-1 py-1 text-[9px] text-[var(--grapho-accent)] hover:bg-[var(--grapho-control)] hover:no-underline">Create a document</button>}</div>}{visibleDocuments.map((document) => <div key={document.id} style={{ marginLeft: `${documentDepth(document) * 14}px` }} className={`group flex items-center gap-2 rounded-xl border px-2.5 py-2 transition-colors ${selectedId === document.id ? "border-[var(--grapho-border)] bg-[var(--grapho-control-hover)] text-[var(--grapho-foreground)]" : "border-transparent text-[var(--grapho-muted)] hover:border-[var(--grapho-border)] hover:bg-[var(--grapho-control)]"}`}><button type="button" onClick={() => { saveNow(); setFocusedDocumentId(document.id); setSelectedId(document.id); }} data-grapho-document-id={document.id} aria-label={`Open ${document.title}`} className="flex min-w-0 flex-1 items-center gap-2.5 text-left"><span className={`grid size-7 shrink-0 place-items-center rounded-lg ${selectedId === document.id ? "bg-[var(--grapho-foreground)] text-[var(--grapho-background)]" : "bg-[var(--grapho-control)] text-[var(--grapho-faint)]"}`}><FileText size={12} /></span><span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-medium">{document.title}</span><span className="mt-0.5 block text-[8px] text-[var(--grapho-faint)]">{document.updated} · {document.blocks.length} blocks</span>{searchResults.has(document.id) && <span className="mt-1 block truncate text-[8px] text-[var(--grapho-accent)]">{searchResults.get(document.id)?.categories.join(" · ")} · {searchResults.get(document.id)?.preview}</span>}</span></button><div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100"><button type="button" onClick={() => createDocument(document.id)} aria-label={`Create subdocument inside ${document.title}`} title="New subdocument" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]"><FolderPlus size={13} /></button><button type="button" onClick={() => renameDocument(document.id)} aria-label={`Rename ${document.title}`} title="Rename document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]"><MoreHorizontal size={13} /></button>{trashOpen ? <button type="button" onClick={() => restoreDocument(document.id)} aria-label={`Restore ${document.title}`} title="Restore document" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]"><Archive size={12} /></button> : <button type="button" onClick={() => deleteDocument(document.id)} aria-label={`Move ${document.title} to Trash`} title="Move to Trash" className="grid size-7 place-items-center rounded-lg text-[var(--grapho-faint)] hover:bg-red-500/10 hover:text-red-400"><Trash2 size={12} /></button>}</div></div>)}</div>
               <div className="mt-auto border-t border-[var(--grapho-border)] pt-3"><button type="button" onClick={() => setTrashOpen((value) => !value)} aria-pressed={trashOpen} className={`flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] ${trashOpen ? "bg-[var(--grapho-control)] text-[var(--grapho-foreground)]" : ""}`}><Trash2 size={13} /> Trash<span className="ml-auto text-[8px] text-[var(--grapho-faint)]">{documents.filter((document) => document.trashed).length}</span></button><button type="button" onClick={() => setHelpOpen(true)} className="flex h-9 w-full items-center gap-2 rounded-lg px-2.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)]"><CircleHelp size={13} /> Help & shortcuts<span className="ml-auto rounded border border-[var(--grapho-border)] px-1.5 py-0.5 text-[7px] text-[var(--grapho-faint)]">?</span></button></div>
             </div>
