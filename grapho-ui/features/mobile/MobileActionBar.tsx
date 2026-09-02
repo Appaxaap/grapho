@@ -18,7 +18,7 @@ type MobileActionBarProps = {
 export function MobileActionBar({ sidebarOpen, onToggleSidebar, onNewDocument, onFocusEditor, onExportPdf, onOpenStyle, onOpenHelp, disabled = false }: MobileActionBarProps) {
   const [expanded, setExpanded] = useState(false);
   const primary = (label: string, icon: React.ReactNode, onClick: () => void, active = false) => <motion.button type="button" whileTap={{ scale: 0.94 }} onClick={onClick} aria-label={label} aria-pressed={active}>{active && <motion.span layoutId="mobile-action-active" className="grapho-mobile-action-active" transition={{ type: "spring", stiffness: 420, damping: 30 }} />}{icon}</motion.button>;
-  return <nav className={`grapho-mobile-action-bar ${expanded ? "is-expanded" : ""}`} aria-label="Mobile workspace navigation">
+  return <nav className={`grapho-mobile-action-bar grapho-floating-toolbar ${expanded ? "is-expanded" : ""}`} aria-label="Mobile workspace navigation" aria-orientation="horizontal">
     <div className="grapho-mobile-tab-capsule">
       {primary("Library", <Menu size={18} />, onToggleSidebar, sidebarOpen)}
       {primary("Write", <Type size={18} />, onFocusEditor, !sidebarOpen && !expanded)}
