@@ -399,6 +399,16 @@
   .grapho-mobile-primary-action { animation: grapho-mobile-fab-morph 3.6s cubic-bezier(.4,0,.2,1) infinite alternate; }
 }
 
+@media (max-width: 700px) {
+  .grapho-mobile-action-bar { right: 12px; bottom: max(14px, env(safe-area-inset-bottom)); left: 12px; gap: 8px; }
+  .grapho-mobile-tab-capsule { min-height: 48px; gap: 0; padding: 4px; border: 0 !important; border-radius: 999px !important; background: var(--grapho-panel-solid) !important; box-shadow: 0 6px 18px color-mix(in srgb, var(--grapho-foreground) 12%, transparent) !important; }
+  .grapho-mobile-action-bar button { min-height: 40px; border-radius: 999px; color: var(--grapho-muted); }
+  .grapho-mobile-action-bar button svg { width: 16px; height: 16px; }
+  .grapho-mobile-action-active { inset: 0; border: 0; border-radius: 999px; background: var(--grapho-control-hover); box-shadow: none; animation: none; }
+  .grapho-mobile-primary-action { min-width: 48px !important; min-height: 48px !important; flex: 0 0 48px !important; border: 0 !important; border-radius: .8rem !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; box-shadow: none !important; animation: none; }
+  .grapho-mobile-primary-action svg { width: 18px; height: 18px; }
+}
+
 @keyframes grapho-mobile-shape-morph {
   from { border-radius: 1rem 1.35rem .95rem 1.2rem; transform: scale(.96); }
   to { border-radius: 1.35rem 1rem 1.2rem .95rem; transform: scale(1); }
