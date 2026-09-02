@@ -279,9 +279,10 @@
 .grapho-document-list > .group > button:first-child { border-radius: .8rem !important; }
 .grapho-document-list > .group:hover { background: var(--grapho-control) !important; }
 .grapho-document-list > .group:hover > button:first-child { background: transparent !important; }
-.grapho-document-list > .group:has([data-selection-checked="true"]) { border-color: color-mix(in srgb, var(--grapho-accent) 55%, var(--grapho-border)) !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; }
+.grapho-document-list > .group:has([data-selection-checked="true"]) { position: relative; border-color: color-mix(in srgb, var(--grapho-accent) 55%, var(--grapho-border)) !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; }
+.grapho-document-list > .group:has([data-selection-checked="true"])::after { position: absolute; top: 8px; right: 8px; display: grid; width: 16px; height: 16px; place-items: center; border-radius: 999px; background: var(--grapho-accent); color: var(--grapho-background); content: "✓"; font-size: 10px; font-weight: 700; line-height: 1; pointer-events: none; }
 .grapho-document-list > .group:has([data-selection-checked="true"]) > button[data-grapho-document-id] { color: var(--grapho-foreground) !important; }
-.grapho-document-list > .group:has([data-selection-checked="true"]) > button[data-grapho-document-id] > span:first-child { background: var(--grapho-accent) !important; color: var(--grapho-background) !important; box-shadow: 0 0 0 2px color-mix(in srgb, var(--grapho-accent) 25%, transparent); }
+.grapho-document-list > .group:has([data-selection-checked="true"]) > button[data-grapho-document-id] > span:first-child { background: var(--grapho-control) !important; color: var(--grapho-faint) !important; box-shadow: none; }
 
 @media print {
   @page {
