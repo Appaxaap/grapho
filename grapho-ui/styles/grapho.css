@@ -288,6 +288,8 @@
   }
   .grapho-ui,
   .grapho-ui .grapho-editor-scroll { background: #fff !important; color: #161617 !important; height: auto !important; min-height: 0 !important; overflow: visible !important; }
+  .grapho-ui .grapho-workspace-layer,
+  .grapho-ui main { min-height: 0 !important; }
   .grapho-ui .grapho-editor-scroll::after { display: none !important; }
   .grapho-ui > header,
   .grapho-ui aside,
