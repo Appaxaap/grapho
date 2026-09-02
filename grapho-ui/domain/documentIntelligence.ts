@@ -9,6 +9,7 @@ const rules: [DocumentType, RegExp[], number][] = [
   ["research-brief", [/question|hypothesis/i, /findings?|evidence/i, /sources?|references?/i], 3],
   ["checklist", [/\[\s?[x ]\s?\]|todo|checklist/i], 2],
   ["voiceover-script", [/episode|voiceover|documentary|script/i, /\b(I'm|I've|we|I)\b/i, /so\.\.\.|welcome back|thank you/i], 2],
+  ["photography-plan", [/photography plan|image library|photographs?/i, /\b(?:16:9|4:5|4:3|3:2|21:9)\b/i, /shoot direction|shoot schedule|technical requirements/i], 2],
 ];
 
 export function detectDocumentType(document: DocumentItem): Detection {
@@ -29,6 +30,20 @@ export function recognizeFields(document: DocumentItem, type: DocumentType): Rec
     if (key) fields.push({ key, label, value: match[2].trim(), blockId: block.id, confidence: known[label.toLowerCase()] ? "high" : "medium" });
   }
   return fields;
+}
+
+export type PhotographyAsset = { name: string; description: string; format?: string; category?: string; priority?: number; usages: string[] };
+export type PhotographyPlan = { assets: PhotographyAsset[]; priorities: { level: number; count?: number; assets: string[] }[]; sessions: { title: string; assets: string[] }[]; deliveryChecklist: string[] };
+
+export function parsePhotographyPlan(document: DocumentItem): PhotographyPlan | null {
+  const text = documentText(document); if (!/photography plan|image slots|image library/i.test(`${document.title}\n${text}`)) return null;
+  const assets: PhotographyAsset[] = []; let category = ""; let priority: number | undefined;
+  for (const line of text.split("\n")) { const heading = line.match(/^#{1,6}\s+(.*)$/); if (heading) { category = heading[1].trim(); const priorityMatch = category.match(/priority\s+(\d+)/i); priority = priorityMatch ? Number(priorityMatch[1]) : priority; }
+    const asset = line.match(/`([A-Za-z][\w-]+)`\s*-\s*(.*)/); if (asset) { const format = asset[2].match(/\b(?:16:9|4:5|4:3|3:2|21:9)\b/)?.[0]; assets.push({ name: asset[1], description: asset[2].trim(), format, category, priority, usages: [] }); }
+  }
+  const sessions = [...text.matchAll(/###\s+Session\s+\d+:\s*(.*)\n([\s\S]*?)(?=###\s+Session|##\s+Priority|$)/gi)].map((match) => ({ title: match[1].trim(), assets: [...match[2].matchAll(/`([A-Za-z][\w-]+)`/g)].map((item) => item[1]) }));
+  const deliveryChecklist = text.split("\n").filter((line) => /^[-*]\s+/.test(line) && /deliver|export|format|rights|alt-text|RAW|negative space/i.test(line)).map((line) => line.replace(/^[-*]\s+/, ""));
+  return assets.length ? { assets, priorities: [], sessions, deliveryChecklist } : null;
 }
 
 export function analyzeDocument(document: DocumentItem, _documents: DocumentItem[] = [document]): DocumentIntelligenceResult {
