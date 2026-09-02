@@ -7,6 +7,7 @@
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](https://tauri.app/)
 [![Local first](https://img.shields.io/badge/storage-local--first-6BA587?style=flat-square)](#data-and-privacy)
 [![Release](https://img.shields.io/badge/release-v1.0.0-6BA587?style=flat-square)](#project-status)
+[![Downloads](https://img.shields.io/github/downloads/Appaxaap/grapho/total?style=flat-square&label=downloads&color=6BA587)](https://github.com/Appaxaap/grapho/releases)
 
 
 > **Write beautifully. Organize simply. Export professionally.**
