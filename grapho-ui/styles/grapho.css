@@ -400,12 +400,13 @@
 }
 
 @media (max-width: 700px) {
-  .grapho-mobile-action-bar { right: 12px; bottom: max(14px, env(safe-area-inset-bottom)); left: 12px; gap: 8px; }
-  .grapho-mobile-tab-capsule { min-height: 48px; gap: 0; padding: 4px; border: 0 !important; border-radius: 999px !important; background: var(--grapho-panel-solid) !important; box-shadow: 0 6px 18px color-mix(in srgb, var(--grapho-foreground) 12%, transparent) !important; }
-  .grapho-mobile-action-bar button { min-height: 40px; border-radius: 999px; color: var(--grapho-muted); }
+  .grapho-editor-scroll { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+  .grapho-mobile-action-bar { right: max(16px, env(safe-area-inset-right)); bottom: calc(max(16px, env(safe-area-inset-bottom)) + 40px); left: max(16px, env(safe-area-inset-left)); gap: 8px; }
+  .grapho-mobile-tab-capsule { min-height: 64px; gap: 0; padding: 4px; border: 0 !important; border-radius: 999px !important; background: var(--grapho-panel-solid) !important; box-shadow: 0 8px 20px color-mix(in srgb, var(--grapho-foreground) 16%, transparent) !important; }
+  .grapho-mobile-action-bar button { min-height: 56px; border-radius: 999px; color: var(--grapho-muted); }
   .grapho-mobile-action-bar button svg { width: 16px; height: 16px; }
-  .grapho-mobile-action-active { inset: 0; border: 0; border-radius: 999px; background: var(--grapho-control-hover); box-shadow: none; animation: none; }
-  .grapho-mobile-primary-action { min-width: 48px !important; min-height: 48px !important; flex: 0 0 48px !important; border: 0 !important; border-radius: .8rem !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; box-shadow: none !important; animation: none; }
+  .grapho-mobile-action-active { top: 8px; right: auto; bottom: 8px; left: 50%; width: 40px; border: 0; border-radius: 50%; background: var(--grapho-control-hover); box-shadow: none; transform: translateX(-50%); animation: none; }
+  .grapho-mobile-primary-action { min-width: 56px !important; min-height: 56px !important; flex: 0 0 56px !important; border: 0 !important; border-radius: 1rem !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; box-shadow: 0 8px 20px color-mix(in srgb, var(--grapho-foreground) 16%, transparent) !important; animation: none; }
   .grapho-mobile-primary-action svg { width: 18px; height: 18px; }
 }
 
