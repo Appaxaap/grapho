@@ -426,12 +426,19 @@
 
 /* Canonical mobile bottom navigation: solid pill + detached create action. */
 @media (max-width: 700px) {
+  .grapho-ui {
+    --grapho-mobile-nav-surface: #f7f1fa;
+    --grapho-mobile-nav-border: #ded7e3;
+    --grapho-mobile-nav-foreground: #4b4652;
+    --grapho-mobile-nav-accent: #c4a9ff;
+  }
   .grapho-mobile-action-bar,
   .grapho-mobile-tab-capsule,
   .grapho-mobile-primary-action,
   .grapho-mobile-secondary-actions { filter: none !important; box-shadow: none !important; }
-  .grapho-mobile-tab-capsule { border: 1px solid var(--grapho-border) !important; background: var(--grapho-panel-solid) !important; }
+  .grapho-mobile-tab-capsule { border: 1px solid var(--grapho-mobile-nav-border) !important; background: var(--grapho-mobile-nav-surface) !important; }
   .grapho-mobile-action-active { display: none !important; }
-  .grapho-mobile-action-bar button[aria-pressed="true"] { background: transparent; color: var(--grapho-foreground); }
-  .grapho-mobile-primary-action { border: 1px solid color-mix(in srgb, var(--grapho-accent) 30%, var(--grapho-border)) !important; background: var(--grapho-accent-soft) !important; }
+  .grapho-mobile-action-bar button { color: var(--grapho-mobile-nav-foreground); }
+  .grapho-mobile-action-bar button[aria-pressed="true"] { background: transparent; color: var(--grapho-mobile-nav-foreground); }
+  .grapho-mobile-primary-action { border: 1px solid color-mix(in srgb, var(--grapho-mobile-nav-accent) 70%, var(--grapho-mobile-nav-border)) !important; background: var(--grapho-mobile-nav-accent) !important; color: var(--grapho-mobile-nav-foreground) !important; }
 }
