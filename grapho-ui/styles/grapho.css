@@ -95,8 +95,6 @@
 .grapho-status-badge.archived { color: var(--grapho-faint); border-color: var(--grapho-border); background: var(--grapho-control); }
 @media print { .grapho-ui .grapho-status-badge { border-color: #9bc8ae !important; background: #eef7f1 !important; color: #3f8662 !important; } .grapho-ui .grapho-status-badge.proposed { border-color: #c9a66b !important; background: #fbf5e9 !important; color: #8c6b2e !important; } }
 .grapho-email-link { display: inline-flex; align-items: center; margin: 0 .08em; padding: .08em .38em; border: 1px solid color-mix(in srgb, var(--grapho-accent) 38%, transparent); border-radius: .45em; background: color-mix(in srgb, var(--grapho-accent) 12%, transparent); color: var(--grapho-accent); text-decoration: none; transition: background-color .18s ease, border-color .18s ease; }
-.grapho-ui [contenteditable] .grapho-email-link { display: inline; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); }
-.grapho-ui [contenteditable] .grapho-email-link::before { content: none; }
 .grapho-email-link::before { content: "↗"; margin-right: .28em; font-size: .72em; opacity: .72; }
 .grapho-email-link:hover { border-color: var(--grapho-accent); background: color-mix(in srgb, var(--grapho-accent) 20%, transparent); }
 .grapho-account-summary { margin: -1rem 0 2rem; padding: .9rem 1rem; border: 1px solid var(--grapho-border); border-radius: 1rem; background: color-mix(in srgb, var(--grapho-control) 65%, transparent); }
