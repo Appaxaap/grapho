@@ -415,6 +415,7 @@
   .grapho-mobile-action-bar { right: max(16px, env(safe-area-inset-right)); bottom: calc(max(16px, env(safe-area-inset-bottom)) + 40px); left: max(16px, env(safe-area-inset-left)); gap: 8px; }
   .grapho-mobile-tab-capsule { min-height: 64px; gap: 0; padding: 4px; border: 0 !important; border-radius: 999px !important; background: var(--grapho-panel-solid) !important; box-shadow: none !important; }
   .grapho-mobile-action-bar button { min-height: 56px; border-radius: 999px; color: var(--grapho-muted); }
+  .grapho-mobile-action-bar button:disabled { cursor: wait; opacity: .45; }
   .grapho-mobile-action-bar button svg { width: 16px; height: 16px; }
   .grapho-mobile-action-active { top: 8px; right: auto; bottom: 8px; left: 50%; width: 40px; margin-left: -20px; border: 0; border-radius: 50%; background: var(--grapho-control-hover); box-shadow: none; transform: none !important; animation: none; }
   .grapho-mobile-primary-action { min-width: 56px !important; min-height: 56px !important; flex: 0 0 56px !important; border: 0 !important; border-radius: 1rem !important; background: var(--grapho-accent-soft) !important; color: var(--grapho-foreground) !important; box-shadow: none !important; animation: none; }
