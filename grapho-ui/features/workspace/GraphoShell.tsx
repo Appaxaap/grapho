@@ -746,9 +746,8 @@ export default function GraphoShell() {
   useEffect(() => {
     const handleBlockDelete = (event: KeyboardEvent) => {
       if (selectedBlockIds.size > 0 && (event.key === "Backspace" || event.key === "Delete")) {
-        const target = event.target as HTMLElement;
-        if (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
         event.preventDefault();
+        event.stopPropagation();
         removeSelectedBlocks();
         return;
       }
@@ -999,7 +998,7 @@ export default function GraphoShell() {
           </div>
         </main>
 
-        {selectedBlockIds.size > 0 && <div className="fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-3 py-2 text-[10px] text-[var(--grapho-muted)]" role="toolbar" aria-label="Selected block actions"><span><strong className="text-[var(--grapho-foreground)]">{selectedBlockIds.size}</strong> block{selectedBlockIds.size === 1 ? "" : "s"} selected</span><span className="hidden text-[var(--grapho-faint)] sm:inline">Drag from the margin to select more</span><button type="button" onClick={() => { setSelectedBlockIds(new Set()); paintBlockSelection(new Set()); }} className="rounded-lg px-2 py-1 hover:bg-[var(--grapho-control)]">Clear</button><button type="button" onClick={removeSelectedBlocks} className="flex items-center gap-1 rounded-lg px-2 py-1 text-red-400 hover:bg-red-500/10"><Trash2 size={12} /> Delete</button></div>}
+        {selectedBlockIds.size > 0 && <div className="grapho-block-selection-actions fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] px-3 py-2 text-[10px] text-[var(--grapho-muted)]" role="toolbar" aria-label="Selected block actions"><span><strong className="text-[var(--grapho-foreground)]">{selectedBlockIds.size}</strong> block{selectedBlockIds.size === 1 ? "" : "s"} selected</span><span className="hidden text-[var(--grapho-faint)] sm:inline">Drag from the margin to select more</span><button type="button" onClick={() => { setSelectedBlockIds(new Set()); paintBlockSelection(new Set()); }} className="rounded-lg px-2 py-1 hover:bg-[var(--grapho-control)]">Clear</button><button type="button" onClick={removeSelectedBlocks} className="flex items-center gap-1 rounded-lg px-2 py-1 text-red-400 hover:bg-red-500/10"><Trash2 size={12} /> Delete</button></div>}
         {selectionToolbar && <div className="grapho-selection-toolbar fixed z-50 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-2 text-[13px] shadow-2xl" style={{ top: selectionToolbar.top, left: selectionToolbar.left }} onMouseDown={(event) => event.preventDefault()}>
                   <button type="button" onClick={() => applySelectionFormat("bold")} className="grid size-9 shrink-0 place-items-center rounded-lg text-[15px] font-bold hover:bg-[var(--grapho-control)]">B</button>
                   <button type="button" onClick={() => applySelectionFormat("italic")} className="grid size-9 shrink-0 place-items-center rounded-lg text-[15px] italic hover:bg-[var(--grapho-control)]">I</button>
