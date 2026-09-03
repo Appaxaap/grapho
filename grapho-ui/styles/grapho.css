@@ -476,6 +476,11 @@
 
 /* Keep block actions stacked immediately above the canonical bottom toolbar. */
 .grapho-block-selection-actions { bottom: 76px !important; }
+.grapho-block-selection-actions { color: var(--grapho-foreground) !important; font-family: var(--grapho-font-sans); font-size: 11px; font-weight: 520; line-height: 1.25; }
+.grapho-block-selection-actions > span:nth-child(2) { color: var(--grapho-muted) !important; }
+.grapho-block-selection-actions strong { color: var(--grapho-foreground) !important; font-weight: 700; }
+.grapho-block-selection-actions button { color: var(--grapho-foreground); font-weight: 600; }
+.grapho-block-selection-actions button:last-child { color: var(--grapho-accent); }
 @media (max-width: 700px) {
-  .grapho-block-selection-actions { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 66px) !important; }
+  .grapho-block-selection-actions { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 66px) !important; font-size: 10px; }
 }
