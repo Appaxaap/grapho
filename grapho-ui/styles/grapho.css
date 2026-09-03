@@ -193,6 +193,7 @@
 .grapho-document-list button > span span:first-child { color: inherit; font-family: var(--grapho-font-sans); font-size: 11px; font-weight: 560; letter-spacing: -0.015em; }
 .grapho-document-list button > span span:last-child { color: var(--grapho-faint); font-family: var(--grapho-font-sans); font-size: 9px; }
 .grapho-ui div.group[data-block-selected="true"] { background: color-mix(in srgb, var(--grapho-selection) 22%, transparent); outline: 1px solid var(--grapho-selection); outline-offset: 2px; }
+.grapho-ui div.group:has([data-grapho-block-id]) { --tw-ring-color: transparent !important; }
 .grapho-document-list button.grapho-empty-action { min-height: 0; background: transparent; }
 .grapho-document-list button.grapho-empty-action:hover { background: var(--grapho-control); color: var(--grapho-accent); }
 .grapho-document-list button.grapho-empty-action:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
