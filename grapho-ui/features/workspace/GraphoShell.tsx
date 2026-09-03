@@ -707,6 +707,32 @@ export default function GraphoShell() {
   }, []);
 
   useEffect(() => {
+    const startCanvasSelection = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target.closest("[contenteditable]") || target.closest("button")) return;
+      const wrapper = target.closest<HTMLElement>("div.group");
+      const editor = wrapper?.querySelector<HTMLElement>("[data-grapho-block-id]");
+      if (!editor?.dataset.graphoBlockId) return;
+      event.preventDefault();
+      window.getSelection()?.removeAllRanges();
+      blockSelectionDragging.current = true;
+      blockSelectionAnchor.current = editor.dataset.graphoBlockId;
+      selectBlockRange(editor.dataset.graphoBlockId, event.shiftKey);
+    };
+    const extendCanvasSelection = (event: MouseEvent) => {
+      if (!blockSelectionDragging.current) return;
+      const editor = (event.target as HTMLElement).closest<HTMLElement>("[data-grapho-block-id]");
+      if (editor?.dataset.graphoBlockId) selectBlockRange(editor.dataset.graphoBlockId);
+    };
+    document.addEventListener("mousedown", startCanvasSelection);
+    document.addEventListener("mouseover", extendCanvasSelection);
+    return () => {
+      document.removeEventListener("mousedown", startCanvasSelection);
+      document.removeEventListener("mouseover", extendCanvasSelection);
+    };
+  }, [selected.blocks, selectedBlockIds, selectBlockRange]);
+
+  useEffect(() => {
     const handleBlockDelete = (event: KeyboardEvent) => {
       if (selectedBlockIds.size > 0 && (event.key === "Backspace" || event.key === "Delete")) {
         const target = event.target as HTMLElement;
