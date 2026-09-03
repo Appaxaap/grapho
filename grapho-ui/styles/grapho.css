@@ -473,3 +473,9 @@
   .grapho-mobile-action-bar button[aria-pressed="true"] { border: 1px solid var(--grapho-accent); background: var(--grapho-accent-soft); color: var(--grapho-mobile-nav-foreground); }
   .grapho-mobile-primary-action { border: 1px solid color-mix(in srgb, var(--grapho-mobile-nav-accent) 70%, var(--grapho-mobile-nav-border)) !important; background: var(--grapho-mobile-nav-accent) !important; color: var(--grapho-mobile-nav-foreground) !important; }
 }
+
+/* Keep block actions stacked immediately above the canonical bottom toolbar. */
+.grapho-block-selection-actions { bottom: 76px !important; }
+@media (max-width: 700px) {
+  .grapho-block-selection-actions { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 66px) !important; }
+}
