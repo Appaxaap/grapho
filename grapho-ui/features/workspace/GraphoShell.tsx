@@ -57,6 +57,9 @@ export default function GraphoShell() {
   const [commandBlockId, setCommandBlockId] = useState<string | null>(null);
   const [selectionToolbar, setSelectionToolbar] = useState<{ top: number; left: number } | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(() => new Set());
+  const blockSelectionAnchor = useRef<string | null>(null);
+  const blockSelectionDragging = useRef(false);
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
   const [dropTargetBlockId, setDropTargetBlockId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -631,6 +634,37 @@ export default function GraphoShell() {
     setSelectedBlockId(null);
   }, [selected.blocks.length, selected.id]);
 
+  const removeSelectedBlocks = useCallback(() => {
+    if (!selectedBlockIds.size || selected.blocks.length <= 1) return;
+    setDocuments((current) => current.map((document) => {
+      if (document.id !== selected.id) return document;
+      const blocks = document.blocks.filter((block) => !selectedBlockIds.has(block.id));
+      return { ...document, blocks: blocks.length ? blocks : [{ id: `empty-${selected.id}`, type: "paragraph", text: "" }], updated: "Just now" };
+    }));
+    setSelectedBlockIds(new Set());
+    setSelectedBlockId(null);
+  }, [selected.blocks.length, selected.id, selectedBlockIds]);
+
+  const paintBlockSelection = (ids: Set<string>) => {
+    document.querySelectorAll<HTMLElement>("[data-grapho-block-id]").forEach((editor) => {
+      const wrapper = editor.closest<HTMLElement>("div.group");
+      if (wrapper) wrapper.dataset.blockSelected = String(ids.has(editor.dataset.graphoBlockId ?? ""));
+    });
+  };
+
+  const selectBlockRange = (targetId: string, additive = false) => {
+    const anchorId = blockSelectionAnchor.current ?? targetId;
+    const anchor = selected.blocks.findIndex((block) => block.id === anchorId);
+    const target = selected.blocks.findIndex((block) => block.id === targetId);
+    if (anchor < 0 || target < 0) return;
+    const [start, end] = anchor < target ? [anchor, target] : [target, anchor];
+    const range = new Set(selected.blocks.slice(start, end + 1).map((block) => block.id));
+    const next = additive ? new Set([...selectedBlockIds, ...range]) : range;
+    blockSelectionAnchor.current = anchorId;
+    setSelectedBlockIds(next);
+    paintBlockSelection(next);
+  };
+
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
       const definition = SHORTCUTS.find((shortcut) => shortcut.key.toLowerCase() === event.key.toLowerCase() && Boolean(shortcut.mod) === (event.metaKey || event.ctrlKey) && Boolean(shortcut.shift) === event.shiftKey);
@@ -667,7 +701,20 @@ export default function GraphoShell() {
   }, [helpOpen, workspaceDialogOpen]);
 
   useEffect(() => {
+    const stopBlockSelection = () => { blockSelectionDragging.current = false; };
+    window.addEventListener("mouseup", stopBlockSelection);
+    return () => window.removeEventListener("mouseup", stopBlockSelection);
+  }, []);
+
+  useEffect(() => {
     const handleBlockDelete = (event: KeyboardEvent) => {
+      if (selectedBlockIds.size > 0 && (event.key === "Backspace" || event.key === "Delete")) {
+        const target = event.target as HTMLElement;
+        if (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+        event.preventDefault();
+        removeSelectedBlocks();
+        return;
+      }
       if (!selectedBlockId || (event.key !== "Backspace" && event.key !== "Delete")) return;
       const target = event.target as HTMLElement;
       if (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
@@ -676,7 +723,7 @@ export default function GraphoShell() {
     };
     window.addEventListener("keydown", handleBlockDelete);
     return () => window.removeEventListener("keydown", handleBlockDelete);
-  }, [removeBlock, selectedBlockId]);
+  }, [removeBlock, removeSelectedBlocks, selectedBlockId, selectedBlockIds.size]);
 
   const pasteBlocks = (blockId: string, rawText: string) => {
     const parsed = parseMarkdownBlocks(rawText, () => `pasted-${blockSequence.current++}`);
@@ -900,7 +947,7 @@ export default function GraphoShell() {
           </motion.aside>}
         </AnimatePresence>
 
-        <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas">
+        <main className="grapho-editor-scroll min-w-0 flex-1" aria-label="Writing canvas" onMouseDown={(event) => { const handle = (event.target as HTMLElement).closest<HTMLButtonElement>('button[aria-label="Drag or select block"]'); if (!handle) return; const editor = handle.closest(".grapho-block-wrapper")?.querySelector<HTMLElement>("[data-grapho-block-id]"); if (!editor?.dataset.graphoBlockId) return; event.preventDefault(); blockSelectionDragging.current = true; blockSelectionAnchor.current = editor.dataset.graphoBlockId; selectBlockRange(editor.dataset.graphoBlockId, event.shiftKey); }} onMouseOver={(event) => { if (!blockSelectionDragging.current) return; const editor = (event.target as HTMLElement).closest<HTMLElement>("[data-grapho-block-id]"); if (editor?.dataset.graphoBlockId) selectBlockRange(editor.dataset.graphoBlockId); }} onKeyDown={(event) => { if (event.key !== "Escape") return; if (selectedBlockIds.size) { event.preventDefault(); setSelectedBlockIds(new Set()); paintBlockSelection(new Set()); } }}>
           <div style={{ ...(editorFont === "Mono" ? { fontFamily: "var(--grapho-font-mono)" } : editorFont === "Serif" ? { fontFamily: "Georgia, serif" } : {}), ...(editorSize === "Large" ? { fontSize: "18px" } : {}) }} className={`mx-auto ${editorWidth === "Wide" ? "max-w-6xl" : "max-w-4xl"} px-5 pb-32 pt-10 sm:px-12 sm:pt-14 lg:px-20 lg:pt-16 ${editorSpacing === "Compact" ? "[--grapho-leading-body:1.55]" : "[--grapho-leading-body:1.9]"}`}>
             <div className="grapho-document-meta mb-8 flex items-center justify-between text-[9px] text-[var(--grapho-faint)]"><div className="flex min-w-0 items-center gap-2"><span>{activeFolder}</span>{documentPath(selected).map((item, index) => <span key={`${item}-${index}`} className="flex min-w-0 items-center gap-2"><ChevronRight size={11} /><span className={index === documentPath(selected).length - 1 ? "truncate text-[var(--grapho-muted)]" : "truncate"}>{item}</span></span>)}</div><div className="grapho-document-stats flex items-center gap-2"><span>{selected.blocks.reduce((count, block) => count + block.text.trim().split(/\s+/).filter(Boolean).length, 0)} words</span><i /> <span>{visibleBlocks(selected).length} blocks</span><i /> <span>{selected.updated}</span></div></div>{backlinks.length > 0 && <div className="mb-8 rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40 px-3 py-2.5"><div className="flex items-center gap-2 text-[8px] uppercase tracking-[.14em] text-[var(--grapho-faint)]"><Link2 size={12} /> Referenced by</div><div className="mt-2 flex flex-wrap gap-1.5">{backlinks.map((backlink) => <button key={`${backlink.documentId}-${backlink.blockId}`} type="button" onClick={() => setSelectedId(backlink.documentId)} className="rounded-lg bg-[var(--grapho-control)] px-2.5 py-1.5 text-[9px] text-[var(--grapho-muted)] hover:bg-[var(--grapho-control-hover)] hover:text-[var(--grapho-foreground)]">{documents.find((document) => document.id === backlink.documentId)?.title ?? "Document"}</button>)}</div></div>}
             {false && productionOpen && <ProductionView blocks={selected.blocks} title={selected.title} onClose={() => setProductionOpen(false)} />}
