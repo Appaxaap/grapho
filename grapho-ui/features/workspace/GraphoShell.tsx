@@ -60,6 +60,7 @@ export default function GraphoShell() {
   const [selectedBlockIds, setSelectedBlockIds] = useState<Set<string>>(() => new Set());
   const blockSelectionAnchor = useRef<string | null>(null);
   const blockSelectionDragging = useRef(false);
+  const blockSelectionPending = useRef<{ id: string; x: number; y: number; additive: boolean } | null>(null);
   const [draggingBlockId, setDraggingBlockId] = useState<string | null>(null);
   const [dropTargetBlockId, setDropTargetBlockId] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -701,34 +702,43 @@ export default function GraphoShell() {
   }, [helpOpen, workspaceDialogOpen]);
 
   useEffect(() => {
-    const stopBlockSelection = () => { blockSelectionDragging.current = false; };
-    window.addEventListener("mouseup", stopBlockSelection);
-    return () => window.removeEventListener("mouseup", stopBlockSelection);
-  }, []);
-
-  useEffect(() => {
     const startCanvasSelection = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (target.closest("[contenteditable]") || target.closest("button")) return;
       const wrapper = target.closest<HTMLElement>("div.group");
       const editor = wrapper?.querySelector<HTMLElement>("[data-grapho-block-id]");
       if (!editor?.dataset.graphoBlockId) return;
-      event.preventDefault();
-      window.getSelection()?.removeAllRanges();
-      blockSelectionDragging.current = true;
-      blockSelectionAnchor.current = editor.dataset.graphoBlockId;
-      selectBlockRange(editor.dataset.graphoBlockId, event.shiftKey);
+      if (target.closest("button") || target.closest("a")) return;
+      blockSelectionPending.current = { id: editor.dataset.graphoBlockId, x: event.clientX, y: event.clientY, additive: event.shiftKey };
     };
     const extendCanvasSelection = (event: MouseEvent) => {
+      const pending = blockSelectionPending.current;
+      if (!blockSelectionDragging.current && pending) {
+        const moved = Math.hypot(event.clientX - pending.x, event.clientY - pending.y) >= 6;
+        if (!moved) return;
+        blockSelectionPending.current = null;
+        blockSelectionDragging.current = true;
+        blockSelectionAnchor.current = pending.id;
+        event.preventDefault();
+        window.getSelection()?.removeAllRanges();
+        selectBlockRange(pending.id, pending.additive);
+      }
       if (!blockSelectionDragging.current) return;
       const editor = (event.target as HTMLElement).closest<HTMLElement>("[data-grapho-block-id]");
       if (editor?.dataset.graphoBlockId) selectBlockRange(editor.dataset.graphoBlockId);
     };
+    const stopBlockSelection = () => {
+      blockSelectionPending.current = null;
+      blockSelectionDragging.current = false;
+    };
     document.addEventListener("mousedown", startCanvasSelection);
     document.addEventListener("mouseover", extendCanvasSelection);
+    document.addEventListener("mousemove", extendCanvasSelection);
+    document.addEventListener("mouseup", stopBlockSelection);
     return () => {
       document.removeEventListener("mousedown", startCanvasSelection);
       document.removeEventListener("mouseover", extendCanvasSelection);
+      document.removeEventListener("mousemove", extendCanvasSelection);
+      document.removeEventListener("mouseup", stopBlockSelection);
     };
   }, [selected.blocks, selectedBlockIds, selectBlockRange]);
 
