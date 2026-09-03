@@ -1302,7 +1302,7 @@ function EditorBlock({ block, orderedIndex, onChange, onToggle, onCollapse, onKe
   if (block.type === "code") return <pre className="my-3 overflow-x-auto rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)] p-4 text-[13px] leading-6 text-[var(--grapho-muted)]"><code>{block.text}</code></pre>;
   if (block.type === "divider") return <hr className="my-5 border-0 border-t border-[var(--grapho-border)]" />;
   if (block.type === "page-break") return <div className="grapho-page-break my-6 flex items-center justify-center text-[8px] uppercase tracking-[.16em] text-[var(--grapho-faint)]">Page break</div>;
-  if (block.type === "table") return <MarkdownTableBlock text={block.text} />;
+  if (block.type === "table") return <MarkdownTableBlock text={block.text} onChange={onChange} />;
   return editable("text-[15px] leading-8 text-[var(--grapho-muted)] sm:text-[17px]", "Paragraph block");
 }
 
