@@ -1245,7 +1245,8 @@ function EditableContent({ blockId, value, content, label, className, onChange, 
     if (hasSelection && (event.key === "Backspace" || event.key === "Delete")) {
       event.preventDefault();
       selection?.deleteFromDocument();
-      ref.current.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: event.key === "Backspace" ? "deleteContentBackward" : "deleteContentForward" }));
+      const editor = ref.current;
+      if (editor) editor.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: event.key === "Backspace" ? "deleteContentBackward" : "deleteContentForward" }));
       return;
     }
     onKeyDown(event);
