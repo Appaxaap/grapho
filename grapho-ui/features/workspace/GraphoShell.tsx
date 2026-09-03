@@ -647,10 +647,18 @@ export default function GraphoShell() {
   }, [selected.blocks.length, selected.id, selectedBlockIds]);
 
   const paintBlockSelection = (ids: Set<string>) => {
-    document.querySelectorAll<HTMLElement>("[data-grapho-block-id]").forEach((editor) => {
-      const wrapper = editor.closest<HTMLElement>("[data-grapho-block-wrapper]");
-      if (wrapper) wrapper.dataset.blockSelected = String(ids.has(editor.dataset.graphoBlockId ?? ""));
+    const wrappers = [...document.querySelectorAll<HTMLElement>("[data-grapho-block-wrapper]")];
+    const selectedWrappers = wrappers.filter((wrapper) => {
+      const editor = wrapper.querySelector<HTMLElement>("[data-grapho-block-id]");
+      return ids.has(editor?.dataset.graphoBlockId ?? "");
     });
+    wrappers.forEach((wrapper) => {
+      wrapper.dataset.blockSelected = String(selectedWrappers.includes(wrapper));
+      delete wrapper.dataset.selectionStart;
+      delete wrapper.dataset.selectionEnd;
+    });
+    if (selectedWrappers[0]) selectedWrappers[0].dataset.selectionStart = "true";
+    if (selectedWrappers.at(-1)) selectedWrappers.at(-1)!.dataset.selectionEnd = "true";
   };
 
   const selectBlockRange = (targetId: string, additive = false) => {
