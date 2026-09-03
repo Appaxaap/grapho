@@ -1243,11 +1243,16 @@ function AccountRegisterSummary({ stats }: { stats: AccountRegisterStats }) {
   </aside>;
 }
 
-function MarkdownTableBlock({ text }: { text: string }) {
+function MarkdownTableBlock({ text, onChange }: { text: string; onChange: (text: string) => void }) {
   const rows = text.split("\n").filter(Boolean).map((row) => row.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim()));
   const normalizedRows = rows.length ? rows : [["Column 1", "Column 2"], ["", ""]];
   const columns = Math.max(...normalizedRows.map((row) => row.length), 2);
   const paddedRows = normalizedRows.map((row) => [...row, ...Array.from({ length: columns - row.length }, () => "")]);
+  const updateCell = (rowIndex: number, cellIndex: number, value: string) => {
+    const nextRows = paddedRows.map((row) => [...row]);
+    nextRows[rowIndex][cellIndex] = value;
+    onChange(nextRows.map((row, index) => `| ${row.join(" | ")} |${index === 0 ? `\n| ${row.map(() => "---").join(" | ")} |` : ""}`).join("\n"));
+  };
   const [widths, setWidths] = useState<number[]>(() => columns === 3 ? [36, 18, 46] : Array.from({ length: columns }, () => 100 / columns));
   const resizeColumn = (index: number, event: React.PointerEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -1269,7 +1274,7 @@ function MarkdownTableBlock({ text }: { text: string }) {
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onEnd, { once: true });
   };
-  return <div className="grapho-markdown-table my-4 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]"><div className="grapho-table-heading"><div><span className="grapho-table-kicker">Structured table</span><strong>{paddedRows.length - 1} rows · {columns} columns</strong></div><span className="grapho-table-hint">Drag column dividers to resize</span></div><table className="w-full min-w-full table-fixed border-collapse text-left text-[11px] leading-5"><colgroup>{widths.map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup><thead><tr>{paddedRows[0].map((cell, index) => <th key={`${cell}-${index}`} className="relative border-b border-r border-[var(--grapho-border)] px-4 py-3 align-top font-semibold text-[var(--grapho-foreground)] break-words last:border-r-0">{renderInlineMarkdown(cell || `Column ${index + 1}`)}{index < columns - 1 && <button type="button" aria-label={`Resize column ${index + 1}`} title="Drag to resize column" onPointerDown={(event) => resizeColumn(index, event)} className="grapho-table-resize-handle absolute -right-1 top-0 z-10 h-full w-2 cursor-col-resize touch-none" />}</th>)}</tr></thead><tbody>{paddedRows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className="break-words border-r border-[var(--grapho-border)] px-4 py-3 align-top text-[var(--grapho-muted)] last:border-r-0">{renderInlineMarkdown(cell || " ")}</td>)}</tr>)}</tbody></table></div>;
+  return <div className="grapho-markdown-table my-4 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]"><div className="grapho-table-heading"><div><span className="grapho-table-kicker">Structured table</span><strong>{paddedRows.length - 1} rows · {columns} columns</strong></div><span className="grapho-table-hint">Click any cell to edit</span></div><table className="w-full min-w-full table-fixed border-collapse text-left text-[11px] leading-5"><colgroup>{widths.map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup><thead><tr>{paddedRows[0].map((cell, index) => <th key={`${cell}-${index}`} className="relative border-b border-r border-[var(--grapho-border)] px-4 py-3 align-top font-semibold text-[var(--grapho-foreground)] break-words last:border-r-0"><input value={cell} onChange={(event) => updateCell(0, index, event.target.value)} aria-label={`Column ${index + 1} heading`} placeholder={`Column ${index + 1}`} className="w-full min-w-0 bg-transparent font-semibold text-[var(--grapho-foreground)] outline-none placeholder:text-[var(--grapho-faint)]" />{index < columns - 1 && <button type="button" aria-label={`Resize column ${index + 1}`} title="Drag to resize column" onPointerDown={(event) => resizeColumn(index, event)} className="grapho-table-resize-handle absolute -right-1 top-0 z-10 h-full w-2 cursor-col-resize touch-none" />}</th>)}</tr></thead><tbody>{paddedRows.slice(1).map((row, rowIndex) => <tr key={rowIndex} className="border-b border-[var(--grapho-border)] last:border-0">{row.map((cell, cellIndex) => <td key={`${cell}-${cellIndex}`} className="break-words border-r border-[var(--grapho-border)] px-4 py-3 align-top last:border-r-0"><input value={cell} onChange={(event) => updateCell(rowIndex + 1, cellIndex, event.target.value)} aria-label={`Row ${rowIndex + 1}, column ${cellIndex + 1}`} placeholder="Empty cell" className="w-full min-w-0 bg-transparent text-[var(--grapho-muted)] outline-none placeholder:text-[var(--grapho-faint)]" /></td>)}</tr>)}</tbody></table></div>;
 }
 
 function markdownTableToHtml(value: string) {
