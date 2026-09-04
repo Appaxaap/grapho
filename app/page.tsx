@@ -1,25 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, Check, GitBranch, LockKeyhole } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Check, FileText, GitBranch, LockKeyhole, Sparkles } from "lucide-react";
 import { Footer } from "../components/site/Footer";
 import { Navigation } from "../components/site/Navigation";
-import { ProductCanvas } from "../components/site/ProductCanvas";
 import "./site.css";
 
 export const metadata: Metadata = {
-  title: "Grapho | A quiet place for serious writing",
-  description: "A local-first writing application for turning ideas into finished, portable documents.",
+  title: "Grapho | Where thoughts become documents",
+  description: "A local-first writing application for turning unfinished thoughts into lasting documents.",
 };
 
-const journey = [["01", "Capture", "Begin before the thought disappears."], ["02", "Compose", "Give every idea structure without leaving the page."], ["03", "Carry", "Export a finished document that remains yours."]];
-
 export default function PublicSite() {
-  return <main className="signal-site" id="top"><Navigation />
-    <section className="signal-hero kinetic-hero" aria-labelledby="signal-title"><div className="signal-rail" aria-hidden="true"><span>GRAPHO / 01</span><i /><span>LOCAL-FIRST WRITING</span></div><div className="kinetic-head"><p className="signal-label"><span /> The document is the interface</p><h1 id="signal-title"><span>Thoughts arrive</span><em>unfinished.</em></h1></div><div className="signal-stage kinetic-stage"><div className="signal-stage-meta"><span>LIVE DOCUMENT</span><span>Saved locally</span></div><ProductCanvas compact /><div className="kinetic-caret" aria-hidden="true" /><p><i /> Grapho gives them somewhere to become clear.</p></div><div className="kinetic-fragments" aria-hidden="true"><span>What if…</span><span>Remember this</span><span>First draft</span><span>One more thought</span></div><div className="kinetic-close"><h2>Leave with<br /><em>something real.</em></h2><p className="signal-lede">A focused writing space where rough thoughts become clear, portable documents.</p><div className="signal-actions"><Link href="/app">Open Grapho <ArrowUpRight size={15} /></Link><a href="#experience">Follow the thought <ArrowDown size={14} /></a></div></div><div className="signal-ticker" aria-hidden="true"><div><span>WRITE</span><i>→</i><span>SHAPE</span><i>→</i><span>FINISH</span><i>→</i><span>KEEP</span><i>→</i><span>WRITE</span><i>→</i><span>SHAPE</span><i>→</i></div></div></section>
-    <section className="signal-manifesto" id="experience"><p className="signal-index">02 / THE EXPERIENCE</p><h2><span>Most writing tools ask you</span><span>to manage the tool.</span><em>Grapho asks what you want to say.</em></h2><div className="manifesto-cursor" aria-hidden="true">G</div></section>
-    <section className="signal-workflow"><header><p className="signal-label"><span /> One continuous flow</p><h2>From first line<br />to final file.</h2></header><div className="signal-steps">{journey.map(([number, title, copy]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{copy}</p><i aria-hidden="true">↗</i></article>)}</div></section>
-    <section className="signal-proof"><div className="signal-proof-copy"><p className="signal-index">03 / THE PRODUCT</p><h2>Your workspace.<br /><em>Already in motion.</em></h2><p>Projects, block-based editing, formatting, tables, export, and local persistence live in one calm system.</p></div><ProductCanvas /></section>
-    <section className="signal-values"><article><LockKeyhole /><span>01</span><h3>Local by design</h3><p>Your writing lives on your device, not inside an account you rent.</p></article><article><Check /><span>02</span><h3>Portable by default</h3><p>The end result is a document you can keep, move, and share.</p></article><article><GitBranch /><span>03</span><h3>Built in the open</h3><p>Read the source, run it yourself, or help shape what comes next.</p></article></section>
-    <section className="signal-finale"><p className="signal-label"><span /> Your next document</p><h2>There is a blank page<br /><em>waiting for a good idea.</em></h2><Link href="/app">Start writing <ArrowUpRight size={16} /></Link></section><Footer />
+  return <main className="atelier" id="top"><Navigation />
+    <section className="atelier-hero" aria-labelledby="atelier-title">
+      <div className="atelier-coordinate" aria-hidden="true"><span>01</span><i /><span>BEGIN</span></div>
+      <header><p><span /> LOCAL-FIRST WRITING, WITHOUT THE NOISE</p><h1 id="atelier-title"><span>Every document</span><span>starts as a</span><em>loose thought.</em></h1></header>
+      <div className="atelier-thoughts" aria-hidden="true"><span>an opening line</span><span>the point I almost lost</span><span>→ connect these</span><span>make this clearer</span></div>
+      <div className="atelier-sheet" aria-label="An unfinished thought becoming a Grapho document"><div className="atelier-sheet-bar"><span>PROJECTS / UNTITLED</span><span><i /> SAVED LOCALLY</span></div><div className="atelier-sheet-body"><small>DOCUMENT 01</small><h2>A place for the idea<br />before it becomes <em>obvious.</em></h2><p>Begin with the sentence you have. Structure can arrive later.</p><div className="atelier-block"><b>01</b><span>Write while the thought is alive.</span></div><div className="atelier-block"><b>02</b><span>Shape it without leaving the page.</span></div><div className="atelier-caret" /></div><div className="atelier-tools"><span>Text</span><b>B</b><i>I</i><span>H2</span><span>↗</span></div></div>
+      <div className="atelier-entry"><p>Grapho turns the scattered beginning into a document you can finish, keep, and carry anywhere.</p><div><Link href="/app">Enter the workspace <ArrowUpRight size={15} /></Link><a href="#movement">Watch it take shape <ArrowDown size={14} /></a></div></div>
+      <div className="atelier-scroll" aria-hidden="true"><span>SCROLL TO COMPOSE</span><i /></div>
+    </section>
+
+    <section className="atelier-movement" id="movement"><aside><span>02</span><p>THE MOVEMENT<br />OF A THOUGHT</p></aside><div className="atelier-sentence"><span>Capture the fragment.</span><span>Find its shape.</span><span>Leave with something</span><em>worth keeping.</em></div><div className="atelier-glyph" aria-hidden="true"><i /><i /><i /><b>G</b></div></section>
+
+    <section className="atelier-workspace"><div className="atelier-workspace-copy"><span>03 / INSIDE GRAPHO</span><h2>The interface<br />becomes <em>quiet.</em></h2><p>Tools appear in context. Structure stays visible. Your writing owns the room.</p></div><div className="atelier-window"><div className="atelier-window-top"><span>Grapho</span><span>Document saved <i /></span></div><aside><b>Library</b><small>WORKSPACE</small><span className="active">Product thinking</span><span>Loose notes</span><span>Reading</span><small>DOCUMENTS</small><span>A quieter tool</span><span>Open questions</span></aside><article><small>PRODUCT THINKING / DRAFT 04</small><h3>Software should make<br />the thought feel <em>larger.</em></h3><p>Not the interface.</p><div className="atelier-selection"><span>When the tools recede, the idea becomes easier to see.</span></div><div className="atelier-toolbar"><b>B</b><i>I</i><span>H2</span><span>Link</span><span>Comment</span></div></article></div></section>
+
+    <section className="atelier-principles"><header><span>04 / WHAT REMAINS</span><h2>Less software.<br /><em>More ownership.</em></h2></header><div><article><LockKeyhole /><span>01</span><h3>Lives with you</h3><p>Local-first storage keeps your writing close and understandable.</p></article><article><FileText /><span>02</span><h3>Leaves as a document</h3><p>Export finished work in formats designed to travel.</p></article><article><GitBranch /><span>03</span><h3>Built in public</h3><p>Read the source and understand the tool holding your words.</p></article></div></section>
+
+    <section className="atelier-end"><Sparkles aria-hidden="true" /><p>THE NEXT PAGE IS YOURS</p><h2>Start with<br /><em>one true sentence.</em></h2><Link href="/app">Open a blank document <ArrowUpRight size={16} /></Link><span><Check size={12} /> No account required</span></section><Footer />
   </main>;
 }
