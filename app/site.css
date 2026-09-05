@@ -265,4 +265,44 @@
   .studio *, .studio *::before, .studio *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .studio-pending { opacity: 1; transform: none; }
 }
-@media print { .studio-pending { opacity: 1; transform: none; } .studio-nav, .studio-actions { display: none; } }
+/* Human marks sit in the margins; interface text keeps the canvas font. */
+.studio-handnote { font: 500 25px/1.15 "Caveat Variable", cursive; color: var(--studio-sage); letter-spacing: 0; }
+.studio-handnote svg, .studio-marked svg { stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.studio-marked { position: relative; display: inline-block; }
+.studio-marked svg { position: absolute; width: 85%; left: 6%; bottom: -14px; height: 24px; pointer-events: none; }
+.studio-marked path { stroke-dasharray: 250; stroke-dashoffset: 250; animation: studio-ink 850ms 450ms var(--studio-ease) forwards; }
+.studio-canvas-scene { position: relative; }
+.studio-canvas-note { position: relative; margin: -28px 0 24px; transform: rotate(-4deg); width: max-content; max-width: 100%; pointer-events: none; }
+.studio-canvas-note svg { position: absolute; width: 72px; height: 36px; right: -80px; top: 8px; }
+.studio-canvas-note path { stroke-dasharray: 160; stroke-dashoffset: 160; animation: studio-ink 700ms 650ms var(--studio-ease) forwards; }
+.studio-prompt { display: grid; gap: 8px; margin-top: 20px; }
+.studio-prompt button, .studio-flight button { width: max-content; max-width: 100%; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 0; background: transparent; color: var(--studio-sage); border: 0; font: 11px var(--studio-font); text-align: left; }
+.studio-prompt button:hover, .studio-flight button:hover { color: var(--studio-text); }
+.studio-prompt button:active, .studio-flight button:active { transform: translateY(1px); }
+.studio-prompt button svg { transition: transform 200ms var(--studio-ease); }
+.studio-prompt button:hover svg { transform: rotate(-15deg); }
+.studio-prompt > span { min-height: 32px; max-width: 360px; font-size: 11px; line-height: 1.6; color: var(--studio-muted); }
+.studio-problem-note { display: block; margin: 20px 0 0 -16px; transform: rotate(-5deg); }
+.studio-export-note { position: absolute; z-index: 2; top: -44px; left: 8px; transform: rotate(-5deg); pointer-events: none; }
+.studio-export-note svg { position: absolute; right: -56px; width: 64px; height: 40px; top: 12px; }
+.studio-final-note { margin-top: 28px !important; transform: rotate(-3deg); transform-origin: left; }
+.studio-flight { margin-top: 32px; }
+.studio-flight-track { position: relative; width: min(320px, 100%); height: 80px; overflow: hidden; }
+.studio-flight-track > svg { width: 100%; height: 100%; stroke: var(--studio-muted); stroke-width: 1; stroke-dasharray: 3 6; opacity: .5; }
+.studio-flight-track > span { position: absolute; left: 0; bottom: 4px; width: 48px; height: 36px; }
+.studio-flight .zine-plane { width: 100%; height: 100%; stroke: var(--studio-sage); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.studio-flight-track > .studio-plane-launched { animation: studio-paper-flight 1200ms var(--studio-ease) both; }
+.studio-flight > .studio-handnote { display: block; font-size: 23px; margin-top: 4px; }
+@keyframes studio-ink { to { stroke-dashoffset: 0; } }
+@keyframes studio-paper-flight { 0% { transform: translate(0, 0) rotate(-8deg); } 40% { transform: translate(100px, -36px) rotate(8deg); } 70% { transform: translate(180px, -12px) rotate(-12deg); } 100% { transform: translate(260px, -40px) rotate(-8deg); } }
+@media (max-width: 800px) { .studio-canvas-note { margin-top: 0; } .studio-export { row-gap: 88px; } }
+@media (max-width: 500px) {
+  .studio-handnote { font-size: 22px; }
+  .studio-canvas-note svg { right: -44px; width: 44px; top: 12px; }
+  .studio-export-note { font-size: 22px; }
+  .studio-export-note svg { right: -40px; width: 44px; }
+  .studio-marked svg { bottom: -16px; }
+  .studio-problem-note { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .studio-marked path, .studio-canvas-note path { stroke-dashoffset: 0; } .studio-flight-track > .studio-plane-launched { transform: translate(180px, -24px); } }
+@media print { .studio-pending { opacity: 1; transform: none; } .studio-nav, .studio-actions, .studio-flight, .studio-prompt { display: none; } }

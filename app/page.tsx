@@ -4,6 +4,8 @@ import { ArrowDown, ArrowUpRight, Download, FileText, Folder, GitBranch, HardDri
 import { LandingCanvas } from "../components/site/LandingCanvas";
 import { LandingMotion } from "../components/site/LandingMotion";
 import { Navigation } from "../components/site/Navigation";
+import { HandArrow, Scribble } from "../components/site/LandingIllustrations";
+import { PaperFlight } from "../components/site/PaperFlight";
 import "./site.css";
 
 export const metadata: Metadata = {
@@ -32,7 +34,7 @@ export default function PublicSite() {
           <div className="studio-hero-top"><span className="studio-eyebrow"><i /> A PLACE FOR YOUR WORDS</span><span className="studio-edition">OPEN SOURCE / V.1.0.0</span></div>
           <div className="studio-hero-grid">
             <div className="studio-hero-copy">
-              <h1 id="hero-title">Room<br />to <span>think.</span></h1>
+              <h1 id="hero-title">Room<br />to <span className="studio-marked">think.<Scribble /></span></h1>
               <p>A quiet canvas for the thought you haven’t quite found the words for. Write it. Shape it. Keep it yours.</p>
               <Actions />
               <span className="studio-platforms">Linux · Windows · Android</span>
@@ -46,6 +48,7 @@ export default function PublicSite() {
           <span className="studio-eyebrow">02 / LESS, BUT BETTER</span>
           <div data-studio-reveal>
             <p className="studio-crossed">Another dashboard.<br />Another workspace.<br />Another thing to manage.</p>
+            <span className="studio-handnote studio-problem-note">I just wanted to write a proposal.</span>
             <h2>What if you<br />just <em>wrote?</em></h2>
             <p className="studio-body">Grapho gives your ideas a place to become documents. The tools arrive when you need them. The rest of the time, it’s you and the page.</p>
           </div>
@@ -76,7 +79,7 @@ export default function PublicSite() {
             <div className="studio-local-top"><span className="studio-eyebrow">05 / OWN YOUR WORDS</span><span><WifiOff size={16} /> OFFLINE IS A FEATURE</span></div>
             <div className="studio-local-grid">
               <h2 data-studio-reveal>Your words.<br />Your files.<br /><span>Your device.</span></h2>
-              <div className="studio-local-details" data-studio-reveal><HardDrive size={48} strokeWidth={1} /><p>Your writing shouldn’t need permission to exist.</p><p className="studio-body">Write without an account or an internet connection. Your documents stay on your device, ready when you are.</p><div className="studio-ownership"><span><Laptop size={18} /> Your device</span><i /><span><FileText size={18} /> Your documents</span></div></div>
+              <div className="studio-local-details" data-studio-reveal><HardDrive size={48} strokeWidth={1} /><p>Your writing shouldn’t need permission to exist.</p><p className="studio-body">Write without an account or an internet connection. Your documents stay on your device, ready when you are.</p><div className="studio-ownership"><span><Laptop size={18} /> Your device</span><i /><span><FileText size={18} /> Your documents</span></div><PaperFlight /></div>
             </div>
           </div>
         </section>
@@ -84,6 +87,7 @@ export default function PublicSite() {
         <section className="studio-export studio-wrap" id="export">
           <div className="studio-export-copy" data-studio-reveal><span className="studio-eyebrow">06 / MAKE IT SOMETHING</span><h2>From rough idea<br />to <em>ready to send.</em></h2><p className="studio-body">A good document deserves a good exit. Export your work in a format that belongs wherever it’s going next.</p><div className="studio-formats"><span>PDF</span><span>Markdown</span><span>HTML</span><span>Plain text</span></div><p className="studio-small">Native PDF export in the desktop app.</p></div>
           <div className="studio-document-stack" data-studio-reveal>
+            <span className="studio-handnote studio-export-note">look at you, all professional.<HandArrow /></span>
             <article className="studio-export-document"><header><span>GRAPHO / FIELD NOTES</span><span>001</span></header><div><span className="studio-eyebrow">AN IDEA, FINISHED.</span><h3>Good things<br />begin with<br /><em>a thought.</em></h3><p>Give it a little time.<br />A little structure.<br />And somewhere to go.</p></div><footer><span>MADE WITH GRAPHO</span><ArrowUpRight size={20} /></footer></article>
           </div>
         </section>
@@ -94,7 +98,7 @@ export default function PublicSite() {
         </section>
 
         <section className="studio-final studio-wrap">
-          <div data-studio-reveal><span className="studio-eyebrow">08 / IT STARTS HERE</span><h2>One blank page.<br /><span>Anything next.</span></h2><Actions /></div>
+          <div data-studio-reveal><span className="studio-eyebrow">08 / IT STARTS HERE</span><h2>One blank page.<br /><span>Anything next.</span></h2><Actions /><p className="studio-handnote studio-final-note">first drafts are allowed to be terrible.</p></div>
           <a className="studio-endmark" href="/app" aria-label="Start writing in Grapho"><ArrowUpRight strokeWidth={0.6} /></a>
         </section>
       </main>

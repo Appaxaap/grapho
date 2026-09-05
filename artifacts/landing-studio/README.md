@@ -15,6 +15,10 @@ Chromium's actual font inspection reported `Geist Mono / GeistMono-Regular / isC
 
 The writing sample is editable, offers all four font choices, preserves text across switches, counts words, supports reset, and explicitly explains that its contents are temporary.
 
+## Playful details
+
+Existing Caveat handwriting and SVG illustrations add sage margin notes, a drawn underline, and arrows around the canvas and export story. A keyboard/touch-accessible prompt button cycles writing ideas without replacing the visitor's text. The offline section includes a paper airplane that flies when activated and announces its result. Reduced motion shows a static result. Browser checks cover prompt cycling, text preservation, flight activation, and reduced-motion animation suppression, alongside the responsive checks below.
+
 ## Validation
 
 - TypeScript passes.
