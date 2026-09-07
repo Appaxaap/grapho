@@ -46,8 +46,9 @@
 .studio-skip { position: fixed; top: 8px; left: 8px; z-index: 100; padding: 12px 20px; background: var(--studio-text); color: var(--studio-bg) !important; transform: translateY(-150%); }
 .studio-skip:focus { transform: none; }
 .studio-nav { position: relative; display: flex; align-items: center; min-height: 100px; gap: 36px; border-bottom: 1px solid var(--studio-line); z-index: 20; }
-.studio-wordmark { font: 500 27px/1 var(--studio-font); letter-spacing: -.085em; }
-.studio-wordmark span { color: var(--studio-green); }
+.studio-wordmark { display: inline-flex; align-items: center; gap: 8px; font: 500 27px/1 var(--studio-font); letter-spacing: -.085em; }
+.studio-wordmark span { color: var(--studio-text); }
+.studio-logo { display: block; width: 30px; height: 30px; object-fit: cover; border-radius: 50%; }
 .studio-nav-links { display: flex; gap: 32px; margin-left: auto; }
 .studio-nav-links a, .studio-nav-open { font-size: 12px; }
 .studio-nav-links a { color: var(--studio-muted); transition: color 150ms; }
@@ -316,9 +317,6 @@
 .studio-local .sketch-solid { fill: var(--studio-panel); }
 .studio-sketch figcaption { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .studio-sketch .studio-handnote { font-size: 22px; }
-.studio-sketch button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border: 1px solid var(--studio-line); border-radius: 50%; background: transparent; color: var(--studio-sage); transition: background 180ms, transform 220ms; }
-.studio-sketch button:hover { background: var(--studio-panel); transform: rotate(-20deg); }
-.studio-sketch button:active { transform: rotate(-40deg) scale(.95); }
 .studio-illustrated-margin { min-width: 0; }
 .studio-illustrated-margin > .studio-sketch { margin-top: 40px; }
 .studio-statement { grid-template-columns: .75fr 1fr .15fr; column-gap: 64px; align-items: center; }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { motion, type Variants } from "motion/react";
-import { RotateCcw } from "lucide-react";
 
 type Kind = "noise" | "pencil" | "folders" | "device" | "community" | "spark";
 const captions: Record<Kind, string> = {
@@ -32,10 +31,9 @@ export function AnimatedSketch({ kind }: { kind: Kind }) {
   const reduced = useSyncExternalStore(subscribeMotionPreference, getMotionPreference, () => false);
   const line: Variants = reduced ? { rest: { pathLength: 1, opacity: 1 }, draw: { pathLength: 1, opacity: 1, transition: { duration: 0 } } } : movingLine;
   const appear: Variants = reduced ? { rest: { opacity: 1 }, draw: { opacity: 1, transition: { duration: 0 } } } : movingAppear;
-  const [take, setTake] = useState(0);
   return (
     <figure className={"studio-sketch studio-sketch-" + kind}>
-      <motion.svg key={take + "-" + reduced} viewBox="0 0 360 240" fill="none" aria-hidden="true"
+      <motion.svg key={reduced ? "reduced" : "motion"} viewBox="0 0 360 240" fill="none" aria-hidden="true"
         initial={reduced ? false : "rest"} whileInView="draw" viewport={{ once: true, amount: .2 }}
         animate={reduced ? "draw" : undefined}
         variants={{ rest: {}, draw: { transition: { staggerChildren: reduced ? 0 : .15 } } }}>
@@ -82,7 +80,7 @@ export function AnimatedSketch({ kind }: { kind: Kind }) {
           <motion.path className="sketch-muted" variants={line} d="M118 218c33-8 77-6 113 0" />
         </>}
       </motion.svg>
-      <figcaption><span className="studio-handnote">{captions[kind]}</span><button type="button" onClick={() => setTake(value => value + 1)} aria-label={"Replay " + kind + " illustration"} title="Replay illustration"><RotateCcw size={14} /></button></figcaption>
+      <figcaption><span className="studio-handnote">{captions[kind]}</span></figcaption>
     </figure>
   );
 }

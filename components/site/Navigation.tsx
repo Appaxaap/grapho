@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -20,7 +21,7 @@ export function Navigation() {
   }, [open]);
   return (
     <nav className="studio-nav studio-wrap" aria-label="Main navigation" ref={nav}>
-      <Link className="studio-wordmark" href="/">grapho<span>_</span></Link>
+      <Link className="studio-wordmark" href="/" aria-label="Grapho home"><Image className="studio-logo" src="/Branding/black-logo.png" alt="" width={30} height={30} priority /><span>grapho</span></Link>
       <div className="studio-nav-links">{links.map(([label, href]) => <a href={href} key={href}>{label}</a>)}</div>
       <Link className="studio-nav-open" href="/app">Start writing <ArrowUpRight size={16} /></Link>
       <button className="studio-menu-toggle" type="button" ref={toggle} aria-expanded={open} aria-controls="studio-mobile-links" aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => setOpen(!open)}>{open ? <X size={22} /> : <Menu size={22} />}</button>

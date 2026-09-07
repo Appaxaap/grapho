@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowDown, ArrowUpRight, Download, FileText, Folder, GitBranch, HardDrive, Laptop, WifiOff } from "lucide-react";
 import { LandingCanvas } from "../components/site/LandingCanvas";
 import { LandingMotion } from "../components/site/LandingMotion";
@@ -104,7 +105,7 @@ export default function PublicSite() {
           <div className="studio-finale-drawing"><AnimatedSketch kind="spark" /><a className="studio-text-link" href="/app" aria-label="Start writing in Grapho">Follow that idea <ArrowUpRight size={20} /></a></div>
         </section>
       </main>
-      <footer className="studio-footer studio-wrap"><Link className="studio-wordmark" href="/">grapho<span>_</span></Link><nav aria-label="Footer navigation"><Link href="/documentation">Documentation</Link><a href={repository}>GitHub</a><a href={repository + "/blob/main/LICENSE"}>License</a></nav><span>A little space to make something.</span></footer>
+      <footer className="studio-footer studio-wrap"><Link className="studio-wordmark" href="/" aria-label="Grapho home"><Image className="studio-logo" src="/Branding/black-logo.png" alt="" width={30} height={30} /><span>grapho</span></Link><nav aria-label="Footer navigation"><Link href="/documentation">Documentation</Link><a href={repository}>GitHub</a><a href={repository + "/blob/main/LICENSE"}>License</a></nav><span>A little space to make something.</span></footer>
     </div>
   );
 }

@@ -22,7 +22,7 @@ Existing Caveat handwriting and SVG illustrations add sage margin notes, a drawn
 ## Illustrated motion system
 
 - Lenis 1.3.26 (MIT) supplies landing-only smooth wheel and anchor scrolling. Native touch and textarea scrolling are retained; teardown restores native scrolling when leaving the landing or enabling reduced motion.
-- Motion (already installed, MIT) drives six original SVG scenes: tangled thoughts, a writing pencil, filing papers, local documents, a contribution graph, and a lightbulb. Each has an accessible replay button and a static reduced-motion result.
+- Motion (already installed, MIT) drives six original SVG scenes: tangled thoughts, a writing pencil, filing papers, local documents, a contribution graph, and a lightbulb. Each animates on entry and has a static reduced-motion result without adding controls to the illustration margins.
 - All eight chapters and the footer have distinct finite animation sequences. Buttons, links, canvas focus, type specimens, and document rows have microinteractions. The reading rule tracks scroll progress.
 - Library references: [Lenis](https://github.com/darkroomengineering/lenis), [Motion SVG animation](https://motion.dev/docs/react-svg-animation). Illustrations are original code-native SVGs; no third-party illustration files or remote animation requests are used.
 
