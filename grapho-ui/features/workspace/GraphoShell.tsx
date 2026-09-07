@@ -879,7 +879,8 @@ export default function GraphoShell() {
         return;
       }
       event.preventDefault();
-      addBlockAfter(block.id);
+      const nextType = block.text.trim() && (block.type === "list" || block.type === "ordered-list") ? block.type : "paragraph";
+      addBlockAfter(block.id, nextType);
     }
     if (event.key === "Backspace") {
       const selection = window.getSelection();
