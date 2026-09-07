@@ -28,7 +28,7 @@ const defaultFolders = [...WORKSPACE_FOLDERS];
 
 export default function GraphoShell() {
   const [theme, setTheme] = useState<Theme>(() => typeof window !== "undefined" && window.localStorage.getItem("grapho-theme") === "light" ? "light" : "dark");
-  const [documents, setDocuments] = useState<DocumentItem[]>(initialDocuments);
+  const [documents, setDocuments] = useState<DocumentItem[]>(() => initialDocuments.map((document) => ({ ...document, blocks: normalizeListBlocks(document.blocks) })));
   const [selectedId, setSelectedId] = useState("product-notes");
   const [query, setQuery] = useState("");
   const [activeFolder, setActiveFolder] = useState("Projects");
@@ -143,7 +143,7 @@ export default function GraphoShell() {
       if (source) {
         const stored = source;
         setDocuments(stored.documents.map((document) => {
-                  const blocks = normalizeTableBlocks(document.blocks.map((block) => block.type === "paragraph" && block.text === "Start writing…" ? { ...block, text: "" } : block));
+                  const blocks = normalizeTableBlocks(normalizeListBlocks(document.blocks).map((block) => block.type === "paragraph" && block.text === "Start writing…" ? { ...block, text: "" } : block));
                   return blocks.length && ["todo", "toggle"].includes(blocks[blocks.length - 1].type) ? { ...document, blocks: [...blocks, { id: `block-${document.id}-writing`, type: "paragraph" as const, text: "" }] } : { ...document, blocks };
                 }));
         setSelectedId(stored.documents.some((document) => document.id === stored.selectedId) ? stored.selectedId : stored.documents[0]?.id ?? "product-notes");
@@ -1109,6 +1109,13 @@ function normalizeTableBlocks(blocks: Block[]): Block[] {
   return normalized;
 }
 
+function normalizeListBlocks(blocks: Block[]): Block[] {
+  return blocks.flatMap((block) => {
+    if ((block.type !== "list" && block.type !== "ordered-list") || !block.text.includes("\n")) return [block];
+    return block.text.split("\n").map((text, index) => ({ ...block, id: index === 0 ? block.id : `${block.id}-${index + 1}`, text, content: undefined }));
+  });
+}
+
 function parseMarkdownBlocks(rawText: string, makeId: () => string): Block[] {
   const lines = rawText.replace(/\r/g, "").split("\n");
   const blocks: Block[] = [];
@@ -1295,7 +1302,7 @@ function EditorBlock({ block, orderedIndex, onChange, onToggle, onCollapse, onKe
 
   if (block.type === "heading") return editable("text-3xl font-semibold leading-tight tracking-[-.06em] sm:text-4xl", "Heading block");
   if (block.type === "quote") return <div className="flex gap-3 border-l-2 border-[var(--grapho-accent)] bg-[var(--grapho-accent-soft)] px-4 py-3"><Quote size={15} className="mt-1 shrink-0 text-[var(--grapho-accent)]" />{editable("text-[15px] italic leading-7 text-[var(--grapho-muted)]", "Quote block")}</div>;
-  if (block.type === "list") return <div className="grapho-list-editor">{editable("whitespace-pre-wrap text-[15px] leading-8 text-[var(--grapho-muted)]", "Bulleted list block")}</div>;
+  if (block.type === "list") return <div className="flex gap-3"><div className="w-5 shrink-0 pt-1 text-[var(--grapho-faint)]">•</div>{editable("whitespace-pre-wrap text-[15px] leading-8 text-[var(--grapho-muted)]", "Bulleted list block")}</div>;
   if (block.type === "ordered-list") return <div className="flex gap-3"><div className="w-5 shrink-0 pt-1 text-right text-[var(--grapho-faint)]">{orderedIndex ?? 1}.</div>{editable("whitespace-pre-wrap text-[15px] leading-8 text-[var(--grapho-muted)]", "Numbered list block")}</div>;
   if (block.type === "todo") return <div className="flex items-start gap-3 py-0.5"><button type="button" onClick={onToggle} aria-label={block.checked ? "Mark todo incomplete" : "Mark todo complete"} aria-pressed={block.checked} className={`mt-[7px] grid size-5 shrink-0 place-items-center rounded-md border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--grapho-accent)]/50 ${block.checked ? "border-[var(--grapho-accent)] bg-[var(--grapho-accent)] text-[var(--grapho-background)]" : "border-[var(--grapho-border)] bg-transparent text-transparent hover:border-[var(--grapho-accent)]"}`}>{block.checked && <Check size={13} strokeWidth={3} aria-hidden="true" />}</button>{editable(`text-[15px] leading-8 ${block.checked ? "text-[var(--grapho-faint)] line-through decoration-[var(--grapho-faint)]/70" : "text-[var(--grapho-muted)]"}`, "To-do block")}</div>;
   if (block.type === "toggle") return <div className="rounded-xl border border-[var(--grapho-border)] bg-[var(--grapho-control)]/40"><div className="flex items-start gap-2 px-3 py-2"><button type="button" onClick={() => onCollapse(!block.collapsed)} aria-label={block.collapsed ? "Expand toggle" : "Collapse toggle"} aria-expanded={!block.collapsed} className="mt-2 grid size-5 shrink-0 place-items-center rounded-md text-xs text-[var(--grapho-faint)] hover:bg-[var(--grapho-control-hover)]">{block.collapsed ? "›" : "⌄"}</button>{editable("text-[15px] font-medium leading-8 text-[var(--grapho-foreground)]", "Toggle block")}</div></div>;
