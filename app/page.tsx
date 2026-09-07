@@ -60,9 +60,9 @@ export default function PublicSite() {
         <section className="studio-writing studio-wrap" id="writing">
           <header className="studio-section-head" data-studio-reveal><div className="studio-illustrated-margin"><span className="studio-eyebrow">03 / FIND YOUR FORM</span><AnimatedSketch kind="pencil" /></div><h2>Different voices.<br /><span>The same thought.</span></h2><p className="studio-body">A technical note. A personal essay. Your next proposal. Give each document the space and character it needs.</p></header>
           <div className="studio-type-specimens" data-studio-reveal>
-            <div><span className="studio-eyebrow">SANS / CLEAR & DIRECT</span><p className="studio-sans">Make<br />your point.</p><span>For the idea that needs clarity.</span></div>
-            <div><span className="studio-eyebrow">MONO / THOUGHTFULLY PRECISE</span><p className="studio-mono">Follow<br />the thought.</p><span>For the details that matter.</span></div>
-            <div><span className="studio-eyebrow">SERIF / A LITTLE MORE HUMAN</span><p className="studio-serif">Find<br /><em>your voice.</em></p><span>For the story only you can tell.</span></div>
+            <div><span className="studio-eyebrow">CLEAR / DIRECT</span><p className="studio-sans">Make<br />your point.</p><span>For the idea that needs clarity.</span></div>
+            <div><span className="studio-eyebrow">PRECISE / FOCUSED</span><p className="studio-mono">Follow<br />the thought.</p><span>For the details that matter.</span></div>
+            <div><span className="studio-eyebrow">HUMAN / DISTINCT</span><p className="studio-serif">Find<br /><em>your voice.</em></p><span>For the story only you can tell.</span></div>
           </div>
           <div className="studio-writing-foot"><span>Markdown · Rich text · Tables · Block editing</span><a className="studio-text-link" href="#canvas">Try the canvas above <ArrowUpRight size={16} /></a></div>
         </section>
