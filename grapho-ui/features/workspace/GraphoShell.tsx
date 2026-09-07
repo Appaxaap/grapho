@@ -872,14 +872,13 @@ export default function GraphoShell() {
       moveBlockByOffset(block.id, event.key === "ArrowUp" ? -1 : 1);
       return;
     }
-    if (event.key === "Enter" && event.shiftKey) {
-      if (block.type === "paragraph" && /^[-*_]{3,}$/.test(block.text.trim())) {
-        event.preventDefault();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!event.shiftKey && block.type === "paragraph" && /^[-*_]{3,}$/.test(block.text.trim())) {
         changeBlockType(block.id, "divider");
         return;
       }
-      event.preventDefault();
-      const nextType = block.text.trim() && (block.type === "list" || block.type === "ordered-list") ? block.type : "paragraph";
+      const nextType = !event.shiftKey && block.text.trim() && (block.type === "list" || block.type === "ordered-list") ? block.type : "paragraph";
       addBlockAfter(block.id, nextType);
     }
     if (event.key === "Backspace") {
