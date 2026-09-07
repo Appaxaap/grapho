@@ -7,9 +7,7 @@ The public landing page now uses a dark, type-led writing studio. It replaces th
 The previous landing used variables scoped to `.grapho-ui` without that ancestor. The new `.studio` root defines its own complete font tokens and explicitly loads the bundled Geist Mono font.
 
 - Default and interface: local Grapho Geist Mono.
-- Sans specimen: locally installed Inter Variable.
-- Mono specimen: the existing workspace stack, including system fallbacks. JetBrains Mono is not bundled.
-- Serif specimen: Georgia.
+- All landing specimens use Grapho Geist Mono for one consistent visual voice.
 
 Chromium's actual font inspection reported `Geist Mono / GeistMono-Regular / isCustomFont: true` for the headline.
 
@@ -35,4 +33,4 @@ Existing Caveat handwriting and SVG illustrations add sage margin notes, a drawn
 - Production build attempted: blocked by Turbopack's internal process/port binding error, `Operation not permitted`. Production completion is not claimed.
 - Changes are scoped to the public landing. No workspace or Tauri window behavior is changed.
 
-The corresponding public-landing rules in the locally ignored `GRAPHO_DESIGN_SYSTEM.md` have been updated. Screenshots in this folder show the desktop hero, mobile hero/canvas, and font specimens.
+The corresponding public-landing rules in the locally ignored `GRAPHO_DESIGN_SYSTEM.md` have been updated. Screenshots in this folder show the desktop hero, mobile hero/canvas, and font specimen.
