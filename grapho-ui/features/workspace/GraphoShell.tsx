@@ -823,6 +823,24 @@ export default function GraphoShell() {
     setSelectedBlockId(blockId);
   };
 
+  const mergeBlockWithPrevious = (blockId: string) => {
+    const index = selected.blocks.findIndex((block) => block.id === blockId);
+    if (index <= 0) return;
+    const previous = selected.blocks[index - 1];
+    setDocuments((current) => current.map((document) => document.id !== selected.id ? document : { ...document, updated: "Just now", blocks: document.blocks.filter((block) => block.id !== blockId).map((block) => block.id === previous.id ? { ...block, text: block.text + selected.blocks[index].text } : block) }));
+    window.setTimeout(() => {
+      const editor = document.querySelector<HTMLElement>(`[data-grapho-block-id="${previous.id}"]`);
+      if (!editor) return;
+      editor.focus();
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }, 0);
+  };
+
   const dropBlock = (targetId: string) => {
     if (!draggingBlockId || draggingBlockId === targetId) return;
     const from = selected.blocks.findIndex((block) => block.id === draggingBlockId);
@@ -862,6 +880,15 @@ export default function GraphoShell() {
       }
       event.preventDefault();
       addBlockAfter(block.id);
+    }
+    if (event.key === "Backspace") {
+      const selection = window.getSelection();
+      const atStart = Boolean(selection?.isCollapsed && selection.anchorOffset === 0 && selection.anchorNode && (event.currentTarget === selection.anchorNode || event.currentTarget.contains(selection.anchorNode)));
+      if (atStart && block.text) {
+        event.preventDefault();
+        mergeBlockWithPrevious(block.id);
+        return;
+      }
     }
     if (event.key === "Backspace" && !block.text) {
       event.preventDefault();
