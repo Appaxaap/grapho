@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/*  */@import "tailwindcss";
 
 @font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin-ext.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
@@ -391,7 +391,11 @@
 .grapho-dialog input:focus { border-color: var(--grapho-accent); box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent); }
 .grapho-dialog .grapho-rename-input:focus { border-color: var(--grapho-border); box-shadow: none; }
 .grapho-dialog header { border-color: var(--grapho-border); }
-.grapho-modal-backdrop { background: color-mix(in srgb, #000 38%, transparent) !important; backdrop-filter: blur(16px) saturate(.72) !important; -webkit-backdrop-filter: blur(16px) saturate(.72) !important; }
+.grapho-modal-backdrop { position: fixed; inset: 0; background: color-mix(in srgb, #000 42%, transparent) !important; backdrop-filter: blur(16px) saturate(.72) !important; -webkit-backdrop-filter: blur(16px) saturate(.72) !important; }
+.grapho-ui.grapho-modal-open .grapho-editor-scroll,
+.grapho-ui.grapho-modal-open .grapho-sidebar,
+.grapho-ui.grapho-modal-open .grapho-app-toolbar,
+.grapho-ui.grapho-modal-open .grapho-native-titlebar { filter: blur(10px); transition: filter 160ms ease; }
 .grapho-block-delete-dialog { background: color-mix(in srgb, var(--grapho-panel-solid) 84%, transparent); backdrop-filter: blur(22px) saturate(1.18); -webkit-backdrop-filter: blur(22px) saturate(1.18); box-shadow: 0 24px 80px color-mix(in srgb, #000 34%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 9%, transparent); }
 .grapho-block-delete-dialog .bg\[var\(--grapho-control\)\] { background: color-mix(in srgb, var(--grapho-control) 78%, transparent); }
 
