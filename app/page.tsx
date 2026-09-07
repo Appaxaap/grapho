@@ -6,6 +6,7 @@ import { LandingMotion } from "../components/site/LandingMotion";
 import { Navigation } from "../components/site/Navigation";
 import { HandArrow, Scribble } from "../components/site/LandingIllustrations";
 import { PaperFlight } from "../components/site/PaperFlight";
+import { AnimatedSketch } from "../components/site/AnimatedSketch";
 import "./site.css";
 
 export const metadata: Metadata = {
@@ -45,7 +46,7 @@ export default function PublicSite() {
         </section>
 
         <section className="studio-statement studio-wrap" id="why">
-          <span className="studio-eyebrow">02 / LESS, BUT BETTER</span>
+          <div className="studio-illustrated-margin"><span className="studio-eyebrow">02 / LESS, BUT BETTER</span><AnimatedSketch kind="noise" /></div>
           <div data-studio-reveal>
             <p className="studio-crossed">Another dashboard.<br />Another workspace.<br />Another thing to manage.</p>
             <span className="studio-handnote studio-problem-note">I just wanted to write a proposal.</span>
@@ -56,7 +57,7 @@ export default function PublicSite() {
         </section>
 
         <section className="studio-writing studio-wrap" id="writing">
-          <header className="studio-section-head" data-studio-reveal><span className="studio-eyebrow">03 / FIND YOUR FORM</span><h2>Different voices.<br /><span>The same thought.</span></h2><p className="studio-body">A technical note. A personal essay. Your next proposal. Give each document the space and character it needs.</p></header>
+          <header className="studio-section-head" data-studio-reveal><div className="studio-illustrated-margin"><span className="studio-eyebrow">03 / FIND YOUR FORM</span><AnimatedSketch kind="pencil" /></div><h2>Different voices.<br /><span>The same thought.</span></h2><p className="studio-body">A technical note. A personal essay. Your next proposal. Give each document the space and character it needs.</p></header>
           <div className="studio-type-specimens" data-studio-reveal>
             <div><span className="studio-eyebrow">SANS / CLEAR & DIRECT</span><p className="studio-sans">Make<br />your point.</p><span>For the idea that needs clarity.</span></div>
             <div><span className="studio-eyebrow">MONO / THOUGHTFULLY PRECISE</span><p className="studio-mono">Follow<br />the thought.</p><span>For the details that matter.</span></div>
@@ -68,6 +69,7 @@ export default function PublicSite() {
         <section className="studio-organize studio-wrap">
           <div data-studio-reveal><span className="studio-eyebrow">04 / A PLACE FOR EVERYTHING</span><h2>A small system.<br /><span>A clearer head.</span></h2><p className="studio-body">Projects, folders, documents. Familiar by design. Keep related thoughts together and find your way back to the one that matters.</p></div>
           <div className="studio-file-index" data-studio-reveal aria-label="Example document organization">
+            <AnimatedSketch kind="folders" />
             <div className="studio-index-heading"><Folder size={18} /><span>My corner of the world</span><span>03</span></div>
             {["The next big idea", "Notes from the in-between", "Something worth sharing"].map((title, index) => <div className="studio-index-row" key={title}><span>0{index + 1}</span><FileText size={18} /><span>{title}</span><span>.grapho</span></div>)}
             <div className="studio-index-caption">A little order. A lot of possibility.</div>
@@ -78,7 +80,7 @@ export default function PublicSite() {
           <div className="studio-wrap">
             <div className="studio-local-top"><span className="studio-eyebrow">05 / OWN YOUR WORDS</span><span><WifiOff size={16} /> OFFLINE IS A FEATURE</span></div>
             <div className="studio-local-grid">
-              <h2 data-studio-reveal>Your words.<br />Your files.<br /><span>Your device.</span></h2>
+              <div><h2 data-studio-reveal>Your words.<br />Your files.<br /><span>Your device.</span></h2><AnimatedSketch kind="device" /></div>
               <div className="studio-local-details" data-studio-reveal><HardDrive size={48} strokeWidth={1} /><p>Your writing shouldn’t need permission to exist.</p><p className="studio-body">Write without an account or an internet connection. Your documents stay on your device, ready when you are.</p><div className="studio-ownership"><span><Laptop size={18} /> Your device</span><i /><span><FileText size={18} /> Your documents</span></div><PaperFlight /></div>
             </div>
           </div>
@@ -93,13 +95,13 @@ export default function PublicSite() {
         </section>
 
         <section className="studio-source studio-wrap" id="open-source">
-          <span className="studio-eyebrow">07 / NOTHING BEHIND THE CURTAIN</span>
+          <div className="studio-illustrated-margin"><span className="studio-eyebrow">07 / NOTHING BEHIND THE CURTAIN</span><AnimatedSketch kind="community" /></div>
           <div data-studio-reveal><GitBranch size={32} strokeWidth={1.3} /><h2>Made in the open.<br /><span>Yours to make better.</span></h2><p className="studio-body">Read it. Build it. Change it. Grapho is open source, because the tools you think with should be yours to understand.</p><a className="studio-text-link" href={repository}>Appaxaap / grapho <ArrowUpRight size={18} /></a><span className="studio-license">MIT LICENSE · TYPESCRIPT · RUST</span></div>
         </section>
 
         <section className="studio-final studio-wrap">
           <div data-studio-reveal><span className="studio-eyebrow">08 / IT STARTS HERE</span><h2>One blank page.<br /><span>Anything next.</span></h2><Actions /><p className="studio-handnote studio-final-note">first drafts are allowed to be terrible.</p></div>
-          <a className="studio-endmark" href="/app" aria-label="Start writing in Grapho"><ArrowUpRight strokeWidth={0.6} /></a>
+          <div className="studio-finale-drawing"><AnimatedSketch kind="spark" /><a className="studio-text-link" href="/app" aria-label="Start writing in Grapho">Follow that idea <ArrowUpRight size={20} /></a></div>
         </section>
       </main>
       <footer className="studio-footer studio-wrap"><Link className="studio-wordmark" href="/">grapho<span>_</span></Link><nav aria-label="Footer navigation"><Link href="/documentation">Documentation</Link><a href={repository}>GitHub</a><a href={repository + "/blob/main/LICENSE"}>License</a></nav><span>A little space to make something.</span></footer>

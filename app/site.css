@@ -306,3 +306,85 @@
 }
 @media (prefers-reduced-motion: reduce) { .studio-marked path, .studio-canvas-note path { stroke-dashoffset: 0; } .studio-flight-track > .studio-plane-launched { transform: translate(180px, -24px); } }
 @media print { .studio-pending { opacity: 1; transform: none; } .studio-nav, .studio-actions, .studio-flight, .studio-prompt { display: none; } }
+
+/* Illustrated chapters: Motion draws SVGs; CSS choreographs the surrounding page. */
+.studio::before { content: ""; position: fixed; z-index: 80; left: 0; top: 0; width: 100%; height: 2px; background: var(--studio-sage); transform: scaleX(var(--studio-progress, 0)); transform-origin: left; pointer-events: none; }
+.studio-sketch { margin: 0; width: 100%; max-width: 360px; color: var(--studio-sage); }
+.studio-sketch > svg { display: block; width: 100%; height: auto; overflow: visible; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.studio-sketch .sketch-muted { stroke: var(--studio-muted); }
+.studio-sketch .sketch-solid { fill: var(--studio-bg); }
+.studio-local .sketch-solid { fill: var(--studio-panel); }
+.studio-sketch figcaption { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.studio-sketch .studio-handnote { font-size: 22px; }
+.studio-sketch button { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; border: 1px solid var(--studio-line); border-radius: 50%; background: transparent; color: var(--studio-sage); transition: background 180ms, transform 220ms; }
+.studio-sketch button:hover { background: var(--studio-panel); transform: rotate(-20deg); }
+.studio-sketch button:active { transform: rotate(-40deg) scale(.95); }
+.studio-illustrated-margin { min-width: 0; }
+.studio-illustrated-margin > .studio-sketch { margin-top: 40px; }
+.studio-statement { grid-template-columns: .75fr 1fr .15fr; column-gap: 64px; align-items: center; }
+.studio-sketch-folders { max-width: 300px; margin: -32px auto 32px; }
+.studio-sketch-device { max-width: 300px; margin: 32px 0 0; }
+.studio-finale-drawing { width: 30%; min-width: 240px; }
+.studio-finale-drawing > a { margin-top: 28px; color: var(--studio-sage); }
+.studio-hero-copy h1 { animation: studio-title-arrive 900ms var(--studio-ease) both; }
+.studio-hero-copy > p { animation: studio-detail-arrive 700ms 160ms var(--studio-ease) both; }
+.studio-hero-copy .studio-actions { animation: studio-detail-arrive 700ms 280ms var(--studio-ease) both; }
+.studio-nav { animation: studio-detail-arrive 600ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-crossed { animation: studio-noise-resolve 1200ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-problem-note { animation: studio-note-arrive 650ms 500ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-type-specimens > div { animation: studio-specimen-arrive 800ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-type-specimens > div:nth-child(2) { animation-delay: 160ms; }
+.studio-chapter-seen .studio-type-specimens > div:nth-child(3) { animation-delay: 320ms; }
+.studio-type-specimens p { transition: transform 500ms var(--studio-ease), color 200ms; }
+.studio-type-specimens > div:hover p { transform: translateX(8px); color: var(--studio-text); }
+.studio-chapter-seen .studio-index-row { animation: studio-file-arrive 700ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-index-row:nth-child(3) { animation-delay: 160ms; }
+.studio-chapter-seen .studio-index-row:nth-child(4) { animation-delay: 320ms; }
+.studio-chapter-seen .studio-index-row:nth-child(5) { animation-delay: 480ms; }
+.studio-index-row { transition: color 180ms, padding-left 250ms var(--studio-ease); }
+.studio-index-row:hover { color: var(--studio-sage); padding-left: 8px; }
+.studio-local.studio-chapter-seen h2 { animation: studio-title-arrive 1000ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-ownership span:last-child { animation: studio-detail-arrive 800ms 450ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-export-document { animation: studio-page-arrive 1000ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-document-stack::before { animation: studio-sheet-back 900ms 200ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-document-stack::after { animation: studio-sheet-middle 900ms 100ms var(--studio-ease) both; }
+.studio-document-stack:hover .studio-export-document { border-color: var(--studio-sage); }
+.studio-chapter-seen .studio-formats span { animation: studio-format-arrive 650ms 350ms var(--studio-ease) both; }
+.studio-chapter-seen .studio-formats span:nth-child(2) { animation-delay: 450ms; }
+.studio-chapter-seen .studio-formats span:nth-child(3) { animation-delay: 550ms; }
+.studio-chapter-seen .studio-formats span:nth-child(4) { animation-delay: 650ms; }
+.studio-source.studio-chapter-seen .studio-license { animation: studio-detail-arrive 650ms 500ms var(--studio-ease) both; }
+.studio-final.studio-chapter-seen h2 { animation: studio-title-arrive 1000ms var(--studio-ease) both; }
+.studio-final.studio-chapter-seen .studio-actions { animation: studio-detail-arrive 750ms 300ms var(--studio-ease) both; }
+.studio-footer.studio-chapter-seen > * { animation: studio-detail-arrive 700ms var(--studio-ease) both; }
+.studio-footer a { transition: color 180ms, transform 180ms; }
+.studio-footer a:hover { transform: translateY(-2px); }
+.studio-nav-links a { position: relative; }
+.studio-nav-links a::after { content: ""; position: absolute; inset: auto 0 -6px; height: 1px; background: var(--studio-sage); transform: scaleX(0); transform-origin: left; transition: transform 220ms var(--studio-ease); }
+.studio-nav-links a:hover::after, .studio-nav-links a:focus-visible::after { transform: scaleX(1); }
+.studio-canvas-controls button { transition: background 180ms, color 180ms, transform 180ms; }
+.studio-canvas-controls button:active { transform: translateY(2px); }
+.studio-canvas:focus-within::before { width: 64px; height: 64px; }
+.studio-canvas::before { transition: width 220ms, height 220ms; }
+@keyframes studio-title-arrive { from { opacity: .1; transform: translateY(32px); clip-path: inset(0 0 12%); } to { opacity: 1; transform: none; clip-path: inset(0); } }
+@keyframes studio-detail-arrive { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes studio-noise-resolve { from { opacity: .1; transform: translateX(-24px) rotate(-4deg); } to { opacity: 1; transform: none; } }
+@keyframes studio-note-arrive { from { opacity: 0; transform: translateX(12px) rotate(-8deg); } to { opacity: 1; transform: rotate(-5deg); } }
+@keyframes studio-specimen-arrive { from { opacity: .1; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+@keyframes studio-file-arrive { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes studio-page-arrive { from { opacity: .1; transform: translateY(36px) rotate(5deg); } to { opacity: 1; transform: none; } }
+@keyframes studio-sheet-back { from { transform: translate(-16px, -16px); } to { transform: none; } }
+@keyframes studio-sheet-middle { from { transform: translate(-8px, -8px); } to { transform: none; } }
+@keyframes studio-format-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 1100px) { .studio-statement { grid-template-columns: .7fr 1fr; gap: 40px; } .studio-margin-note { display: none; } }
+@media (max-width: 800px) { .studio-finale-drawing { min-width: 200px; } .studio-sketch .studio-handnote { font-size: 20px; } }
+@media (max-width: 500px) {
+  .studio-statement { grid-template-columns: 1fr; }
+  .studio-sketch { max-width: 280px; margin-inline: auto; }
+  .studio-illustrated-margin > .studio-sketch { margin-top: 24px; }
+  .studio-sketch-folders { margin-top: 0; }
+  .studio-finale-drawing { width: 100%; margin-top: 48px; }
+  .studio-final { flex-direction: column; align-items: stretch; }
+  .studio-finale-drawing > a { display: flex; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .studio::before { display: none; } .studio-type-specimens > div:hover p { transform: none; } }

@@ -29,7 +29,7 @@ export function LandingCanvas() {
         <div className="studio-canvas-ruler" aria-hidden="true"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div>
         <div className="studio-canvas-page">
           <label htmlFor="studio-writing-sample">Go on, write something.</label>
-          <textarea id="studio-writing-sample" className={"studio-voice-" + voice.id} value={text} onChange={event => setText(event.target.value)} placeholder="Your next thought starts here…" spellCheck={false} maxLength={3000} aria-describedby="studio-demo-note" />
+          <textarea data-lenis-prevent id="studio-writing-sample" className={"studio-voice-" + voice.id} value={text} onChange={event => setText(event.target.value)} placeholder="Your next thought starts here…" spellCheck={false} maxLength={3000} aria-describedby="studio-demo-note" />
         </div>
         <div className="studio-canvas-controls"><div role="group" aria-label="Canvas font">{voices.map(item => <button key={item.id} type="button" aria-pressed={voice.id === item.id} onClick={() => setVoice(item)}>{item.label}</button>)}</div><span>{words} {words === 1 ? "word" : "words"}</span></div>
       </div>

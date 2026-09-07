@@ -19,7 +19,14 @@ The writing sample is editable, offers all four font choices, preserves text acr
 
 Existing Caveat handwriting and SVG illustrations add sage margin notes, a drawn underline, and arrows around the canvas and export story. A keyboard/touch-accessible prompt button cycles writing ideas without replacing the visitor's text. The offline section includes a paper airplane that flies when activated and announces its result. Reduced motion shows a static result. Browser checks cover prompt cycling, text preservation, flight activation, and reduced-motion animation suppression, alongside the responsive checks below.
 
-## Validation
+## Illustrated motion system
+
+- Lenis 1.3.26 (MIT) supplies landing-only smooth wheel and anchor scrolling. Native touch and textarea scrolling are retained; teardown restores native scrolling when leaving the landing or enabling reduced motion.
+- Motion (already installed, MIT) drives six original SVG scenes: tangled thoughts, a writing pencil, filing papers, local documents, a contribution graph, and a lightbulb. Each has an accessible replay button and a static reduced-motion result.
+- All eight chapters and the footer have distinct finite animation sequences. Buttons, links, canvas focus, type specimens, and document rows have microinteractions. The reading rule tracks scroll progress.
+- Library references: [Lenis](https://github.com/darkroomengineering/lenis), [Motion SVG animation](https://motion.dev/docs/react-svg-animation). Illustrations are original code-native SVGs; no third-party illustration files or remote animation requests are used.
+
+## Checks
 
 - TypeScript passes.
 - ESLint: no errors, 11 existing warnings outside the changed components.
