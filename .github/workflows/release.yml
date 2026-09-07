@@ -149,7 +149,6 @@ jobs:
           const fs = require("fs");
           const path = "app/build.gradle.kts";
           let source = fs.readFileSync(path, "utf8");
-          source = `import java.io.FileInputStream\nimport java.util.Properties\n${source}`;
           const signing = `    signingConfigs {
                   create("release") {
                       val keystorePropertiesFile = rootProject.file("keystore.properties")
