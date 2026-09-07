@@ -133,8 +133,38 @@ jobs:
       - name: Restore Android signing keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/grapho-release.keystore"
+          cd src-tauri/gen/android
+          {
+            echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+            echo "keyPassword=$ANDROID_KEY_PASSWORD"
+            echo "keyAlias=$ANDROID_KEY_ALIAS"
+            echo "storeFile=$RUNNER_TEMP/grapho-release.keystore"
+          } > keystore.properties
+          node <<'NODE'
+          const fs = require("fs");
+          const path = "app/build.gradle.kts";
+          let source = fs.readFileSync(path, "utf8");
+          const signing = `    signingConfigs {
+                  create("release") {
+                      val keystorePropertiesFile = rootProject.file("keystore.properties")
+                      val keystoreProperties = java.util.Properties()
+                      if (keystorePropertiesFile.exists()) keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+                      keyAlias = keystoreProperties["keyAlias"] as String
+                      keyPassword = keystoreProperties["keyPassword"] as String
+                      storeFile = file(keystoreProperties["storeFile"] as String)
+                      storePassword = keystoreProperties["storePassword"] as String
+                  }
+              }
+          `;
+          source = source.replace("    buildTypes {", `${signing}    buildTypes {`);
+          source = source.replace('        getByName("release") {', '        getByName("release") {\n            signingConfig = signingConfigs.getByName("release")');
+          fs.writeFileSync(path, source);
+          NODE
 
       - name: Build signed Android APKs
         env:
