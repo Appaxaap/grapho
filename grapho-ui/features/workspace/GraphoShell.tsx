@@ -895,7 +895,20 @@ export default function GraphoShell() {
       if (block.type === "list" || block.type === "ordered-list") {
         changeBlockType(block.id, "paragraph");
       } else if (selected.blocks.length > 1) {
+        const blockIndex = selected.blocks.findIndex((item) => item.id === block.id);
+        const previousBlock = selected.blocks[blockIndex - 1];
         removeBlock(block.id);
+        if (previousBlock) window.requestAnimationFrame(() => {
+          const editor = document.querySelector<HTMLElement>(`[data-grapho-block-id="${previousBlock.id}"]`);
+          if (!editor) return;
+          editor.focus();
+          const range = document.createRange();
+          range.selectNodeContents(editor);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        });
       }
     }
     if (event.key === " " && block.type === "paragraph") {
