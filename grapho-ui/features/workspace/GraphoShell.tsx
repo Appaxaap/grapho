@@ -872,7 +872,7 @@ export default function GraphoShell() {
       moveBlockByOffset(block.id, event.key === "ArrowUp" ? -1 : 1);
       return;
     }
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === "Enter" && event.shiftKey) {
       if (block.type === "paragraph" && /^[-*_]{3,}$/.test(block.text.trim())) {
         event.preventDefault();
         changeBlockType(block.id, "divider");
@@ -1462,6 +1462,8 @@ function readInlineContent(root: HTMLElement): InlineText[] {
     const element = node as HTMLElement;
     const nextMarks = [...marks];
     const tag = element.tagName.toLowerCase();
+    if ((tag === "div" || tag === "p") && result.length && !result[result.length - 1].text.endsWith("\n")) result.push({ text: "\n" });
+    if (tag === "br") { result.push({ text: "\n" }); return; }
     if (tag === "strong" || tag === "b") nextMarks.push({ type: "bold" });
     if (tag === "em" || tag === "i") nextMarks.push({ type: "italic" });
     if (tag === "u") nextMarks.push({ type: "underline" });
