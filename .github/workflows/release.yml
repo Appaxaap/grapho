@@ -149,11 +149,12 @@ jobs:
           const fs = require("fs");
           const path = "app/build.gradle.kts";
           let source = fs.readFileSync(path, "utf8");
+          source = `import java.io.FileInputStream\nimport java.util.Properties\n${source}`;
           const signing = `    signingConfigs {
                   create("release") {
                       val keystorePropertiesFile = rootProject.file("keystore.properties")
-                      val keystoreProperties = java.util.Properties()
-                      if (keystorePropertiesFile.exists()) keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))
+                  val keystoreProperties = Properties()
+                  if (keystorePropertiesFile.exists()) keystoreProperties.load(FileInputStream(keystorePropertiesFile))
                       keyAlias = keystoreProperties["keyAlias"] as String
                       keyPassword = keystoreProperties["keyPassword"] as String
                       storeFile = file(keystoreProperties["storeFile"] as String)
