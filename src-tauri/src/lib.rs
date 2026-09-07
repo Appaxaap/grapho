@@ -59,6 +59,7 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
     let mut current_page = page;
     let mut current_layer = layer;
     let mut y = 270.0_f64;
+    let mut ordered_index = 0_u32;
     let write_line = |text: &str,
                       size: f64,
                       bold_text: bool,
@@ -82,7 +83,15 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
     );
     y -= 10.0;
     for block in document.blocks {
-        if block.r#type == "page-break" || y < 25.0 {
+        if block.r#type == "page-break" {
+            let added = pdf.add_page(Mm(210.0), Mm(297.0), "Grapho");
+            current_page = added.0;
+            current_layer = added.1;
+            y = 270.0;
+            ordered_index = 0;
+            continue;
+        }
+        if y < 25.0 {
             let added = pdf.add_page(Mm(210.0), Mm(297.0), "Grapho");
             current_page = added.0;
             current_layer = added.1;
@@ -96,17 +105,22 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
             11.0
         };
         let bold_text = block.r#type == "heading";
+        if block.r#type == "ordered-list" {
+            ordered_index += 1;
+        } else {
+            ordered_index = 0;
+        }
+        let prefix = if block.r#type == "list" {
+            "• ".to_string()
+        } else if block.r#type == "ordered-list" {
+            format!("{}. ", ordered_index)
+        } else if block.r#type == "quote" {
+            "“ ".to_string()
+        } else {
+            String::new()
+        };
         for paragraph in block.text.lines() {
-            let prefix = if block.r#type == "list" {
-                "• "
-            } else if block.r#type == "ordered-list" {
-                "1. "
-            } else if block.r#type == "quote" {
-                "“ "
-            } else {
-                ""
-            };
-            for line in paragraph.as_bytes().chunks(92) {
+            for line in paragraph.as_bytes().chunks(84) {
                 let text = String::from_utf8_lossy(line);
                 if y < 20.0 {
                     let added = pdf.add_page(Mm(210.0), Mm(297.0), "Grapho");
@@ -144,4 +158,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running Grapho");
 }
-
