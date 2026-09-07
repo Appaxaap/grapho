@@ -156,6 +156,7 @@ export default function GraphoShell() {
         setEditorSpacing(preferences.editorSpacing);
         setEditorFont(preferences.editorFont);
         setEditorSize(preferences.editorSize);
+        setFocusMode(Boolean(preferences.focusMode));
       }
       hydrated.current = true;
       setIsHydrated(true);
@@ -177,12 +178,12 @@ export default function GraphoShell() {
   }, []);
 
   useEffect(() => {
-    latestWorkspace.current = { documents, selectedId, activeFolder, folders, preferences: { editorWidth, editorSpacing, editorFont, editorSize } };
+    latestWorkspace.current = { documents, selectedId, activeFolder, folders, preferences: { editorWidth, editorSpacing, editorFont, editorSize, focusMode } };
     if (!hydrated.current) return;
     setSaveState("saving");
     const timer = window.setTimeout(saveNow, 350);
     return () => window.clearTimeout(timer);
-  }, [documents, selectedId, activeFolder, folders, editorWidth, editorSpacing, editorFont, editorSize, saveNow]);
+  }, [documents, selectedId, activeFolder, folders, editorWidth, editorSpacing, editorFont, editorSize, focusMode, saveNow]);
 
   useEffect(() => {
     const flushSave = () => saveNow();
@@ -996,6 +997,7 @@ export default function GraphoShell() {
         <ToolbarButton label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} icon={<Menu size={16} />} onClick={() => setSidebarOpen((value) => !value)} />
         <div className="mx-1 flex items-center gap-2 border-r border-[var(--grapho-border)] px-2 pr-3"><span className="grapho-brand-mark grid size-8 place-items-center overflow-hidden rounded-xl"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><span className="hidden text-[11px] font-semibold tracking-[-.04em] sm:block">Grapho</span></div>
         
+        <ToolbarButton label="Focused note taking" icon={<AlignLeft size={16} />} onClick={() => setFocusMode((value) => !value)} active={focusMode} />
         <ToolbarButton label="Workspace tools" icon={<SlidersHorizontal size={16} />} onClick={() => setStyleOpen((value) => !value)} />
                 <ToolbarButton label="Tool guide" icon={<CircleHelp size={16} />} onClick={() => { setHelpTab("tools"); setHelpOpen(true); }} />
 

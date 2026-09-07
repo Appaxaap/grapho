@@ -8,6 +8,7 @@ export type GraphoPreferences = {
   editorSpacing: "Relaxed" | "Compact";
   editorFont: "Sans" | "Mono" | "Serif";
   editorSize: "Standard" | "Large";
+  focusMode?: boolean;
 };
 
 export const defaultGraphoPreferences: GraphoPreferences = {
@@ -15,6 +16,7 @@ export const defaultGraphoPreferences: GraphoPreferences = {
   editorSpacing: "Relaxed",
   editorFont: "Sans",
   editorSize: "Standard",
+  focusMode: false,
 };
 
 export type GraphoStoragePayload = {
