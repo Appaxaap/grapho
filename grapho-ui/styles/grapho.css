@@ -511,3 +511,18 @@
 @media (max-width: 700px) {
   .grapho-block-selection-actions { bottom: calc(max(8px, env(safe-area-inset-bottom)) + 66px) !important; font-size: 10px; }
 }
+
+/* Tauri's compact focused window is still a desktop canvas. Do not let its
+   physical size activate the browser/mobile navigation treatment. */
+.grapho-ui.is-native-window.grapho-focus-mode .grapho-mobile-action-bar,
+.grapho-ui.is-native-window.grapho-focus-mode .grapho-mobile-surface-dismiss,
+.grapho-ui.is-native-window.grapho-focus-mode .grapho-block-selection-actions { display: none !important; }
+.grapho-ui.is-native-window.grapho-focus-mode .grapho-editor-scroll {
+  padding-bottom: 0 !important;
+}
+.grapho-ui.is-native-window.grapho-focus-mode .grapho-editor-scroll > div {
+  width: 100% !important;
+  max-width: 860px !important;
+  padding-right: 32px !important;
+  padding-left: 32px !important;
+}
