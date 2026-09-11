@@ -5,7 +5,7 @@
   "identifier": "com.codecx.grapho",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "devUrl": "http://localhost:3000",
+    "devUrl": "http://localhost:3000/app",
     "beforeBuildCommand": "npm run build && node scripts/prepare-tauri.mjs",
     "frontendDist": "../out"
   },
