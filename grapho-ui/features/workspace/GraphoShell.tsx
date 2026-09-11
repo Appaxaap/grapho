@@ -969,7 +969,7 @@ export default function GraphoShell() {
 
   return (
     <div style={{ "--grapho-accent": accentStyle === "Muted Ink" ? "#7B8792" : undefined, "--grapho-accent-soft": accentStyle === "Muted Ink" ? "rgba(123,135,146,.16)" : undefined } as CSSProperties} className={`grapho-ui ${theme === "dark" ? "grapho-dark" : ""} ${pageSurface === "Soft gray" ? "grapho-soft-surface" : ""} ${focusMode ? "grapho-focus-mode" : ""} grapho-no-grid ${isNativeWindow ? "is-native-window" : ""} ${modalOpen ? "grapho-modal-open" : ""} relative min-h-screen overflow-hidden`}>
-      {focusMode && <button type="button" className="grapho-focus-exit" onClick={() => setFocusMode(false)} aria-label="Exit focused note taking">Exit focus</button>}
+      {focusMode && <button type="button" className="grapho-focus-exit" onClick={() => setFocusMode(false)} aria-label="Exit focused note taking" title="Exit focused note taking">×</button>}
       {isNativeWindow && <div className="grapho-native-titlebar" data-tauri-drag-region>
         <div className="grapho-native-brand" data-tauri-drag-region><span className="grapho-brand-mark"><img src={theme === "dark" ? "/Branding/black-logo.png" : "/Branding/png-logo.png"} alt="" aria-hidden="true" /></span><b>Grapho</b></div>
         <div className="grapho-native-context" data-tauri-drag-region>{selected.title}</div>

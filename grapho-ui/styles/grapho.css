@@ -392,7 +392,7 @@
 .grapho-focus-mode [data-grapho-block-wrapper] > div.pointer-events-none { display: none !important; }
 .grapho-focus-mode article > div { padding-top: 10vh !important; }
 .grapho-focus-mode article { min-height: 100vh !important; }
-.grapho-focus-exit { position: fixed; top: 48px; right: 18px; z-index: 70; padding: 9px 13px; border: 1px solid var(--grapho-border); border-radius: 10px; background: var(--grapho-panel-solid); color: var(--grapho-foreground); font: 10px var(--grapho-font-mono); box-shadow: 0 8px 24px rgb(0 0 0 / 18%); transition: background 180ms ease, border-color 180ms ease; }
+.grapho-focus-exit { position: fixed; top: 42px; right: 10px; z-index: 70; display: grid; width: 28px; height: 28px; place-items: center; padding: 0; border: 1px solid var(--grapho-border); border-radius: 8px; background: var(--grapho-panel-solid); color: var(--grapho-muted); font: 16px/1 var(--grapho-font-mono); box-shadow: 0 6px 16px rgb(0 0 0 / 18%); transition: background 180ms ease, border-color 180ms ease, color 180ms ease; }
 .grapho-focus-exit:hover, .grapho-focus-exit:focus-visible { border-color: var(--grapho-accent); background: var(--grapho-control-hover); }
 .grapho-modal-backdrop { background: rgba(0, 0, 0, .22); backdrop-filter: blur(18px) saturate(72%); -webkit-backdrop-filter: blur(18px) saturate(72%); }
 .grapho-modal-open .grapho-modal-backdrop { isolation: isolate; }
