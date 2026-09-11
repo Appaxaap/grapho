@@ -156,7 +156,7 @@ export default function GraphoShell() {
         setEditorSpacing(preferences.editorSpacing);
         setEditorFont(preferences.editorFont);
         setEditorSize(preferences.editorSize);
-        setFocusMode(Boolean(preferences.focusMode));
+        setFocusMode(isNativePersistenceAvailable() ? true : Boolean(preferences.focusMode));
       }
       hydrated.current = true;
       setIsHydrated(true);
