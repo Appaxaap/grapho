@@ -294,6 +294,7 @@
 .grapho-document-stats { color: var(--grapho-faint); font-size: 9px; white-space: nowrap; }
 .grapho-document-stats i { width: 2px; height: 2px; border-radius: 50%; background: currentColor; opacity: .7; }
 .grapho-page-break { min-height: 28px; border-top: 1px dashed var(--grapho-border); }
+.grapho-print-branding { display: none; }
 @media print { .grapho-page-break { break-before: page; page-break-before: always; border: 0 !important; min-height: 0 !important; } }
 .grapho-command-input:focus,
 .grapho-command-input:focus-visible,
@@ -369,6 +370,7 @@
   .grapho-ui a { color: #246a49 !important; text-decoration: underline !important; }
   .grapho-ui blockquote { color: #3e443f !important; }
   .grapho-ui .grapho-page-break { display: block !important; }
+  .grapho-print-branding { display: block !important; position: fixed; right: 0; bottom: 6mm; left: 0; z-index: 50; color: #71717a; font-family: var(--grapho-font) !important; font-size: 8pt; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
   .grapho-ui .grapho-field-label { color: #161617 !important; }
   .grapho-ui .grapho-email-link { border-color: #9bc8ae !important; background: #eef7f1 !important; color: #3f8662 !important; }
   .grapho-ui .grapho-email-link::before { color: #3f8662 !important; }
