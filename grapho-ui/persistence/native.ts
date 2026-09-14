@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { save } from "@tauri-apps/plugin-dialog";
 import type { GraphoStoragePayload } from "./storage";
+import type { DocumentItem } from "../domain/model";
 
 export function isNativePersistenceAvailable() {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -21,7 +22,7 @@ export async function saveNativeWorkspace(payload: GraphoStoragePayload) {
   await invoke("save_native_workspace", { payload: JSON.stringify(payload) });
 }
 
-export async function exportNativePdf(document: { title: string; blocks: { text: string }[] }) {
+export async function exportNativePdf(document: DocumentItem) {
   const path = await save({
     defaultPath: `${document.title || "grapho-document"}.pdf`,
     filters: [{ name: "PDF document", extensions: ["pdf"] }],
