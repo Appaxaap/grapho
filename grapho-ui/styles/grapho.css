@@ -293,9 +293,6 @@
 @media (max-width: 700px) { .grapho-style-panel { top: auto !important; right: 10px !important; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 120px) !important; left: 10px; width: auto !important; max-height: min(68dvh, 620px); } }
 .grapho-document-stats { color: var(--grapho-faint); font-size: 9px; white-space: nowrap; }
 .grapho-document-stats i { width: 2px; height: 2px; border-radius: 50%; background: currentColor; opacity: .7; }
-.grapho-print-branding { display: none; }
-.grapho-print-header, .grapho-print-footer { display: none; }
-.grapho-print-page-number { display: none; }
 .grapho-page-break { min-height: 28px; border-top: 1px dashed var(--grapho-border); }
 @media print { .grapho-page-break { break-before: page; page-break-before: always; border: 0 !important; min-height: 0 !important; } }
 .grapho-command-input:focus,
@@ -384,13 +381,6 @@
   .grapho-ui [data-grapho-block] { break-inside: auto; }
   .grapho-ui pre { break-inside: avoid; white-space: pre-wrap; overflow-wrap: anywhere; }
   .grapho-ui * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  .grapho-print-page-number { display: block !important; position: fixed; right: 0; bottom: -11mm; z-index: 60; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; letter-spacing: .04em; }
-  .grapho-print-page-number span::after { content: counter(page); }
-  .grapho-print-header, .grapho-print-footer { display: flex; position: fixed; left: 0; right: 0; z-index: 50; justify-content: space-between; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; letter-spacing: .04em; }
-  .grapho-print-header { top: -11mm; border-bottom: 1px solid #d4d4d8; padding-bottom: 3mm; }
-  .grapho-print-footer { bottom: -11mm; border-top: 1px solid #d4d4d8; padding-top: 3mm; }
-  .grapho-print-branding { display: block; position: fixed; z-index: 50; font-family: var(--grapho-font-mono); font-size: 8pt; color: #71717a; }
-  .grapho-print-branding { bottom: 0; left: 50%; transform: translateX(-50%); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
 }
 .grapho-ui .grapho-glass { background: color-mix(in srgb, var(--grapho-panel) 78%, transparent); border: 1px solid color-mix(in srgb, var(--grapho-foreground) 12%, var(--grapho-border)); box-shadow: var(--grapho-shadow), inset 0 1px 0 color-mix(in srgb, white 10%, transparent); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); }
 .grapho-focus-mode .grapho-sidebar { display: none !important; }
