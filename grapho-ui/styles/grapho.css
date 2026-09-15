@@ -330,7 +330,10 @@
   .grapho-ui,
   .grapho-ui .grapho-editor-scroll { background: #fff !important; color: #161617 !important; height: auto !important; min-height: 0 !important; overflow: visible !important; }
   .grapho-ui .grapho-workspace-layer,
-  .grapho-ui main { min-height: 0 !important; }
+  .grapho-ui main { min-height: 0 !important; height: auto !important; }
+  .grapho-ui .grapho-workspace-layer { display: block !important; }
+  .grapho-ui main { display: block !important; flex: none !important; }
+  .grapho-ui .grapho-editor-scroll > div { height: auto !important; min-height: 0 !important; }
   .grapho-ui .grapho-editor-scroll::after { display: none !important; }
   .grapho-ui > header,
   .grapho-ui aside,
@@ -370,6 +373,7 @@
   .grapho-ui a { color: #246a49 !important; text-decoration: underline !important; }
   .grapho-ui blockquote { color: #3e443f !important; }
   .grapho-ui .grapho-page-break { display: block !important; }
+  .grapho-ui article > div > div:last-child .grapho-page-break { display: none !important; break-before: auto !important; page-break-before: auto !important; }
   .grapho-print-branding { display: block !important; position: fixed; right: 0; bottom: 6mm; left: 0; z-index: 50; color: #71717a; font-family: var(--grapho-font) !important; font-size: 8pt; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
   .grapho-ui .grapho-field-label { color: #161617 !important; }
   .grapho-ui .grapho-email-link { border-color: #9bc8ae !important; background: #eef7f1 !important; color: #3f8662 !important; }
