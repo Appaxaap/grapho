@@ -17,6 +17,7 @@ const MARGIN_TOP: f64 = 270.0;
 const MARGIN_BOTTOM: f64 = 21.0;
 const CONTENT_WIDTH: f64 = PAGE_WIDTH - (MARGIN_X * 2.0);
 const GEIST_FONT: &[u8] = include_bytes!("../assets/Geist-Regular.ttf");
+const SERIF_FONT: &[u8] = include_bytes!("../assets/LiberationSerif-Regular.ttf");
 
 fn workspace_path(app: &AppHandle) -> Result<PathBuf, String> {
     let directory = app
@@ -77,6 +78,8 @@ struct PdfBlock {
 struct PdfDocument {
     title: String,
     blocks: Vec<PdfBlock>,
+    #[serde(default)]
+    font: String,
 }
 
 #[derive(Clone)]
@@ -520,8 +523,13 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
         Mm(PAGE_HEIGHT as f32),
         "Grapho",
     );
+    let font_data = if document.font == "Serif" {
+        SERIF_FONT
+    } else {
+        GEIST_FONT
+    };
     let font = pdf
-        .add_external_font(Cursor::new(GEIST_FONT))
+        .add_external_font(Cursor::new(font_data))
         .map_err(|error| format!("Could not load Grapho font: {error}"))?;
     let mut canvas = PdfCanvas::new(pdf, page, layer, font);
     canvas
@@ -536,9 +544,12 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
     );
     canvas.advance(16.0);
     let mut ordered_index = 0_u32;
-    for block in document.blocks {
+    let block_count = document.blocks.len();
+    for (block_index, block) in document.blocks.into_iter().enumerate() {
         if block.r#type == "page-break" {
-            canvas.new_page();
+            if block_index + 1 < block_count {
+                canvas.new_page();
+            }
             ordered_index = 0;
             continue;
         }
@@ -622,6 +633,10 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
             }
             canvas.advance(3.0);
         } else {
+            if block.r#type == "heading" {
+                let lines = wrap_runs(&runs, CONTENT_WIDTH, size);
+                canvas.ensure_space(lines.len() as f64 * line_height + 5.0);
+            }
             draw_rich_lines(
                 &mut canvas,
                 &runs,
