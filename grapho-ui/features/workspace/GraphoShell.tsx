@@ -8,7 +8,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { AnimatePresence, motion } from "motion/react";
 
 import {
-  AlignLeft, Archive, Check, ChevronDown, ChevronRight, CircleHelp, FileCode, FileDown, FileJson, FileText, Folder, FolderOpen, FolderPlus, GripVertical, Hash, Image as ImageIcon, Link2, List, Menu, Minus, MoreHorizontal,
+  AlignLeft, Archive, Check, ChevronDown, ChevronRight, CircleHelp, Copy, FileCode, FileDown, FileJson, FileText, Folder, FolderOpen, FolderPlus, GripVertical, Hash, Image as ImageIcon, Link2, List, Menu, Minus, MoreHorizontal,
   Plus, Quote, Search, Settings2, Sparkles, Trash2,
   Sun, Moon, SlidersHorizontal, Table2, Type, Undo2, Redo2, X,
 } from "lucide-react";
@@ -649,6 +649,33 @@ export default function GraphoShell() {
     setSelectedBlockId(null);
   }, [selected.blocks.length, selected.id, selectedBlockIds]);
 
+  const copySelectedBlocks = useCallback(async () => {
+    const blocks = selected.blocks.filter((block) => selectedBlockIds.has(block.id));
+    if (!blocks.length) return;
+    const html = blocksToClipboardHtml(blocks);
+    const text = blocksToClipboardText(blocks);
+    try {
+      if (navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
+        await navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })]);
+      } else if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const fallback = document.createElement("textarea");
+        fallback.value = text;
+        fallback.setAttribute("readonly", "true");
+        fallback.style.position = "fixed";
+        fallback.style.opacity = "0";
+        document.body.appendChild(fallback);
+        fallback.select();
+        if (!document.execCommand("copy")) throw new Error("Clipboard unavailable");
+        fallback.remove();
+      }
+      setToast(`${blocks.length} block${blocks.length === 1 ? "" : "s"} copied`);
+    } catch {
+      setToast("Could not copy blocks");
+    }
+  }, [selected.blocks, selectedBlockIds]);
+
   const paintBlockSelection = (ids: Set<string>) => {
     const wrappers = [...document.querySelectorAll<HTMLElement>("[data-grapho-block-wrapper]")];
     const selectedWrappers = wrappers.filter((wrapper) => {
@@ -756,6 +783,14 @@ export default function GraphoShell() {
 
   useEffect(() => {
     const handleBlockDelete = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      const editing = target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA";
+      if (selectedBlockIds.size > 0 && !editing && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "c" && !window.getSelection()?.toString()) {
+        event.preventDefault();
+        event.stopPropagation();
+        void copySelectedBlocks();
+        return;
+      }
       if (selectedBlockIds.size > 0 && !blockDeleteConfirmOpen && (event.key === "Backspace" || event.key === "Delete")) {
         event.preventDefault();
         event.stopPropagation();
@@ -763,14 +798,13 @@ export default function GraphoShell() {
         return;
       }
       if (!selectedBlockId || (event.key !== "Backspace" && event.key !== "Delete")) return;
-      const target = event.target as HTMLElement;
-      if (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+      if (editing) return;
       event.preventDefault();
       removeBlock(selectedBlockId);
     };
     window.addEventListener("keydown", handleBlockDelete);
     return () => window.removeEventListener("keydown", handleBlockDelete);
-  }, [blockDeleteConfirmOpen, removeBlock, selectedBlockId, selectedBlockIds.size]);
+  }, [blockDeleteConfirmOpen, copySelectedBlocks, removeBlock, selectedBlockId, selectedBlockIds.size]);
 
   const pasteBlocks = (blockId: string, rawText: string) => {
     const parsed = parseMarkdownBlocks(rawText, () => `pasted-${blockSequence.current++}`);
@@ -1051,7 +1085,7 @@ export default function GraphoShell() {
           </div>
         </main>
 
-        {selectedBlockIds.size > 0 && <div className="grapho-block-selection-actions fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-1.5 text-[10px] text-[var(--grapho-foreground)]" role="toolbar" aria-label="Selected block actions"><span className="flex items-center gap-2 rounded-xl bg-[var(--grapho-accent-soft)] px-2.5 py-2"><span className="grid size-5 place-items-center rounded-md bg-[var(--grapho-accent)] text-[var(--grapho-background)]"><Check size={12} strokeWidth={3} /></span><span><strong>{selectedBlockIds.size}</strong> block{selectedBlockIds.size === 1 ? "" : "s"}</span></span><span className="hidden px-1 text-[var(--grapho-muted)] sm:inline">Shift-click to extend</span><button type="button" onClick={() => { setSelectedBlockIds(new Set()); paintBlockSelection(new Set()); }} className="rounded-xl px-2.5 py-2 text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]">Clear</button><button type="button" onClick={() => setBlockDeleteConfirmOpen(true)} className="flex items-center gap-1 rounded-xl bg-[var(--grapho-control)] px-2.5 py-2 text-red-400 hover:bg-red-500/10"><Trash2 size={12} /> Delete</button></div>}
+        {selectedBlockIds.size > 0 && <div className="grapho-block-selection-actions fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-1.5 text-[10px] text-[var(--grapho-foreground)]" role="toolbar" aria-label="Selected block actions"><span className="flex items-center gap-2 rounded-xl bg-[var(--grapho-accent-soft)] px-2.5 py-2"><span className="grid size-5 place-items-center rounded-md bg-[var(--grapho-accent)] text-[var(--grapho-background)]"><Check size={12} strokeWidth={3} /></span><span><strong>{selectedBlockIds.size}</strong> block{selectedBlockIds.size === 1 ? "" : "s"}</span></span><span className="hidden px-1 text-[var(--grapho-muted)] sm:inline">Shift-click to extend</span><button type="button" onClick={copySelectedBlocks} className="flex items-center gap-1 rounded-xl px-2.5 py-2 text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]"><Copy size={12} /> Copy</button><button type="button" onClick={() => { setSelectedBlockIds(new Set()); paintBlockSelection(new Set()); }} className="rounded-xl px-2.5 py-2 text-[var(--grapho-muted)] hover:bg-[var(--grapho-control)] hover:text-[var(--grapho-foreground)]">Clear</button><button type="button" onClick={() => setBlockDeleteConfirmOpen(true)} className="flex items-center gap-1 rounded-xl bg-[var(--grapho-control)] px-2.5 py-2 text-red-400 hover:bg-red-500/10"><Trash2 size={12} /> Delete</button></div>}
         {selectionToolbar && <div className="grapho-selection-toolbar fixed z-50 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-nowrap items-center gap-1.5 overflow-x-auto rounded-2xl border border-[var(--grapho-border)] bg-[var(--grapho-panel-solid)] p-2 text-[13px] shadow-2xl" style={{ top: selectionToolbar.top, left: selectionToolbar.left }} onMouseDown={(event) => event.preventDefault()}>
                   <button type="button" onClick={() => applySelectionFormat("bold")} className="grid size-9 shrink-0 place-items-center rounded-lg text-[15px] font-bold hover:bg-[var(--grapho-control)]">B</button>
                   <button type="button" onClick={() => applySelectionFormat("italic")} className="grid size-9 shrink-0 place-items-center rounded-lg text-[15px] italic hover:bg-[var(--grapho-control)]">I</button>
@@ -1213,6 +1247,93 @@ function documentToMarkdown(document: DocumentItem) {
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
+}
+
+function clipboardInlineLines(content: InlineText[]) {
+  const lines: InlineText[][] = [[]];
+  content.forEach((span) => {
+    const parts = span.text.split("\n");
+    parts.forEach((part, index) => {
+      if (part) lines[lines.length - 1].push({ text: part, marks: span.marks });
+      if (index < parts.length - 1) lines.push([]);
+    });
+  });
+  return lines;
+}
+
+function safeClipboardHref(href: string) {
+  return /^(https?:|mailto:|tel:|\/|#)/i.test(href) ? href : "#";
+}
+
+function clipboardInlineHtml(content: InlineText[]) {
+  return clipboardInlineLines(content).map((line) => line.map((span) => {
+    let html = escapeHtml(span.text);
+    for (const mark of span.marks ?? []) {
+      if (mark.type === "bold") html = `<strong>${html}</strong>`;
+      if (mark.type === "italic") html = `<em>${html}</em>`;
+      if (mark.type === "underline") html = `<u>${html}</u>`;
+      if (mark.type === "strike") html = `<s>${html}</s>`;
+      if (mark.type === "code") html = `<code>${html}</code>`;
+      if (mark.type === "highlight") html = `<mark style="background-color:${escapeHtml(mark.color ?? "#dbeafe")}">${html}</mark>`;
+      if (mark.type === "link") html = `<a href="${escapeHtml(safeClipboardHref(mark.href))}">${html}</a>`;
+    }
+    return html;
+  }).join("")).join("<br>");
+}
+
+function clipboardListItems(content: InlineText[]) {
+  return clipboardInlineLines(content).map((line) => `<li>${line.map((span) => {
+    let html = escapeHtml(span.text);
+    for (const mark of span.marks ?? []) {
+      if (mark.type === "bold") html = `<strong>${html}</strong>`;
+      if (mark.type === "italic") html = `<em>${html}</em>`;
+      if (mark.type === "underline") html = `<u>${html}</u>`;
+      if (mark.type === "strike") html = `<s>${html}</s>`;
+      if (mark.type === "code") html = `<code>${html}</code>`;
+      if (mark.type === "highlight") html = `<mark style="background-color:${escapeHtml(mark.color ?? "#dbeafe")}">${html}</mark>`;
+      if (mark.type === "link") html = `<a href="${escapeHtml(safeClipboardHref(mark.href))}">${html}</a>`;
+    }
+    return html;
+  }).join("")}</li>`).join("");
+}
+
+function blockToClipboardHtml(block: Block, orderedIndex: number) {
+  const content = blockInlineContent(block);
+  const inline = clipboardInlineHtml(content);
+  if (block.type === "heading") return `<h2>${inline}</h2>`;
+  if (block.type === "quote") return `<blockquote>${inline}</blockquote>`;
+  if (block.type === "list") return `<ul>${clipboardListItems(content)}</ul>`;
+  if (block.type === "ordered-list") return `<ol start="${orderedIndex}">${clipboardListItems(content)}</ol>`;
+  if (block.type === "todo") return `<p>${block.checked ? "☑" : "☐"} ${inline}</p>`;
+  if (block.type === "toggle") return `<details${block.collapsed ? "" : " open"}><summary>${inline}</summary></details>`;
+  if (block.type === "callout") return `<aside>${inline}</aside>`;
+  if (block.type === "code") return `<pre><code>${escapeHtml(block.text)}</code></pre>`;
+  if (block.type === "divider") return "<hr>";
+  if (block.type === "page-break") return `<div style="page-break-after:always"></div>`;
+  if (block.type === "table") return markdownTableToHtml(block.text);
+  return `<p>${inline || "<br>"}</p>`;
+}
+
+function blocksToClipboardHtml(blocks: Block[]) {
+  let orderedIndex = 1;
+  return blocks.map((block) => {
+    const html = blockToClipboardHtml(block, orderedIndex);
+    if (block.type === "ordered-list") orderedIndex += Math.max(1, clipboardInlineLines(blockInlineContent(block)).length);
+    else orderedIndex = 1;
+    return html;
+  }).join("\n");
+}
+
+function blocksToClipboardText(blocks: Block[]) {
+  return blocks.map((block) => {
+    const text = plainInlineText(blockInlineContent(block));
+    if (block.type === "list") return text.split("\n").map((line) => `• ${line}`).join("\n");
+    if (block.type === "ordered-list") return text.split("\n").map((line, index) => `${index + 1}. ${line}`).join("\n");
+    if (block.type === "todo") return `${block.checked ? "[x]" : "[ ]"} ${text}`;
+    if (block.type === "divider") return "--------------------";
+    if (block.type === "page-break") return "[Page break]";
+    return text;
+  }).join("\n\n");
 }
 
 function documentToPlainText(document: DocumentItem) {
