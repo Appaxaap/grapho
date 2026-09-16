@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { save } from "@tauri-apps/plugin-dialog";
-import type { GraphoStoragePayload } from "./storage";
+import type { EditorFont, GraphoStoragePayload } from "./storage";
 import type { DocumentItem } from "../domain/model";
 
 export function isNativePersistenceAvailable() {
@@ -22,12 +22,12 @@ export async function saveNativeWorkspace(payload: GraphoStoragePayload) {
   await invoke("save_native_workspace", { payload: JSON.stringify(payload) });
 }
 
-export async function exportNativePdf(document: DocumentItem, options: { font?: "Sans" | "Mono" | "Serif" } = {}) {
+export async function exportNativePdf(document: DocumentItem, options: { font?: EditorFont } = {}) {
   const path = await save({
     defaultPath: `${document.title || "grapho-document"}.pdf`,
     filters: [{ name: "PDF document", extensions: ["pdf"] }],
   });
   if (!path) return false;
-  await invoke("export_pdf", { path, document: { ...document, font: options.font ?? "Sans" } });
+  await invoke("export_pdf", { path, document: { ...document, font: options.font ?? "Grapho Geist Mono" } });
   return true;
 }

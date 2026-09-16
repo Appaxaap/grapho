@@ -3,10 +3,19 @@ import type { DocumentItem } from "../domain/model";
 export const GRAPHO_STORAGE_KEY = "grapho.workspace.v1";
 export const GRAPHO_STORAGE_VERSION = 1;
 
+export type EditorFont = "Grapho Geist Mono" | "Inter" | "Source Serif 4";
+
+export function normalizeEditorFont(value: unknown): EditorFont {
+  if (value === "Inter" || value === "Source Serif 4" || value === "Grapho Geist Mono") return value;
+  if (value === "Serif") return "Source Serif 4";
+  if (value === "Mono" || value === "Sans") return value === "Sans" ? "Inter" : "Grapho Geist Mono";
+  return "Grapho Geist Mono";
+}
+
 export type GraphoPreferences = {
   editorWidth: "Readable" | "Wide";
   editorSpacing: "Relaxed" | "Compact";
-  editorFont: "Sans" | "Mono" | "Serif";
+  editorFont: EditorFont;
   editorSize: "Standard" | "Large";
   focusMode?: boolean;
 };
@@ -14,7 +23,7 @@ export type GraphoPreferences = {
 export const defaultGraphoPreferences: GraphoPreferences = {
   editorWidth: "Readable",
   editorSpacing: "Relaxed",
-  editorFont: "Sans",
+  editorFont: "Grapho Geist Mono",
   editorSize: "Standard",
   focusMode: false,
 };

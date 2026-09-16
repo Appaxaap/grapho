@@ -523,7 +523,7 @@ fn export_pdf(path: String, document: PdfDocument) -> Result<(), String> {
         Mm(PAGE_HEIGHT as f32),
         "Grapho",
     );
-    let font_data = if document.font == "Serif" {
+    let font_data = if document.font == "Source Serif 4" || document.font == "Serif" {
         SERIF_FONT
     } else {
         GEIST_FONT

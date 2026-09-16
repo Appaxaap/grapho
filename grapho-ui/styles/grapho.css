@@ -1,4 +1,6 @@
 /*  */@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/source-serif-4";
 
 @font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin-ext.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Grapho Geist Mono"; src: url("/fonts/geist-mono-latin.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
@@ -25,8 +27,8 @@
   --grapho-selection: #A7C5E0;
   --grapho-shadow: 0 20px 55px rgba(0, 0, 0, .065), 0 1px 2px rgba(0, 0, 0, .025);
   --grapho-font-sans: "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --grapho-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  --grapho-font-serif: "Lyon Text", Georgia, "Times New Roman", ui-serif, serif;
+  --grapho-font-mono: var(--grapho-font);
+  --grapho-font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, "Times New Roman", ui-serif, serif;
   min-height: 100vh;
   background: var(--grapho-background);
   color: var(--grapho-foreground);
@@ -77,6 +79,7 @@
 .grapho-ui button, .grapho-ui input, .grapho-ui textarea { font: inherit; }
 .grapho-ui button { -webkit-tap-highlight-color: transparent; }
 .grapho-ui :focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
+.grapho-font-select option { background: var(--grapho-panel-solid); color: var(--grapho-foreground); }
 .grapho-ui textarea:focus-visible,
 .grapho-ui [contenteditable]:focus-visible { outline: none; }
 .grapho-ui textarea:focus,
@@ -289,6 +292,8 @@
 .grapho-style-option:focus-visible { outline: 2px solid var(--grapho-accent); outline-offset: 2px; }
 .grapho-style-option-label { font-weight: 500; }
 .grapho-style-option-value { font-size: 9px; }
+.grapho-style-option select { color: var(--grapho-foreground); font: inherit; }
+.grapho-style-option select option { background: var(--grapho-panel-solid); color: var(--grapho-foreground); }
 .grapho-style-option-arrow { display: grid; width: 17px; height: 17px; place-items: center; border: 1px solid var(--grapho-border); border-radius: 5px; color: var(--grapho-accent); font-size: 10px; line-height: 1; }
 @media (prefers-reduced-motion: reduce) { .grapho-style-option { transition: none; } }
 @media (max-width: 700px) { .grapho-style-panel { top: auto !important; right: 10px !important; bottom: calc(max(16px, env(safe-area-inset-bottom)) + 120px) !important; left: 10px; width: auto !important; max-height: min(68dvh, 620px); } }
